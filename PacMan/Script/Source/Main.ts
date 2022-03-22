@@ -4,7 +4,7 @@ namespace Script {
 
   let viewport: ƒ.Viewport;
   let pacman: ƒ.Node;
-  let speed: ƒ.Vector3 = new ƒ.Vector3(1 / 60, 1 / 60, 0);
+  let movement: ƒ.Vector3 = new ƒ.Vector3(1 / 80, 0, 0);
 
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
@@ -15,6 +15,8 @@ namespace Script {
 
     pacman = graph.getChildrenByName("Pacman")[0];
 
+    document.addEventListener("keydown", movePacman);
+
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }
@@ -22,9 +24,28 @@ namespace Script {
   function update(_event: Event): void {
     // ƒ.Physics.simulate();  // if physics is included and used
 
-    pacman.mtxLocal.translate(speed);
+    pacman.mtxLocal.translate(movement);
 
     viewport.draw();
     ƒ.AudioManager.default.update();
+  }
+
+  function movePacman(_event: KeyboardEvent) {
+    switch (_event.code) {
+      case ƒ.KEYBOARD_CODE.ARROW_RIGHT:
+        movement = new ƒ.Vector3(1 / 80, 0, 0);
+        break;
+      case ƒ.KEYBOARD_CODE.ARROW_DOWN:
+        movement = new ƒ.Vector3(0, -1 / 80, 0);
+        break;
+      case ƒ.KEYBOARD_CODE.ARROW_LEFT:
+        movement = new ƒ.Vector3(-1 / 80, 0, 0);
+        break;
+      case ƒ.KEYBOARD_CODE.ARROW_UP:
+        movement = new ƒ.Vector3(0, 1 / 80, 0);
+        break;
+      default:
+        break;
+    }
   }
 }
