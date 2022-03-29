@@ -49,6 +49,8 @@ var Script;
     document.addEventListener("interactiveViewportStarted", start);
     function start(_event) {
         viewport = _event.detail;
+        viewport.camera.mtxPivot.translate(new ƒ.Vector3(2.5, 2.5, 15));
+        viewport.camera.mtxPivot.rotateY(180);
         const graph = viewport.getBranch();
         pacman = graph.getChildrenByName("Pacman")[0];
         walls = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
@@ -63,7 +65,7 @@ var Script;
             pacman.mtxLocal.translate(movement);
         }
         viewport.draw();
-        ƒ.AudioManager.default.update();
+        // ƒ.AudioManager.default.update();
     }
     function movePacman() {
         if (ƒ.Keyboard.isPressedOne([

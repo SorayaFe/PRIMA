@@ -14,6 +14,8 @@ namespace Script {
 
   function start(_event: CustomEvent): void {
     viewport = _event.detail;
+    viewport.camera.mtxPivot.translate(new ƒ.Vector3(2.5, 2.5, 15));
+    viewport.camera.mtxPivot.rotateY(180);
 
     const graph: ƒ.Node = viewport.getBranch();
 
@@ -35,7 +37,7 @@ namespace Script {
     }
 
     viewport.draw();
-    ƒ.AudioManager.default.update();
+    // ƒ.AudioManager.default.update();
   }
 
   function movePacman(): void {
@@ -90,8 +92,8 @@ namespace Script {
   }
 
   function checkIfMove(_direction?: string): boolean {
-    const y = pacman.mtxLocal.translation.y;
-    const x = pacman.mtxLocal.translation.x;
+    const y: number = pacman.mtxLocal.translation.y;
+    const x: number = pacman.mtxLocal.translation.x;
     let newPosition: ƒ.Vector3;
 
     switch (_direction ?? movingDirection) {
@@ -112,7 +114,7 @@ namespace Script {
         break;
     }
 
-    const wall = walls.find((w) =>
+    const wall: ƒ.Node = walls.find((w) =>
       w.mtxLocal.translation.equals(newPosition, 0.022)
     );
 
@@ -120,7 +122,7 @@ namespace Script {
       return false;
     }
 
-    const path = paths.find((p) =>
+    const path: ƒ.Node = paths.find((p) =>
       p.mtxLocal.translation.equals(newPosition, 1)
     );
 
