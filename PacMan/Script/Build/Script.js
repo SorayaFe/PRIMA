@@ -40,58 +40,90 @@ var Script;
 (function (Script) {
     var ƒ = FudgeCore;
     ƒ.Debug.info("Main Program Template running!");
+    let dialog;
+    window.addEventListener("load", init);
+    document.addEventListener("interactiveViewportStarted", start);
     let viewport;
     let pacman;
     let walls;
     let paths;
+    let sounds;
     let movingDirection = "y";
-    let movement = new ƒ.Vector3(0, 1 / 60, 0);
-    document.addEventListener("interactiveViewportStarted", start);
+    let movement = new ƒ.Vector3(0, 0, 0);
+    function init(_event) {
+        dialog = document.querySelector("dialog");
+        dialog.querySelector("h1").textContent = document.title;
+        dialog.addEventListener("click", function (_event) {
+            // @ts-ignore until HTMLDialog is implemented by all browsers and available in dom.d.ts
+            dialog.close();
+            startInteractiveViewport();
+        });
+        // @ts-ignore
+        dialog.showModal();
+    }
+    async function startInteractiveViewport() {
+        // load resources referenced in the link-tag
+        await ƒ.Project.loadResourcesFromHTML();
+        ƒ.Debug.log("Project:", ƒ.Project.resources);
+        // pick the graph to show
+        let graph = ƒ.Project.resources["Graph|2022-03-17T14:08:08.737Z|08207"];
+        ƒ.Debug.log("Graph:", graph);
+        if (!graph) {
+            alert("Nothing to render. Create a graph with at least a mesh, material and probably some light");
+            return;
+        }
+        // setup the viewport
+        let cmpCamera = new ƒ.ComponentCamera();
+        let canvas = document.querySelector("canvas");
+        let viewport = new ƒ.Viewport();
+        viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
+        ƒ.Debug.log("Viewport:", viewport);
+        viewport.draw();
+        canvas.dispatchEvent(new CustomEvent("interactiveViewportStarted", {
+            bubbles: true,
+            detail: viewport,
+        }));
+    }
     function start(_event) {
         viewport = _event.detail;
         viewport.camera.mtxPivot.translate(new ƒ.Vector3(2.5, 2.5, 15));
         viewport.camera.mtxPivot.rotateY(180);
         const graph = viewport.getBranch();
+        ƒ.AudioManager.default.listenTo(graph);
+        sounds = graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
         pacman = graph.getChildrenByName("Pacman")[0];
         walls = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
         paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
-        ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
+        ƒ.Loop.start(); // start the game loop to continuously draw the viewport, update the audiosystem and drive the physics i/a
     }
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
         movePacman();
         if (checkIfMove()) {
+            if (!sounds[1].isPlaying && !movement.equals(new ƒ.Vector3(0, 0, 0))) {
+                sounds[1].play(true);
+            }
             pacman.mtxLocal.translate(movement);
         }
         viewport.draw();
-        // ƒ.AudioManager.default.update();
     }
     function movePacman() {
-        if (ƒ.Keyboard.isPressedOne([
-            ƒ.KEYBOARD_CODE.ARROW_RIGHT,
-            ƒ.KEYBOARD_CODE.D,
-        ]) &&
+        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_RIGHT, ƒ.KEYBOARD_CODE.D]) &&
             (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05) {
             if (checkIfMove("x")) {
                 movement.set(1 / 60, 0, 0);
                 movingDirection = "x";
             }
         }
-        if (ƒ.Keyboard.isPressedOne([
-            ƒ.KEYBOARD_CODE.ARROW_DOWN,
-            ƒ.KEYBOARD_CODE.S,
-        ]) &&
+        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]) &&
             (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05) {
             if (checkIfMove("-y")) {
                 movement.set(0, -1 / 60, 0);
                 movingDirection = "-y";
             }
         }
-        if (ƒ.Keyboard.isPressedOne([
-            ƒ.KEYBOARD_CODE.ARROW_LEFT,
-            ƒ.KEYBOARD_CODE.A,
-        ]) &&
+        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A]) &&
             (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05) {
             if (checkIfMove("-x")) {
                 movement.set(-1 / 60, 0, 0);
@@ -128,10 +160,15 @@ var Script;
         }
         const wall = walls.find((w) => w.mtxLocal.translation.equals(newPosition, 0.022));
         if (wall) {
+            sounds[1].play(false);
             return false;
         }
         const path = paths.find((p) => p.mtxLocal.translation.equals(newPosition, 1));
-        return path ? true : false;
+        if (!path) {
+            sounds[1].play(false);
+            return false;
+        }
+        return true;
     }
 })(Script || (Script = {}));
 //# sourceMappingURL=Script.js.map
