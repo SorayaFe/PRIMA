@@ -39,11 +39,8 @@ var Script;
 var Script;
 (function (Script) {
     var ƒ = FudgeCore;
-    var ƒAid = FudgeAid;
     ƒ.Debug.info("Main Program Template running!");
     let dialog;
-    let animations;
-    let spritePacman;
     window.addEventListener("load", init);
     document.addEventListener("interactiveViewportStarted", start);
     let viewport;
@@ -51,7 +48,7 @@ var Script;
     let walls;
     let paths;
     let sounds;
-    let movingDirection = "y";
+    Script.movingDirection = "y";
     let movement = new ƒ.Vector3(0, 0, 0);
     function init(_event) {
         dialog = document.querySelector("dialog");
@@ -81,7 +78,7 @@ var Script;
         let viewport = new ƒ.Viewport();
         viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
         ƒ.Debug.log("Viewport:", viewport);
-        await loadSprites();
+        await Script.loadSprites();
         viewport.draw();
         canvas.dispatchEvent(new CustomEvent("interactiveViewportStarted", {
             bubbles: true,
@@ -98,15 +95,7 @@ var Script;
         pacman = graph.getChildrenByName("Pacman")[0];
         walls = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
         paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
-        spritePacman = new ƒAid.NodeSprite("Sprite");
-        spritePacman.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
-        spritePacman.setAnimation(animations["pacman"]);
-        spritePacman.setFrameDirection(1);
-        spritePacman.mtxLocal.translateZ(0.5);
-        spritePacman.framerate = 15;
-        pacman.addChild(spritePacman);
-        pacman.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
-        spritePacman.mtxLocal.rotateZ(90);
+        Script.setSprite(pacman);
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continuously draw the viewport, update the audiosystem and drive the physics i/a
     }
@@ -126,32 +115,32 @@ var Script;
             (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05) {
             if (checkIfMove("x")) {
                 movement.set(1 / 60, 0, 0);
-                rotateSprite("x");
-                movingDirection = "x";
+                Script.rotateSprite("x");
+                Script.movingDirection = "x";
             }
         }
         if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_DOWN, ƒ.KEYBOARD_CODE.S]) &&
             (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05) {
             if (checkIfMove("-y")) {
                 movement.set(0, -1 / 60, 0);
-                rotateSprite("-y");
-                movingDirection = "-y";
+                Script.rotateSprite("-y");
+                Script.movingDirection = "-y";
             }
         }
         if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_LEFT, ƒ.KEYBOARD_CODE.A]) &&
             (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05) {
             if (checkIfMove("-x")) {
                 movement.set(-1 / 60, 0, 0);
-                rotateSprite("-x");
-                movingDirection = "-x";
+                Script.rotateSprite("-x");
+                Script.movingDirection = "-x";
             }
         }
         if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.ARROW_UP, ƒ.KEYBOARD_CODE.W]) &&
             (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05) {
             if (checkIfMove("y")) {
                 movement.set(0, 1 / 60, 0);
-                rotateSprite("y");
-                movingDirection = "y";
+                Script.rotateSprite("y");
+                Script.movingDirection = "y";
             }
         }
     }
@@ -159,7 +148,7 @@ var Script;
         const y = pacman.mtxLocal.translation.y;
         const x = pacman.mtxLocal.translation.x;
         let newPosition;
-        switch (_direction ?? movingDirection) {
+        switch (_direction ?? Script.movingDirection) {
             case "x":
                 newPosition = new ƒ.Vector3(x + 1, y, 0);
                 break;
@@ -187,12 +176,19 @@ var Script;
         }
         return true;
     }
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒAid = FudgeAid;
+    let animations;
+    let spritePacman;
     async function loadSprites() {
         let imgSpriteSheet = new ƒ.TextureImage();
         await imgSpriteSheet.load("Assets/pacman-sprites.png");
         let spriteSheet = new ƒ.CoatTextured(undefined, imgSpriteSheet);
         generateSprites(spriteSheet);
     }
+    Script.loadSprites = loadSprites;
     function generateSprites(_spritesheet) {
         animations = {};
         let name = "pacman";
@@ -200,28 +196,41 @@ var Script;
         sprite.generateByGrid(ƒ.Rectangle.GET(0, 0, 64, 64), 8, 70, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(64));
         animations[name] = sprite;
     }
+    function setSprite(_node) {
+        spritePacman = new ƒAid.NodeSprite("Sprite");
+        spritePacman.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+        spritePacman.setAnimation(animations["pacman"]);
+        spritePacman.setFrameDirection(1);
+        spritePacman.mtxLocal.translateZ(0.5);
+        spritePacman.framerate = 15;
+        _node.addChild(spritePacman);
+        _node.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+        spritePacman.mtxLocal.rotateZ(90);
+    }
+    Script.setSprite = setSprite;
     function rotateSprite(_direction) {
-        if (_direction !== movingDirection) {
+        if (_direction !== Script.movingDirection) {
             spritePacman.mtxLocal.rotateZ(0);
-            if ((_direction === "x" && movingDirection === "y") ||
-                (_direction === "-y" && movingDirection === "x") ||
-                (_direction === "-x" && movingDirection === "-y") ||
-                (_direction === "y" && movingDirection === "-x")) {
+            if ((_direction === "x" && Script.movingDirection === "y") ||
+                (_direction === "-y" && Script.movingDirection === "x") ||
+                (_direction === "-x" && Script.movingDirection === "-y") ||
+                (_direction === "y" && Script.movingDirection === "-x")) {
                 spritePacman.mtxLocal.rotateZ(-90);
             }
-            else if ((_direction === "-x" && movingDirection === "y") ||
-                (_direction === "x" && movingDirection === "-y") ||
-                (_direction === "y" && movingDirection === "x") ||
-                (_direction === "-y" && movingDirection === "-x")) {
+            else if ((_direction === "-x" && Script.movingDirection === "y") ||
+                (_direction === "x" && Script.movingDirection === "-y") ||
+                (_direction === "y" && Script.movingDirection === "x") ||
+                (_direction === "-y" && Script.movingDirection === "-x")) {
                 spritePacman.mtxLocal.rotateZ(90);
             }
-            else if ((_direction === "-x" && movingDirection === "x") ||
-                (_direction === "x" && movingDirection === "-x") ||
-                (_direction === "y" && movingDirection === "-y") ||
-                (_direction === "-y" && movingDirection === "y")) {
+            else if ((_direction === "-x" && Script.movingDirection === "x") ||
+                (_direction === "x" && Script.movingDirection === "-x") ||
+                (_direction === "y" && Script.movingDirection === "-y") ||
+                (_direction === "-y" && Script.movingDirection === "y")) {
                 spritePacman.mtxLocal.rotateZ(180);
             }
         }
     }
+    Script.rotateSprite = rotateSprite;
 })(Script || (Script = {}));
 //# sourceMappingURL=Script.js.map

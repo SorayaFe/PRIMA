@@ -8,4 +8,10 @@ declare namespace Script {
     }
 }
 declare namespace Script {
+    let movingDirection: string;
+}
+declare namespace Script {
+    function loadSprites(): Promise<void>;
+    function setSprite(_node: ƒ.Node): void;
+    function rotateSprite(_direction: string): void;
 }
