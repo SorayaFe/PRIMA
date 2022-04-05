@@ -39,8 +39,11 @@ var Script;
 var Script;
 (function (Script) {
     var ƒ = FudgeCore;
+    var ƒAid = FudgeAid;
     ƒ.Debug.info("Main Program Template running!");
     let dialog;
+    let animations;
+    let spritePacman;
     window.addEventListener("load", init);
     document.addEventListener("interactiveViewportStarted", start);
     let viewport;
@@ -78,6 +81,7 @@ var Script;
         let viewport = new ƒ.Viewport();
         viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
         ƒ.Debug.log("Viewport:", viewport);
+        await loadSprites();
         viewport.draw();
         canvas.dispatchEvent(new CustomEvent("interactiveViewportStarted", {
             bubbles: true,
@@ -94,6 +98,15 @@ var Script;
         pacman = graph.getChildrenByName("Pacman")[0];
         walls = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
         paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
+        spritePacman = new ƒAid.NodeSprite("Sprite");
+        spritePacman.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+        spritePacman.setAnimation(animations["pacman"]);
+        spritePacman.setFrameDirection(1);
+        spritePacman.mtxLocal.translateZ(0.5);
+        spritePacman.framerate = 15;
+        pacman.addChild(spritePacman);
+        pacman.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
+        spritePacman.mtxLocal.rotateZ(90);
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continuously draw the viewport, update the audiosystem and drive the physics i/a
     }
@@ -113,6 +126,7 @@ var Script;
             (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05) {
             if (checkIfMove("x")) {
                 movement.set(1 / 60, 0, 0);
+                rotateSprite("x");
                 movingDirection = "x";
             }
         }
@@ -120,6 +134,7 @@ var Script;
             (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05) {
             if (checkIfMove("-y")) {
                 movement.set(0, -1 / 60, 0);
+                rotateSprite("-y");
                 movingDirection = "-y";
             }
         }
@@ -127,6 +142,7 @@ var Script;
             (pacman.mtxLocal.translation.y + 0.025) % 1 < 0.05) {
             if (checkIfMove("-x")) {
                 movement.set(-1 / 60, 0, 0);
+                rotateSprite("-x");
                 movingDirection = "-x";
             }
         }
@@ -134,6 +150,7 @@ var Script;
             (pacman.mtxLocal.translation.x + 0.025) % 1 < 0.05) {
             if (checkIfMove("y")) {
                 movement.set(0, 1 / 60, 0);
+                rotateSprite("y");
                 movingDirection = "y";
             }
         }
@@ -169,6 +186,42 @@ var Script;
             return false;
         }
         return true;
+    }
+    async function loadSprites() {
+        let imgSpriteSheet = new ƒ.TextureImage();
+        await imgSpriteSheet.load("Assets/pacman-sprites.png");
+        let spriteSheet = new ƒ.CoatTextured(undefined, imgSpriteSheet);
+        generateSprites(spriteSheet);
+    }
+    function generateSprites(_spritesheet) {
+        animations = {};
+        let name = "pacman";
+        let sprite = new ƒAid.SpriteSheetAnimation(name, _spritesheet);
+        sprite.generateByGrid(ƒ.Rectangle.GET(0, 0, 64, 64), 8, 70, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(64));
+        animations[name] = sprite;
+    }
+    function rotateSprite(_direction) {
+        if (_direction !== movingDirection) {
+            spritePacman.mtxLocal.rotateZ(0);
+            if ((_direction === "x" && movingDirection === "y") ||
+                (_direction === "-y" && movingDirection === "x") ||
+                (_direction === "-x" && movingDirection === "-y") ||
+                (_direction === "y" && movingDirection === "-x")) {
+                spritePacman.mtxLocal.rotateZ(-90);
+            }
+            else if ((_direction === "-x" && movingDirection === "y") ||
+                (_direction === "x" && movingDirection === "-y") ||
+                (_direction === "y" && movingDirection === "x") ||
+                (_direction === "-y" && movingDirection === "-x")) {
+                spritePacman.mtxLocal.rotateZ(90);
+            }
+            else if ((_direction === "-x" && movingDirection === "x") ||
+                (_direction === "x" && movingDirection === "-x") ||
+                (_direction === "y" && movingDirection === "-y") ||
+                (_direction === "-y" && movingDirection === "y")) {
+                spritePacman.mtxLocal.rotateZ(180);
+            }
+        }
     }
 })(Script || (Script = {}));
 //# sourceMappingURL=Script.js.map
