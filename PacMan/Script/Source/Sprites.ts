@@ -36,8 +36,6 @@ namespace Script {
 
   export function rotateSprite(_direction: string): void {
     if (_direction !== movingDirection) {
-      spritePacman.mtxLocal.rotateZ(0);
-
       if (
         (_direction === "x" && movingDirection === "y") ||
         (_direction === "-y" && movingDirection === "x") ||

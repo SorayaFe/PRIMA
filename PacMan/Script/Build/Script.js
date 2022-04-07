@@ -44,10 +44,11 @@ var Script;
     window.addEventListener("load", init);
     document.addEventListener("interactiveViewportStarted", start);
     let viewport;
+    let sounds;
     let pacman;
     let walls;
     let paths;
-    let sounds;
+    let ghost;
     Script.movingDirection = "y";
     let movement = new ƒ.Vector3(0, 0, 0);
     function init(_event) {
@@ -95,6 +96,8 @@ var Script;
         pacman = graph.getChildrenByName("Pacman")[0];
         walls = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
         paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
+        ghost = createGhost();
+        graph.addChild(ghost);
         Script.setSprite(pacman);
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continuously draw the viewport, update the audiosystem and drive the physics i/a
@@ -176,6 +179,20 @@ var Script;
         }
         return true;
     }
+    function createGhost() {
+        const node = new ƒ.Node("Ghost");
+        const mesh = new ƒ.MeshSphere();
+        const material = new ƒ.Material("MaterialGhost", ƒ.ShaderLit, new ƒ.CoatColored());
+        const cmpTransform = new ƒ.ComponentTransform();
+        const cmpMesh = new ƒ.ComponentMesh(mesh);
+        const cmpMaterial = new ƒ.ComponentMaterial(material);
+        cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
+        node.addComponent(cmpTransform);
+        node.addComponent(cmpMesh);
+        node.addComponent(cmpMaterial);
+        node.mtxLocal.translate(new ƒ.Vector3(2, 1, 0));
+        return node;
+    }
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
@@ -210,7 +227,6 @@ var Script;
     Script.setSprite = setSprite;
     function rotateSprite(_direction) {
         if (_direction !== Script.movingDirection) {
-            spritePacman.mtxLocal.rotateZ(0);
             if ((_direction === "x" && Script.movingDirection === "y") ||
                 (_direction === "-y" && Script.movingDirection === "x") ||
                 (_direction === "-x" && Script.movingDirection === "-y") ||

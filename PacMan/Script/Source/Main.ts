@@ -10,11 +10,11 @@ namespace Script {
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
   let viewport: ƒ.Viewport;
+  let sounds: ƒ.ComponentAudio[];
   let pacman: ƒ.Node;
   let walls: ƒ.Node[];
   let paths: ƒ.Node[];
-
-  let sounds: ƒ.ComponentAudio[];
+  let ghost: ƒ.Node;
 
   export let movingDirection: string = "y";
   let movement: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
@@ -72,10 +72,12 @@ namespace Script {
     ƒ.AudioManager.default.listenTo(graph);
 
     sounds = graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
-
     pacman = graph.getChildrenByName("Pacman")[0];
     walls = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
     paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
+
+    ghost = createGhost();
+    graph.addChild(ghost);
 
     setSprite(pacman);
 
@@ -182,5 +184,25 @@ namespace Script {
     }
 
     return true;
+  }
+
+  function createGhost(): ƒ.Node {
+    const node: ƒ.Node = new ƒ.Node("Ghost");
+
+    const mesh: ƒ.MeshSphere = new ƒ.MeshSphere();
+    const material: ƒ.Material = new ƒ.Material("MaterialGhost", ƒ.ShaderLit, new ƒ.CoatColored());
+
+    const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
+    const cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
+    const cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(material);
+    cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
+
+    node.addComponent(cmpTransform);
+    node.addComponent(cmpMesh);
+    node.addComponent(cmpMaterial);
+
+    node.mtxLocal.translate(new ƒ.Vector3(2, 1, 0));
+
+    return node;
   }
 }
