@@ -176,7 +176,7 @@ var Script;
     }
     function start(_event) {
         viewport = _event.detail;
-        viewport.camera.mtxPivot.translate(new ƒ.Vector3(2.5, 2.5, 15));
+        viewport.camera.mtxPivot.translate(new ƒ.Vector3(3, 2, 15));
         viewport.camera.mtxPivot.rotateY(180);
         const graph = viewport.getBranch();
         ƒ.AudioManager.default.listenTo(graph);
@@ -281,6 +281,9 @@ var Script;
             ƒ.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, update);
             sounds[1].play(false);
             sounds[2].play(true);
+            document.getElementById("restart").addEventListener("click", function (_event) {
+                window.location.reload();
+            });
         }
     }
 })(Script || (Script = {}));

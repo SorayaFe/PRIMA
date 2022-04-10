@@ -64,7 +64,7 @@ namespace Script {
 
   function start(_event: CustomEvent): void {
     viewport = _event.detail;
-    viewport.camera.mtxPivot.translate(new ƒ.Vector3(2.5, 2.5, 15));
+    viewport.camera.mtxPivot.translate(new ƒ.Vector3(3, 2, 15));
     viewport.camera.mtxPivot.rotateY(180);
 
     const graph: ƒ.Node = viewport.getBranch();
@@ -208,6 +208,10 @@ namespace Script {
 
       sounds[1].play(false);
       sounds[2].play(true);
+
+      document.getElementById("restart").addEventListener("click", function (_event: Event) {
+        window.location.reload();
+      });
     }
   }
 }

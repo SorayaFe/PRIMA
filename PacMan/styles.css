@@ -31,3 +31,9 @@ canvas.fullscreen {
   font-size: 10rem;
   font-weight: bold;
 }
+#restart {
+  cursor: pointer;
+  font-size: 2rem;
+  text-align: center;
+  font-weight: normal;
+}
