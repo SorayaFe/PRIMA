@@ -11,7 +11,7 @@ declare namespace Script {
     import ƒ = FudgeCore;
     class Ghost extends ƒ.Node {
         private movement;
-        private numbers;
+        private lastPath;
         constructor(_name: string);
         move(_paths: ƒ.Node[]): void;
     }

@@ -11,8 +11,8 @@ namespace Script {
   cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
 
   export class Ghost extends ƒ.Node {
-    private movement: ƒ.Vector3 = new ƒ.Vector3(0, 1 / 60, 0);
-    private numbers: Map<number, number> = new Map<number, number>();
+    private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 60, 0);
+    private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
 
     constructor(_name: string) {
       super(_name);
@@ -64,24 +64,33 @@ namespace Script {
           }
         }
 
-        // get random number and check if its already been used too many times
-        let number = Math.floor(Math.random() * possiblePaths.length);
+        // lower probability for going back to same path
+        const index = possiblePaths.findIndex((p) => p.mtxLocal.translation.equals(this.lastPath));
 
-        const num = this.numbers.get(number);
-        if (!num) {
-          this.numbers.set(number, 1);
-        } else {
-          this.numbers.set(number, num + 1);
+        if (possiblePaths.length !== 1 && index !== -1) {
+          const pathsCopy = possiblePaths.slice();
+          pathsCopy.splice(index, 1);
+
+          possiblePaths.push(...pathsCopy);
+          possiblePaths.push(...pathsCopy.reverse());
+          possiblePaths.push(...pathsCopy);
+          possiblePaths.push(...pathsCopy.reverse());
+          possiblePaths.push(...pathsCopy);
+          possiblePaths.push(...pathsCopy.reverse());
+          possiblePaths.push(...pathsCopy.reverse());
+          possiblePaths.push(...pathsCopy);
+          possiblePaths.push(...pathsCopy.reverse());
+          possiblePaths.push(...pathsCopy);
+          possiblePaths.push(...pathsCopy);
         }
 
-        if (this.numbers.get(number) > 2 && possiblePaths.length > 1) {
-          while (number === num) {
-            number = Math.floor(Math.random() * possiblePaths.length);
-          }
-          this.numbers = new Map();
-        }
+        const path = possiblePaths[Math.floor(Math.random() * possiblePaths.length)];
 
-        const path = possiblePaths[number];
+        this.lastPath.set(
+          Math.round(this.mtxLocal.translation.x),
+          Math.round(this.mtxLocal.translation.y),
+          0
+        );
 
         // set moving direction
         if (path) {
