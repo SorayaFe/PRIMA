@@ -14,7 +14,7 @@ namespace Script {
   let pacman: ƒ.Node;
   let walls: ƒ.Node[];
   let paths: ƒ.Node[];
-  let ghost: ƒ.Node;
+  let ghost: Ghost;
 
   export let movingDirection: string = "y";
   let movement: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
@@ -76,7 +76,7 @@ namespace Script {
     walls = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
     paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
 
-    ghost = createGhost();
+    ghost = new Ghost("Ghost");
     graph.addChild(ghost);
 
     setSprite(pacman);
@@ -89,6 +89,7 @@ namespace Script {
     // ƒ.Physics.simulate();  // if physics is included and used
 
     movePacman();
+    ghost.move(paths);
 
     if (checkIfMove()) {
       if (!sounds[1].isPlaying && !movement.equals(new ƒ.Vector3(0, 0, 0))) {
@@ -96,6 +97,8 @@ namespace Script {
       }
       pacman.mtxLocal.translate(movement);
     }
+
+    checkIfGameOver();
 
     viewport.draw();
   }
@@ -186,23 +189,25 @@ namespace Script {
     return true;
   }
 
-  function createGhost(): ƒ.Node {
-    const node: ƒ.Node = new ƒ.Node("Ghost");
+  function checkIfGameOver(): void {
+    const isEvenPacman =
+      (Math.round(pacman.mtxLocal.translation.y) + Math.round(pacman.mtxLocal.translation.x)) %
+        2 ===
+      0;
 
-    const mesh: ƒ.MeshSphere = new ƒ.MeshSphere();
-    const material: ƒ.Material = new ƒ.Material("MaterialGhost", ƒ.ShaderLit, new ƒ.CoatColored());
+    const isEvenGhost =
+      (Math.round(ghost.mtxLocal.translation.y) + Math.round(ghost.mtxLocal.translation.x)) % 2 ===
+      0;
 
-    const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
-    const cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
-    const cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(material);
-    cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
+    if (
+      isEvenPacman !== isEvenGhost &&
+      pacman.mtxLocal.translation.equals(ghost.mtxLocal.translation, 0.8)
+    ) {
+      document.getElementById("game-over").style.width = "100vw";
+      ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, update);
 
-    node.addComponent(cmpTransform);
-    node.addComponent(cmpMesh);
-    node.addComponent(cmpMaterial);
-
-    node.mtxLocal.translate(new ƒ.Vector3(2, 1, 0));
-
-    return node;
+      sounds[1].play(false);
+      sounds[2].play(true);
+    }
   }
 }

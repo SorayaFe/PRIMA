@@ -2190,6 +2190,15 @@
                     "loop": true,
                     "volume": 0.15000037848949432
                   }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-04-10T15:12:48.953Z|42060",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.15000002086162567
+                  }
                 }
               ]
             },
@@ -2199,6 +2208,14 @@
       ],
       "idResource": "Graph|2022-03-17T14:08:08.737Z|08207",
       "type": "Graph"
+    }
+  },
+  "Audio|2022-04-10T15:12:48.953Z|42060": {
+    "ƒ.Audio": {
+      "url": "Sound\\pacman_death.wav",
+      "idResource": "Audio|2022-04-10T15:12:48.953Z|42060",
+      "name": "Death",
+      "type": "Audio"
     }
   }
 }

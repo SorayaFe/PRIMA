@@ -1,7 +1,7 @@
 namespace Script {
   import ƒAid = FudgeAid;
 
-  let animations: ƒAid.SpriteSheetAnimations;
+  export let animations: ƒAid.SpriteSheetAnimations = {};
   let spritePacman: ƒAid.NodeSprite;
 
   export async function loadSprites(): Promise<void> {
@@ -12,13 +12,20 @@ namespace Script {
   }
 
   function generateSprites(_spritesheet: ƒ.CoatTextured): void {
-    animations = {};
-    let name: string = "pacman";
+    const pacman: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("pacman", _spritesheet);
+    pacman.generateByGrid(ƒ.Rectangle.GET(0, 0, 64, 64), 8, 70, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(64));
 
-    let sprite: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation(name, _spritesheet);
-    sprite.generateByGrid(ƒ.Rectangle.GET(0, 0, 64, 64), 8, 70, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(64));
+    const ghost: ƒAid.SpriteSheetAnimation = new ƒAid.SpriteSheetAnimation("ghost", _spritesheet);
+    ghost.generateByGrid(
+      ƒ.Rectangle.GET(512, 0, 60, 64),
+      4,
+      70,
+      ƒ.ORIGIN2D.CENTER,
+      ƒ.Vector2.X(64)
+    );
 
-    animations[name] = sprite;
+    animations["pacman"] = pacman;
+    animations["ghost"] = ghost;
   }
 
   export function setSprite(_node: ƒ.Node): void {
