@@ -46,17 +46,17 @@ namespace Script {
 
         // get possible paths
         for (const path of _paths) {
-          const isEvenLocal =
-            (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
-              2 ===
-            0;
-
           if (
             path.mtxLocal.translation.equals(this.mtxLocal.translation, 1.05) &&
             !path.mtxLocal.translation.equals(this.mtxLocal.translation)
           ) {
             const isEvenPath =
               (path.mtxLocal.translation.y + path.mtxLocal.translation.x) % 2 === 0;
+
+            const isEvenLocal =
+              (Math.round(this.mtxLocal.translation.y) + Math.round(this.mtxLocal.translation.x)) %
+                2 ===
+              0;
 
             if (isEvenPath !== isEvenLocal) {
               possiblePaths.push(path);
