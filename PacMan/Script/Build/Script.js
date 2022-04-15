@@ -40,28 +40,27 @@ var Script;
 (function (Script) {
     var ƒ = FudgeCore;
     var ƒAid = FudgeAid;
-    const mesh = new ƒ.MeshSphere();
-    const material = new ƒ.Material("MaterialGhost", ƒ.ShaderLit, new ƒ.CoatColored());
-    const cmpTransform = new ƒ.ComponentTransform();
-    const cmpMesh = new ƒ.ComponentMesh(mesh);
-    const cmpMaterial = new ƒ.ComponentMaterial(material);
-    cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
     class Ghost extends ƒ.Node {
         movement = new ƒ.Vector3(0, -1 / 60, 0);
         lastPath = new ƒ.Vector3(0, 0, 0);
         constructor(_name) {
             super(_name);
+            const mesh = new ƒ.MeshSphere();
+            const material = new ƒ.Material("MaterialGhost", ƒ.ShaderLit, new ƒ.CoatColored());
+            const cmpTransform = new ƒ.ComponentTransform();
+            const cmpMesh = new ƒ.ComponentMesh(mesh);
+            const cmpMaterial = new ƒ.ComponentMaterial(material);
+            cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
             this.addComponent(cmpTransform);
             this.addComponent(cmpMesh);
             this.addComponent(cmpMaterial);
-            this.mtxLocal.translate(new ƒ.Vector3(2, 1, 0));
             // sprites
             const sprite = new ƒAid.NodeSprite("Sprite");
             sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
             sprite.setAnimation(Script.animations["ghost"]);
             sprite.setFrameDirection(1);
             sprite.mtxLocal.translateZ(0.5);
-            sprite.framerate = 15;
+            sprite.framerate = 10;
             this.addChild(sprite);
             this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
         }
@@ -136,7 +135,7 @@ var Script;
     let pacman;
     let walls;
     let paths;
-    let ghost;
+    let ghosts = [];
     Script.movingDirection = "y";
     let movement = new ƒ.Vector3(0, 0, 0);
     function init(_event) {
@@ -184,8 +183,16 @@ var Script;
         pacman = graph.getChildrenByName("Pacman")[0];
         walls = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
         paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
-        ghost = new Script.Ghost("Ghost");
-        graph.addChild(ghost);
+        for (const path of paths) {
+            addPill(path);
+        }
+        const ghost1 = new Script.Ghost("Ghost");
+        const ghost2 = new Script.Ghost("Ghost");
+        ghost1.mtxLocal.translate(new ƒ.Vector3(4, 1, 0));
+        ghost2.mtxLocal.translate(new ƒ.Vector3(3, 5, 0));
+        ghosts.push(ghost1, ghost2);
+        graph.addChild(ghost1);
+        graph.addChild(ghost2);
         Script.setSprite(pacman);
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continuously draw the viewport, update the audiosystem and drive the physics i/a
@@ -193,11 +200,12 @@ var Script;
     function update(_event) {
         // ƒ.Physics.simulate();  // if physics is included and used
         movePacman();
-        ghost.move(paths);
+        ghosts.map((g) => g.move(paths));
         if (checkIfMove()) {
             if (!sounds[1].isPlaying && !movement.equals(new ƒ.Vector3(0, 0, 0))) {
                 sounds[1].play(true);
             }
+            removePill();
             pacman.mtxLocal.translate(movement);
         }
         checkIfGameOver();
@@ -270,20 +278,41 @@ var Script;
         return true;
     }
     function checkIfGameOver() {
-        const isEvenPacman = (Math.round(pacman.mtxLocal.translation.y) + Math.round(pacman.mtxLocal.translation.x)) %
-            2 ===
-            0;
-        const isEvenGhost = (Math.round(ghost.mtxLocal.translation.y) + Math.round(ghost.mtxLocal.translation.x)) % 2 ===
-            0;
-        if (isEvenPacman !== isEvenGhost &&
-            pacman.mtxLocal.translation.equals(ghost.mtxLocal.translation, 0.8)) {
-            document.getElementById("game-over").style.width = "100vw";
-            ƒ.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, update);
-            sounds[1].play(false);
-            sounds[2].play(true);
-            document.getElementById("restart").addEventListener("click", function (_event) {
-                window.location.reload();
-            });
+        for (const ghost of ghosts) {
+            const isEvenPacman = (Math.round(pacman.mtxLocal.translation.y) + Math.round(pacman.mtxLocal.translation.x)) %
+                2 ===
+                0;
+            const isEvenGhost = (Math.round(ghost.mtxLocal.translation.y) + Math.round(ghost.mtxLocal.translation.x)) %
+                2 ===
+                0;
+            if (isEvenPacman !== isEvenGhost &&
+                pacman.mtxLocal.translation.equals(ghost.mtxLocal.translation, 0.8)) {
+                document.getElementById("game-over").style.width = "100vw";
+                ƒ.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, update);
+                sounds[1].play(false);
+                sounds[2].play(true);
+                document.getElementById("restart").addEventListener("click", function (_event) {
+                    window.location.reload();
+                });
+            }
+        }
+    }
+    function addPill(_path) {
+        const mtrPill = new ƒ.Material("Pill", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("#f5ce42")));
+        const pillNode = new ƒ.Node("Pill");
+        pillNode.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+        pillNode.addComponent(new ƒ.ComponentMaterial(mtrPill));
+        pillNode.addComponent(new ƒ.ComponentTransform());
+        pillNode.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
+        _path.addChild(pillNode);
+    }
+    function removePill() {
+        const path = paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2));
+        if (path) {
+            const pill = path.getChild(0);
+            if (pill) {
+                path.removeChild(pill);
+            }
         }
     }
 })(Script || (Script = {}));

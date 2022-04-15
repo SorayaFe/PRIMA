@@ -14,7 +14,7 @@ namespace Script {
   let pacman: ƒ.Node;
   let walls: ƒ.Node[];
   let paths: ƒ.Node[];
-  let ghost: Ghost;
+  let ghosts: Ghost[] = [];
 
   export let movingDirection: string = "y";
   let movement: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
@@ -76,8 +76,19 @@ namespace Script {
     walls = graph.getChildrenByName("Grid")[0].getChild(1).getChildren();
     paths = graph.getChildrenByName("Grid")[0].getChild(0).getChildren();
 
-    ghost = new Ghost("Ghost");
-    graph.addChild(ghost);
+    for (const path of paths) {
+      addPill(path);
+    }
+
+    const ghost1 = new Ghost("Ghost");
+    const ghost2 = new Ghost("Ghost");
+
+    ghost1.mtxLocal.translate(new ƒ.Vector3(4, 1, 0));
+    ghost2.mtxLocal.translate(new ƒ.Vector3(3, 5, 0));
+
+    ghosts.push(ghost1, ghost2);
+    graph.addChild(ghost1);
+    graph.addChild(ghost2);
 
     setSprite(pacman);
 
@@ -89,12 +100,13 @@ namespace Script {
     // ƒ.Physics.simulate();  // if physics is included and used
 
     movePacman();
-    ghost.move(paths);
+    ghosts.map((g) => g.move(paths));
 
     if (checkIfMove()) {
       if (!sounds[1].isPlaying && !movement.equals(new ƒ.Vector3(0, 0, 0))) {
         sounds[1].play(true);
       }
+      removePill();
       pacman.mtxLocal.translate(movement);
     }
 
@@ -190,28 +202,59 @@ namespace Script {
   }
 
   function checkIfGameOver(): void {
-    const isEvenPacman =
-      (Math.round(pacman.mtxLocal.translation.y) + Math.round(pacman.mtxLocal.translation.x)) %
-        2 ===
-      0;
+    for (const ghost of ghosts) {
+      const isEvenPacman =
+        (Math.round(pacman.mtxLocal.translation.y) + Math.round(pacman.mtxLocal.translation.x)) %
+          2 ===
+        0;
 
-    const isEvenGhost =
-      (Math.round(ghost.mtxLocal.translation.y) + Math.round(ghost.mtxLocal.translation.x)) % 2 ===
-      0;
+      const isEvenGhost =
+        (Math.round(ghost.mtxLocal.translation.y) + Math.round(ghost.mtxLocal.translation.x)) %
+          2 ===
+        0;
 
-    if (
-      isEvenPacman !== isEvenGhost &&
-      pacman.mtxLocal.translation.equals(ghost.mtxLocal.translation, 0.8)
-    ) {
-      document.getElementById("game-over").style.width = "100vw";
-      ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, update);
+      if (
+        isEvenPacman !== isEvenGhost &&
+        pacman.mtxLocal.translation.equals(ghost.mtxLocal.translation, 0.8)
+      ) {
+        document.getElementById("game-over").style.width = "100vw";
+        ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, update);
 
-      sounds[1].play(false);
-      sounds[2].play(true);
+        sounds[1].play(false);
+        sounds[2].play(true);
 
-      document.getElementById("restart").addEventListener("click", function (_event: Event) {
-        window.location.reload();
-      });
+        document.getElementById("restart").addEventListener("click", function (_event: Event) {
+          window.location.reload();
+        });
+      }
+    }
+  }
+
+  function addPill(_path: ƒ.Node): void {
+    const mtrPill: ƒ.Material = new ƒ.Material(
+      "Pill",
+      ƒ.ShaderLit,
+      new ƒ.CoatColored(ƒ.Color.CSS("#f5ce42"))
+    );
+
+    const pillNode = new ƒ.Node("Pill");
+    pillNode.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+    pillNode.addComponent(new ƒ.ComponentMaterial(mtrPill));
+    pillNode.addComponent(new ƒ.ComponentTransform());
+    pillNode.mtxLocal.scale(new ƒ.Vector3(0.3, 0.3, 0.3));
+
+    _path.addChild(pillNode);
+  }
+
+  function removePill() {
+    const path = paths.find((p) => p.mtxLocal.translation.equals(pacman.mtxLocal.translation, 0.2));
+
+    if (path) {
+      const pill: ƒ.Node = path.getChild(0);
+
+      if (pill) {
+        path.removeChild(pill);
+      }
     }
   }
 }

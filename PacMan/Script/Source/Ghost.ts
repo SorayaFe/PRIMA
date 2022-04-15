@@ -2,14 +2,6 @@ namespace Script {
   import ƒ = FudgeCore;
   import ƒAid = FudgeAid;
 
-  const mesh: ƒ.MeshSphere = new ƒ.MeshSphere();
-  const material: ƒ.Material = new ƒ.Material("MaterialGhost", ƒ.ShaderLit, new ƒ.CoatColored());
-
-  const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
-  const cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
-  const cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(material);
-  cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
-
   export class Ghost extends ƒ.Node {
     private movement: ƒ.Vector3 = new ƒ.Vector3(0, -1 / 60, 0);
     private lastPath: ƒ.Vector3 = new ƒ.Vector3(0, 0, 0);
@@ -17,11 +9,21 @@ namespace Script {
     constructor(_name: string) {
       super(_name);
 
+      const mesh: ƒ.MeshSphere = new ƒ.MeshSphere();
+      const material: ƒ.Material = new ƒ.Material(
+        "MaterialGhost",
+        ƒ.ShaderLit,
+        new ƒ.CoatColored()
+      );
+
+      const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
+      const cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
+      const cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(material);
+      cmpMaterial.clrPrimary = ƒ.Color.CSS("red");
+
       this.addComponent(cmpTransform);
       this.addComponent(cmpMesh);
       this.addComponent(cmpMaterial);
-
-      this.mtxLocal.translate(new ƒ.Vector3(2, 1, 0));
 
       // sprites
       const sprite: ƒAid.NodeSprite = new ƒAid.NodeSprite("Sprite");
@@ -29,7 +31,7 @@ namespace Script {
       sprite.setAnimation(<ƒAid.SpriteSheetAnimation>animations["ghost"]);
       sprite.setFrameDirection(1);
       sprite.mtxLocal.translateZ(0.5);
-      sprite.framerate = 15;
+      sprite.framerate = 10;
 
       this.addChild(sprite);
       this.getComponent(ƒ.ComponentMaterial).clrPrimary = new ƒ.Color(0, 0, 0, 0);
