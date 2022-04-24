@@ -46,8 +46,7 @@ var Script;
     const speedRotY = -0.1;
     const speedRotX = 0.2;
     let rotationX = 0;
-    let cntrWalk = new ƒ.Control("cntrWalk", 6, 0 /* PROPORTIONAL */);
-    cntrWalk.setDelay(350);
+    let cntrWalk = new ƒ.Control("cntrWalk", 2, 0 /* PROPORTIONAL */, 300);
     document.addEventListener("interactiveViewportStarted", start);
     function start(_event) {
         viewport = _event.detail;
@@ -73,9 +72,10 @@ var Script;
     function controlWalk() {
         let input = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W, ƒ.KEYBOARD_CODE.ARROW_UP], [ƒ.KEYBOARD_CODE.S, ƒ.KEYBOARD_CODE.ARROW_DOWN]);
         cntrWalk.setInput(input);
+        cntrWalk.setFactor(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) ? 6 : 2);
         let input2 = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT], [ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.ARROW_RIGHT]);
         avatar.mtxLocal.translateZ((cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 1000);
-        avatar.mtxLocal.translateX((6 * input2 * ƒ.Loop.timeFrameGame) / 1000);
+        avatar.mtxLocal.translateX((1.5 * input2 * ƒ.Loop.timeFrameGame) / 1000);
     }
 })(Script || (Script = {}));
 //# sourceMappingURL=Script.js.map

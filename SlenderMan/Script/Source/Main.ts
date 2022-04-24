@@ -9,8 +9,7 @@ namespace Script {
   const speedRotY: number = -0.1;
   const speedRotX: number = 0.2;
   let rotationX: number = 0;
-  let cntrWalk: ƒ.Control = new ƒ.Control("cntrWalk", 6, ƒ.CONTROL_TYPE.PROPORTIONAL);
-  cntrWalk.setDelay(350);
+  let cntrWalk: ƒ.Control = new ƒ.Control("cntrWalk", 2, ƒ.CONTROL_TYPE.PROPORTIONAL, 300);
 
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
@@ -49,6 +48,7 @@ namespace Script {
     );
 
     cntrWalk.setInput(input);
+    cntrWalk.setFactor(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) ? 6 : 2);
 
     let input2: number = ƒ.Keyboard.mapToTrit(
       [ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT],
@@ -56,6 +56,6 @@ namespace Script {
     );
 
     avatar.mtxLocal.translateZ((cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 1000);
-    avatar.mtxLocal.translateX((6 * input2 * ƒ.Loop.timeFrameGame) / 1000);
+    avatar.mtxLocal.translateX((1.5 * input2 * ƒ.Loop.timeFrameGame) / 1000);
   }
 }

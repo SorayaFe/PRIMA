@@ -2193,7 +2193,7 @@ declare namespace FudgeCore {
         protected timeValueDelay: number;
         protected timeOutputTargetSet: number;
         protected idTimer: number;
-        constructor(_name: string, _factor?: number, _type?: CONTROL_TYPE, _active?: boolean);
+        constructor(_name: string, _factor?: number, _type?: CONTROL_TYPE, _delay?: number);
         /**
          * Set the time-object to be used when calculating the output in {@link CONTROL_TYPE.INTEGRAL}
          */
@@ -3253,11 +3253,10 @@ declare namespace FudgeCore {
          * Multiply this matrix with the given matrix
          */
         multiply(_matrix: Matrix4x4, _fromLeft?: boolean): void;
-        getEulerAngles(): Vector3;
         /**
          * Calculates and returns the euler-angles representing the current rotation of this matrix.
          */
-        getEulerAnglesX(): Vector3;
+        getEulerAngles(): Vector3;
         /**
          * Sets the elements of this matrix to the values of the given matrix
          */
@@ -6245,6 +6244,7 @@ declare namespace FudgeCore {
         static useProgram(this: typeof Shader): void;
         static createProgram(this: typeof Shader): void;
         protected static registerSubclass(_subclass: typeof Shader): number;
+        protected static insertDefines(_shader: string, _defines: string[]): string;
     }
 }
 declare namespace FudgeCore {
@@ -6362,6 +6362,11 @@ declare namespace FudgeCore {
         static getVertexShaderSource(): string;
         static getFragmentShaderSource(): string;
     }
+}
+declare namespace FudgeCore {
+    let shaderSources: {
+        [source: string]: string;
+    };
 }
 declare namespace FudgeCore {
     interface BoneList {
