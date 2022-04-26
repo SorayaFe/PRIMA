@@ -1,20 +1,17 @@
 namespace Script {
   import ƒ = FudgeCore;
-  ƒ.Project.registerScriptNamespace(Script);  // Register the namespace to FUDGE for serialization
+  ƒ.Project.registerScriptNamespace(Script); // Register the namespace to FUDGE for serialization
 
-  export class CustomComponentScript extends ƒ.ComponentScript {
+  export class DropToGroundInitial extends ƒ.ComponentScript {
     // Register the script as component for use in the editor via drag&drop
-    public static readonly iSubclass: number = ƒ.Component.registerSubclass(CustomComponentScript);
+    public static readonly iSubclass: number = ƒ.Component.registerSubclass(DropToGroundInitial);
     // Properties may be mutated by users in the editor via the automatically created user interface
-    public message: string = "CustomComponentScript added to ";
-
 
     constructor() {
       super();
 
       // Don't start when running in editor
-      if (ƒ.Project.mode == ƒ.MODE.EDITOR)
-        return;
+      if (ƒ.Project.mode == ƒ.MODE.EDITOR) return;
 
       // Listen to this component being added to or removed from a node
       this.addEventListener(ƒ.EVENT.COMPONENT_ADD, this.hndEvent);
@@ -26,7 +23,7 @@ namespace Script {
     public hndEvent = (_event: Event): void => {
       switch (_event.type) {
         case ƒ.EVENT.COMPONENT_ADD:
-          ƒ.Debug.log(this.message, this.node);
+          this.node.mtxLocal.translateY(1);
           break;
         case ƒ.EVENT.COMPONENT_REMOVE:
           this.removeEventListener(ƒ.EVENT.COMPONENT_ADD, this.hndEvent);
@@ -36,7 +33,7 @@ namespace Script {
           // if deserialized the node is now fully reconstructed and access to all its components and children is possible
           break;
       }
-    }
+    };
 
     // protected reduceMutator(_mutator: ƒ.Mutator): void {
     //   // delete properties that should not be mutated
