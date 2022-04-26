@@ -9,7 +9,7 @@ namespace Script {
 
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
-  let viewport: ƒ.Viewport;
+  export let viewport: ƒ.Viewport;
   let sounds: ƒ.ComponentAudio[];
   let pacman: ƒ.Node;
   let walls: ƒ.Node[];

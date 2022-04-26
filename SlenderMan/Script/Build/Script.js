@@ -21,7 +21,7 @@ var Script;
         hndEvent = (_event) => {
             switch (_event.type) {
                 case "componentAdd" /* COMPONENT_ADD */:
-                    this.node.mtxLocal.translateY(1);
+                    document.addEventListener("interactiveViewportStarted", this.setPosition);
                     break;
                 case "componentRemove" /* COMPONENT_REMOVE */:
                     this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
@@ -32,8 +32,52 @@ var Script;
                     break;
             }
         };
+        setPosition = () => {
+            const graph = ƒ.Project.resources["Graph|2022-04-14T12:59:19.588Z|86127"];
+            const ground = graph
+                .getChildrenByName("Environment")[0]
+                .getChildrenByName("Ground")[0];
+            const cmpMeshTerrain = ground.getComponent(ƒ.ComponentMesh);
+            const meshTerrain = cmpMeshTerrain.mesh;
+            const distance = meshTerrain.getTerrainInfo(this.node.mtxLocal.translation, cmpMeshTerrain.mtxWorld).distance;
+            this.node.mtxLocal.translateY(-distance);
+        };
     }
     Script.DropToGroundInitial = DropToGroundInitial;
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
+    ƒ.Project.registerScriptNamespace(Script); // Register the namespace to FUDGE for serialization
+    class DropToGroundMove extends ƒ.ComponentScript {
+        static graph;
+        static ground;
+        static cmpMeshTerrain;
+        static meshTerrain;
+        // Register the script as component for use in the editor via drag&drop
+        static iSubclass = ƒ.Component.registerSubclass(DropToGroundMove);
+        // Properties may be mutated by users in the editor via the automatically created user interface
+        constructor() {
+            super();
+            // Don't start when running in editor
+            if (ƒ.Project.mode == ƒ.MODE.EDITOR)
+                return;
+            ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.setPosition);
+        }
+        setPosition = (_event) => {
+            if (!DropToGroundMove.graph) {
+                DropToGroundMove.graph = ƒ.Project.resources["Graph|2022-04-14T12:59:19.588Z|86127"];
+                DropToGroundMove.ground = DropToGroundMove.graph
+                    .getChildrenByName("Environment")[0]
+                    .getChildrenByName("Ground")[0];
+                DropToGroundMove.cmpMeshTerrain = DropToGroundMove.ground.getComponent(ƒ.ComponentMesh);
+                DropToGroundMove.meshTerrain = DropToGroundMove.cmpMeshTerrain.mesh;
+            }
+            const distance = DropToGroundMove.meshTerrain.getTerrainInfo(this.node.mtxLocal.translation, DropToGroundMove.cmpMeshTerrain.mtxWorld).distance;
+            this.node.mtxLocal.translateY(-distance);
+        };
+    }
+    Script.DropToGroundMove = DropToGroundMove;
 })(Script || (Script = {}));
 var Script;
 (function (Script) {

@@ -23,7 +23,7 @@ namespace Script {
     public hndEvent = (_event: Event): void => {
       switch (_event.type) {
         case ƒ.EVENT.COMPONENT_ADD:
-          this.node.mtxLocal.translateY(1);
+          document.addEventListener("interactiveViewportStarted", <EventListener>this.setPosition);
           break;
         case ƒ.EVENT.COMPONENT_REMOVE:
           this.removeEventListener(ƒ.EVENT.COMPONENT_ADD, this.hndEvent);
@@ -33,6 +33,20 @@ namespace Script {
           // if deserialized the node is now fully reconstructed and access to all its components and children is possible
           break;
       }
+    };
+
+    private setPosition = (): void => {
+      const graph: ƒ.Graph = ƒ.Project.resources["Graph|2022-04-14T12:59:19.588Z|86127"] as ƒ.Graph;
+      const ground: ƒ.Node = graph
+        .getChildrenByName("Environment")[0]
+        .getChildrenByName("Ground")[0];
+      const cmpMeshTerrain: ƒ.ComponentMesh = ground.getComponent(ƒ.ComponentMesh);
+      const meshTerrain = <ƒ.MeshTerrain>cmpMeshTerrain.mesh;
+      const distance = meshTerrain.getTerrainInfo(
+        this.node.mtxLocal.translation,
+        cmpMeshTerrain.mtxWorld
+      ).distance;
+      this.node.mtxLocal.translateY(-distance);
     };
 
     // protected reduceMutator(_mutator: ƒ.Mutator): void {
