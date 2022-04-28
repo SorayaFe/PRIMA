@@ -19,7 +19,9 @@ namespace Script {
     camera = avatar.getChild(0).getComponent(ƒ.ComponentCamera);
     viewport.camera = camera;
 
-    viewport.getCanvas().addEventListener("pointermove", hndPointerMove);
+    let canvas: HTMLCanvasElement = viewport.getCanvas();
+    canvas.addEventListener("pointermove", hndPointerMove);
+    canvas.requestPointerLock();
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a

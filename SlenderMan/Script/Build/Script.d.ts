@@ -3,7 +3,6 @@ declare namespace Script {
     class DropToGroundInitial extends ƒ.ComponentScript {
         static readonly iSubclass: number;
         constructor();
-        hndEvent: (_event: Event) => void;
         private setPosition;
     }
 }
@@ -16,8 +15,20 @@ declare namespace Script {
         private static meshTerrain;
         static readonly iSubclass: number;
         constructor();
-        setPosition: (_event: Event) => void;
+        addComponent: () => void;
+        setPosition: () => void;
     }
 }
 declare namespace Script {
+}
+declare namespace Script {
+    import ƒ = FudgeCore;
+    class MoveSlenderMan extends ƒ.ComponentScript {
+        static readonly iSubclass: number;
+        private time;
+        private movement;
+        constructor();
+        addComponent: () => void;
+        move: () => void;
+    }
 }

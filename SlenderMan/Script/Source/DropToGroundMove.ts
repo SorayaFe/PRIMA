@@ -18,10 +18,14 @@ namespace Script {
       // Don't start when running in editor
       if (ƒ.Project.mode == ƒ.MODE.EDITOR) return;
 
-      ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.setPosition);
+      this.addEventListener(ƒ.EVENT.COMPONENT_ADD, this.addComponent);
     }
 
-    public setPosition = (_event: Event): void => {
+    public addComponent = (): void => {
+      this.node.addEventListener(ƒ.EVENT.RENDER_PREPARE, this.setPosition);
+    };
+
+    public setPosition = (): void => {
       if (!DropToGroundMove.graph) {
         DropToGroundMove.graph = ƒ.Project.resources[
           "Graph|2022-04-14T12:59:19.588Z|86127"
@@ -33,11 +37,13 @@ namespace Script {
         DropToGroundMove.meshTerrain = <ƒ.MeshTerrain>DropToGroundMove.cmpMeshTerrain.mesh;
       }
 
-      const distance = DropToGroundMove.meshTerrain.getTerrainInfo(
+      const distance: number = DropToGroundMove.meshTerrain.getTerrainInfo(
         this.node.mtxLocal.translation,
         DropToGroundMove.cmpMeshTerrain.mtxWorld
-      ).distance;
-      this.node.mtxLocal.translateY(-distance);
+      )?.distance;
+      if (distance) {
+        this.node.mtxLocal.translateY(-distance);
+      }
     };
   }
 }

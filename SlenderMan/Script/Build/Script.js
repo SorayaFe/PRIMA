@@ -12,26 +12,8 @@ var Script;
             // Don't start when running in editor
             if (ƒ.Project.mode == ƒ.MODE.EDITOR)
                 return;
-            // Listen to this component being added to or removed from a node
-            this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
-            this.addEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
-            this.addEventListener("nodeDeserialized" /* NODE_DESERIALIZED */, this.hndEvent);
+            document.addEventListener("interactiveViewportStarted", this.setPosition);
         }
-        // Activate the functions of this component as response to events
-        hndEvent = (_event) => {
-            switch (_event.type) {
-                case "componentAdd" /* COMPONENT_ADD */:
-                    document.addEventListener("interactiveViewportStarted", this.setPosition);
-                    break;
-                case "componentRemove" /* COMPONENT_REMOVE */:
-                    this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
-                    this.removeEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
-                    break;
-                case "nodeDeserialized" /* NODE_DESERIALIZED */:
-                    // if deserialized the node is now fully reconstructed and access to all its components and children is possible
-                    break;
-            }
-        };
         setPosition = () => {
             const graph = ƒ.Project.resources["Graph|2022-04-14T12:59:19.588Z|86127"];
             const ground = graph
@@ -62,9 +44,12 @@ var Script;
             // Don't start when running in editor
             if (ƒ.Project.mode == ƒ.MODE.EDITOR)
                 return;
-            ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.setPosition);
+            this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.addComponent);
         }
-        setPosition = (_event) => {
+        addComponent = () => {
+            this.node.addEventListener("renderPrepare" /* RENDER_PREPARE */, this.setPosition);
+        };
+        setPosition = () => {
             if (!DropToGroundMove.graph) {
                 DropToGroundMove.graph = ƒ.Project.resources["Graph|2022-04-14T12:59:19.588Z|86127"];
                 DropToGroundMove.ground = DropToGroundMove.graph
@@ -73,8 +58,10 @@ var Script;
                 DropToGroundMove.cmpMeshTerrain = DropToGroundMove.ground.getComponent(ƒ.ComponentMesh);
                 DropToGroundMove.meshTerrain = DropToGroundMove.cmpMeshTerrain.mesh;
             }
-            const distance = DropToGroundMove.meshTerrain.getTerrainInfo(this.node.mtxLocal.translation, DropToGroundMove.cmpMeshTerrain.mtxWorld).distance;
-            this.node.mtxLocal.translateY(-distance);
+            const distance = DropToGroundMove.meshTerrain.getTerrainInfo(this.node.mtxLocal.translation, DropToGroundMove.cmpMeshTerrain.mtxWorld)?.distance;
+            if (distance) {
+                this.node.mtxLocal.translateY(-distance);
+            }
         };
     }
     Script.DropToGroundMove = DropToGroundMove;
@@ -96,7 +83,9 @@ var Script;
         avatar = viewport.getBranch().getChildrenByName("Avatar")[0];
         camera = avatar.getChild(0).getComponent(ƒ.ComponentCamera);
         viewport.camera = camera;
-        viewport.getCanvas().addEventListener("pointermove", hndPointerMove);
+        let canvas = viewport.getCanvas();
+        canvas.addEventListener("pointermove", hndPointerMove);
+        canvas.requestPointerLock();
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
@@ -120,5 +109,36 @@ var Script;
         avatar.mtxLocal.translateZ((cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 1000);
         avatar.mtxLocal.translateX((1.5 * input2 * ƒ.Loop.timeFrameGame) / 1000);
     }
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
+    ƒ.Project.registerScriptNamespace(Script); // Register the namespace to FUDGE for serialization
+    class MoveSlenderMan extends ƒ.ComponentScript {
+        // Register the script as component for use in the editor via drag&drop
+        static iSubclass = ƒ.Component.registerSubclass(MoveSlenderMan);
+        // Properties may be mutated by users in the editor via the automatically created user interface
+        time = 0;
+        movement = new ƒ.Vector3();
+        constructor() {
+            super();
+            // Don't start when running in editor
+            if (ƒ.Project.mode == ƒ.MODE.EDITOR)
+                return;
+            this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.addComponent);
+        }
+        addComponent = () => {
+            this.node.addEventListener("renderPrepare" /* RENDER_PREPARE */, this.move);
+        };
+        move = () => {
+            this.node.mtxLocal.translate(ƒ.Vector3.SCALE(this.movement, ƒ.Loop.timeFrameGame / 1000));
+            if (this.time > ƒ.Time.game.get()) {
+                return;
+            }
+            this.time = ƒ.Time.game.get() + 1000;
+            this.movement = ƒ.Random.default.getVector3(new ƒ.Vector3(-1, 0 - 1), new ƒ.Vector3(1, 0, 1));
+        };
+    }
+    Script.MoveSlenderMan = MoveSlenderMan;
 })(Script || (Script = {}));
 //# sourceMappingURL=Script.js.map
