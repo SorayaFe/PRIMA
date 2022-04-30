@@ -28,7 +28,7 @@ namespace Script {
         return;
       }
       this.time = ƒ.Time.game.get() + 1000;
-      this.movement = ƒ.Random.default.getVector3(new ƒ.Vector3(-1, 0 - 1), new ƒ.Vector3(1, 0, 1));
+      this.movement = ƒ.Random.default.getVector3(new ƒ.Vector3(-0, 0, -1), new ƒ.Vector3(1, 0, 1));
     };
   }
 }

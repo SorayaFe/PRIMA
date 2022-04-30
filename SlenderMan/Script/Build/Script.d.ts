@@ -3,6 +3,7 @@ declare namespace Script {
     class DropToGroundInitial extends ƒ.ComponentScript {
         static readonly iSubclass: number;
         constructor();
+        private add;
         private setPosition;
     }
 }
@@ -30,5 +31,13 @@ declare namespace Script {
         constructor();
         addComponent: () => void;
         move: () => void;
+    }
+}
+declare namespace Script {
+    import ƒ = FudgeCore;
+    class Tree extends ƒ.Node {
+        static takenPositions: ƒ.Vector3[];
+        constructor(_name: string, _position: ƒ.Vector3);
+        private addGraph;
     }
 }

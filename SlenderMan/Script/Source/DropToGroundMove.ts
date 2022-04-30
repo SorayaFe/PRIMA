@@ -41,6 +41,7 @@ namespace Script {
         this.node.mtxLocal.translation,
         DropToGroundMove.cmpMeshTerrain.mtxWorld
       )?.distance;
+
       if (distance) {
         this.node.mtxLocal.translateY(-distance);
       }

@@ -5,6 +5,7 @@ namespace Script {
   let viewport: ƒ.Viewport;
   let avatar: ƒ.Node;
   let camera: ƒ.ComponentCamera;
+  let graph: ƒ.Node;
 
   const speedRotY: number = -0.1;
   const speedRotX: number = 0.2;
@@ -15,13 +16,16 @@ namespace Script {
 
   function start(_event: CustomEvent): void {
     viewport = _event.detail;
-    avatar = viewport.getBranch().getChildrenByName("Avatar")[0];
+    graph = viewport.getBranch();
+    avatar = graph.getChildrenByName("Avatar")[0];
     camera = avatar.getChild(0).getComponent(ƒ.ComponentCamera);
     viewport.camera = camera;
 
     let canvas: HTMLCanvasElement = viewport.getCanvas();
     canvas.addEventListener("pointermove", hndPointerMove);
     canvas.requestPointerLock();
+
+    addTrees();
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -59,5 +63,25 @@ namespace Script {
 
     avatar.mtxLocal.translateZ((cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 1000);
     avatar.mtxLocal.translateX((1.5 * input2 * ƒ.Loop.timeFrameGame) / 1000);
+  }
+
+  function addTrees() {
+    const trees: ƒ.Node = graph.getChildrenByName("Environment")[0].getChildrenByName("Trees")[0];
+
+    for (let index = 0; index < 100; index++) {
+      const position = ƒ.Random.default.getVector3(
+        new ƒ.Vector3(29, 0, 29),
+        new ƒ.Vector3(-29, 0, -29)
+      );
+      const roundedPosition = new ƒ.Vector3(
+        Math.round(position.x),
+        Math.round(position.y),
+        Math.round(position.z)
+      );
+
+      if (!Tree.takenPositions.find((p) => p.equals(roundedPosition))) {
+        trees.addChild(new Tree("Tree", roundedPosition));
+      }
+    }
   }
 }

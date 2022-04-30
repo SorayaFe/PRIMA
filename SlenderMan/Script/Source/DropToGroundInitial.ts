@@ -13,8 +13,17 @@ namespace Script {
       // Don't start when running in editor
       if (ƒ.Project.mode == ƒ.MODE.EDITOR) return;
 
-      document.addEventListener("interactiveViewportStarted", <EventListener>this.setPosition);
+      this.addEventListener(ƒ.EVENT.COMPONENT_ADD, this.add);
     }
+
+    private add = (): void => {
+      const graph: ƒ.Graph = ƒ.Project.resources["Graph|2022-04-14T12:59:19.588Z|86127"] as ƒ.Graph;
+      if (graph) {
+        this.setPosition();
+      } else {
+        document.addEventListener("interactiveViewportStarted", <EventListener>this.setPosition);
+      }
+    };
 
     private setPosition = (): void => {
       const graph: ƒ.Graph = ƒ.Project.resources["Graph|2022-04-14T12:59:19.588Z|86127"] as ƒ.Graph;
@@ -26,8 +35,10 @@ namespace Script {
       const distance = meshTerrain.getTerrainInfo(
         this.node.mtxLocal.translation,
         cmpMeshTerrain.mtxWorld
-      ).distance;
-      this.node.mtxLocal.translateY(-distance);
+      )?.distance;
+      if (distance) {
+        this.node.mtxLocal.translateY(-distance);
+      }
     };
   }
 }
