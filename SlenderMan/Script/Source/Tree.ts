@@ -2,7 +2,17 @@ namespace Script {
   import ƒ = FudgeCore;
 
   export class Tree extends ƒ.Node {
-    public static takenPositions: ƒ.Vector3[] = [];
+    public static takenPositions: ƒ.Vector3[] = [
+      new ƒ.Vector3(0, 0, 0),
+      new ƒ.Vector3(1, 0, 0),
+      new ƒ.Vector3(1, 0, 1),
+      new ƒ.Vector3(0, 0, 1),
+      new ƒ.Vector3(-1, 0, 0),
+      new ƒ.Vector3(0, 0, -1),
+      new ƒ.Vector3(-1, 0, 1),
+      new ƒ.Vector3(1, 0, -1),
+      new ƒ.Vector3(-1, 0, -1),
+    ];
 
     constructor(_name: string, _position: ƒ.Vector3) {
       super(_name);

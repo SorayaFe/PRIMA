@@ -69,9 +69,22 @@ var Script;
                 DropToGroundMove.cmpMeshTerrain = DropToGroundMove.ground.getComponent(ƒ.ComponentMesh);
                 DropToGroundMove.meshTerrain = DropToGroundMove.cmpMeshTerrain.mesh;
             }
-            const distance = DropToGroundMove.meshTerrain.getTerrainInfo(this.node.mtxLocal.translation, DropToGroundMove.cmpMeshTerrain.mtxWorld)?.distance;
+            let distance = 0;
+            if (this.node.getComponent(ƒ.ComponentRigidbody)) {
+                distance = DropToGroundMove.meshTerrain.getTerrainInfo(this.node.getComponent(ƒ.ComponentRigidbody).getPosition(), DropToGroundMove.cmpMeshTerrain.mtxWorld)?.distance;
+            }
+            else {
+                distance = DropToGroundMove.meshTerrain.getTerrainInfo(this.node.mtxLocal.translation, DropToGroundMove.cmpMeshTerrain.mtxWorld)?.distance;
+            }
             if (distance) {
-                this.node.mtxLocal.translateY(-distance);
+                if (this.node.getComponent(ƒ.ComponentRigidbody)) {
+                    this.node
+                        .getComponent(ƒ.ComponentRigidbody)
+                        .translateBody(new ƒ.Vector3(0, -distance, 0));
+                }
+                else {
+                    this.node.mtxLocal.translateY(-distance);
+                }
             }
         };
     }
@@ -96,6 +109,7 @@ var Script;
         avatar = graph.getChildrenByName("Avatar")[0];
         camera = avatar.getChild(0).getComponent(ƒ.ComponentCamera);
         viewport.camera = camera;
+        avatar.getComponent(ƒ.ComponentRigidbody).effectRotation = new ƒ.Vector3(0, 0, 0);
         let canvas = viewport.getCanvas();
         canvas.addEventListener("pointermove", hndPointerMove);
         canvas.requestPointerLock();
@@ -104,24 +118,48 @@ var Script;
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
     function update(_event) {
-        // ƒ.Physics.simulate();  // if physics is included and used
+        ƒ.Physics.simulate(); // if physics is included and used
         controlWalk();
         viewport.draw();
         ƒ.AudioManager.default.update();
     }
     function hndPointerMove(_event) {
-        avatar.mtxLocal.rotateY(_event.movementX * speedRotY);
+        // variante ohne physics
+        // avatar.mtxLocal.rotateY(_event.movementX * speedRotY);
+        // variante mit physics
+        avatar.getComponent(ƒ.ComponentRigidbody).rotateBody(ƒ.Vector3.Y(_event.movementX * speedRotY));
         rotationX += _event.movementY * speedRotX;
         rotationX = Math.min(60, Math.max(-60, rotationX));
         camera.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
     }
     function controlWalk() {
-        let input = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W, ƒ.KEYBOARD_CODE.ARROW_UP], [ƒ.KEYBOARD_CODE.S, ƒ.KEYBOARD_CODE.ARROW_DOWN]);
+        const input = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W, ƒ.KEYBOARD_CODE.ARROW_UP], [ƒ.KEYBOARD_CODE.S, ƒ.KEYBOARD_CODE.ARROW_DOWN]);
         cntrWalk.setInput(input);
-        cntrWalk.setFactor(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) ? 6 : 2);
-        let input2 = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT], [ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.ARROW_RIGHT]);
-        avatar.mtxLocal.translateZ((cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 1000);
-        avatar.mtxLocal.translateX((1.5 * input2 * ƒ.Loop.timeFrameGame) / 1000);
+        cntrWalk.setFactor(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) ? 5 : 2);
+        const input2 = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT], [ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.ARROW_RIGHT]);
+        // variante mit physics
+        const vector = new ƒ.Vector3((1.5 * input2 * ƒ.Loop.timeFrameGame) / 20, 0, (cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 20);
+        vector.transform(avatar.mtxLocal, false);
+        avatar.getComponent(ƒ.ComponentRigidbody).setVelocity(vector);
+        // funktioniert auch
+        // avatar
+        //   .getComponent(ƒ.ComponentRigidbody)
+        //   .setVelocity(
+        //     ƒ.Vector3.SCALE(avatar.mtxLocal.getZ(), (cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 20)
+        //   );
+        // funktioniert nicht wenn man sich dreht
+        // avatar
+        //   .getComponent(ƒ.ComponentRigidbody)
+        //   .setVelocity(
+        //     new ƒ.Vector3(
+        //       (1.5 * input2 * ƒ.Loop.timeFrameGame) / 20,
+        //       0,
+        //       (cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 20
+        //     )
+        //   );
+        // variante ohne physics
+        // avatar.mtxLocal.translateZ((cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 1000);
+        // avatar.mtxLocal.translateX((1.5 * input2 * ƒ.Loop.timeFrameGame) / 1000);
     }
     function addTrees() {
         const trees = graph.getChildrenByName("Environment")[0].getChildrenByName("Trees")[0];
@@ -169,7 +207,17 @@ var Script;
 (function (Script) {
     var ƒ = FudgeCore;
     class Tree extends ƒ.Node {
-        static takenPositions = [];
+        static takenPositions = [
+            new ƒ.Vector3(0, 0, 0),
+            new ƒ.Vector3(1, 0, 0),
+            new ƒ.Vector3(1, 0, 1),
+            new ƒ.Vector3(0, 0, 1),
+            new ƒ.Vector3(-1, 0, 0),
+            new ƒ.Vector3(0, 0, -1),
+            new ƒ.Vector3(-1, 0, 1),
+            new ƒ.Vector3(1, 0, -1),
+            new ƒ.Vector3(-1, 0, -1),
+        ];
         constructor(_name, _position) {
             super(_name);
             const cmpTransform = new ƒ.ComponentTransform();

@@ -21,6 +21,8 @@ namespace Script {
     camera = avatar.getChild(0).getComponent(ƒ.ComponentCamera);
     viewport.camera = camera;
 
+    avatar.getComponent(ƒ.ComponentRigidbody).effectRotation = new ƒ.Vector3(0, 0, 0);
+
     let canvas: HTMLCanvasElement = viewport.getCanvas();
     canvas.addEventListener("pointermove", hndPointerMove);
     canvas.requestPointerLock();
@@ -32,7 +34,7 @@ namespace Script {
   }
 
   function update(_event: Event): void {
-    // ƒ.Physics.simulate();  // if physics is included and used
+    ƒ.Physics.simulate(); // if physics is included and used
     controlWalk();
 
     viewport.draw();
@@ -40,7 +42,12 @@ namespace Script {
   }
 
   function hndPointerMove(_event: PointerEvent): void {
-    avatar.mtxLocal.rotateY(_event.movementX * speedRotY);
+    // variante ohne physics
+
+    // avatar.mtxLocal.rotateY(_event.movementX * speedRotY);
+
+    // variante mit physics
+    avatar.getComponent(ƒ.ComponentRigidbody).rotateBody(ƒ.Vector3.Y(_event.movementX * speedRotY));
 
     rotationX += _event.movementY * speedRotX;
     rotationX = Math.min(60, Math.max(-60, rotationX));
@@ -48,21 +55,55 @@ namespace Script {
   }
 
   function controlWalk(): void {
-    let input: number = ƒ.Keyboard.mapToTrit(
+    const input: number = ƒ.Keyboard.mapToTrit(
       [ƒ.KEYBOARD_CODE.W, ƒ.KEYBOARD_CODE.ARROW_UP],
       [ƒ.KEYBOARD_CODE.S, ƒ.KEYBOARD_CODE.ARROW_DOWN]
     );
 
     cntrWalk.setInput(input);
-    cntrWalk.setFactor(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) ? 6 : 2);
+    cntrWalk.setFactor(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) ? 5 : 2);
 
-    let input2: number = ƒ.Keyboard.mapToTrit(
+    const input2: number = ƒ.Keyboard.mapToTrit(
       [ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT],
       [ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.ARROW_RIGHT]
     );
 
-    avatar.mtxLocal.translateZ((cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 1000);
-    avatar.mtxLocal.translateX((1.5 * input2 * ƒ.Loop.timeFrameGame) / 1000);
+    // variante mit physics
+
+    const vector = new ƒ.Vector3(
+      (1.5 * input2 * ƒ.Loop.timeFrameGame) / 20,
+      0,
+      (cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 20
+    );
+
+    vector.transform(avatar.mtxLocal, false);
+
+    avatar.getComponent(ƒ.ComponentRigidbody).setVelocity(vector);
+
+    // funktioniert auch
+
+    // avatar
+    //   .getComponent(ƒ.ComponentRigidbody)
+    //   .setVelocity(
+    //     ƒ.Vector3.SCALE(avatar.mtxLocal.getZ(), (cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 20)
+    //   );
+
+    // funktioniert nicht wenn man sich dreht
+
+    // avatar
+    //   .getComponent(ƒ.ComponentRigidbody)
+    //   .setVelocity(
+    //     new ƒ.Vector3(
+    //       (1.5 * input2 * ƒ.Loop.timeFrameGame) / 20,
+    //       0,
+    //       (cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 20
+    //     )
+    //   );
+
+    // variante ohne physics
+
+    // avatar.mtxLocal.translateZ((cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 1000);
+    // avatar.mtxLocal.translateX((1.5 * input2 * ƒ.Loop.timeFrameGame) / 1000);
   }
 
   function addTrees() {

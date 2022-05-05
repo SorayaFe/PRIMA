@@ -37,13 +37,28 @@ namespace Script {
         DropToGroundMove.meshTerrain = <ƒ.MeshTerrain>DropToGroundMove.cmpMeshTerrain.mesh;
       }
 
-      const distance: number = DropToGroundMove.meshTerrain.getTerrainInfo(
-        this.node.mtxLocal.translation,
-        DropToGroundMove.cmpMeshTerrain.mtxWorld
-      )?.distance;
+      let distance: number = 0;
+
+      if (this.node.getComponent(ƒ.ComponentRigidbody)) {
+        distance = DropToGroundMove.meshTerrain.getTerrainInfo(
+          this.node.getComponent(ƒ.ComponentRigidbody).getPosition(),
+          DropToGroundMove.cmpMeshTerrain.mtxWorld
+        )?.distance;
+      } else {
+        distance = DropToGroundMove.meshTerrain.getTerrainInfo(
+          this.node.mtxLocal.translation,
+          DropToGroundMove.cmpMeshTerrain.mtxWorld
+        )?.distance;
+      }
 
       if (distance) {
-        this.node.mtxLocal.translateY(-distance);
+        if (this.node.getComponent(ƒ.ComponentRigidbody)) {
+          this.node
+            .getComponent(ƒ.ComponentRigidbody)
+            .translateBody(new ƒ.Vector3(0, -distance, 0));
+        } else {
+          this.node.mtxLocal.translateY(-distance);
+        }
       }
     };
   }
