@@ -47,7 +47,6 @@ declare namespace Script {
         private static instructions;
         private cmpBody;
         private time;
-        private movement;
         constructor();
         static get(): ƒAid.StateMachineInstructions<JOB>;
         private static transitDefault;

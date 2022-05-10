@@ -15,7 +15,6 @@ namespace Script {
 
     private cmpBody: ƒ.ComponentRigidbody;
     private time: number = 0;
-    private movement: ƒ.Vector3 = new ƒ.Vector3();
 
     constructor() {
       super();
@@ -47,7 +46,7 @@ namespace Script {
     private static async actFollow(_machine: StateMachine): Promise<void> {
       if (avatar) {
         _machine.node.mtxLocal.translate(
-          ƒ.Vector3.SCALE(_machine.movement, ƒ.Loop.timeFrameGame / 1000)
+          ƒ.Vector3.SCALE(ƒ.Vector3.Z(), ƒ.Loop.timeFrameGame / 1000)
         );
 
         if (_machine.time > ƒ.Time.game.get()) {
@@ -55,16 +54,13 @@ namespace Script {
         }
         _machine.time = ƒ.Time.game.get() + 1000;
 
-        const vector: ƒ.Vector3 = avatar.mtxLocal.translation.clone;
-        vector.subtract(_machine.node.mtxLocal.translation);
-        vector.normalize();
-
-        _machine.movement = vector;
+        _machine.node.mtxLocal.lookAt(avatar.mtxLocal.translation, ƒ.Vector3.Y(), true);
       }
     }
 
     private static async actStand(_machine: StateMachine): Promise<void> {
       console.log("stand");
+      _machine.transit(JOB.FOLLOW);
     }
 
     private static async actTeleport(_machine: StateMachine): Promise<void> {

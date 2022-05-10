@@ -218,7 +218,6 @@ var Script;
         static instructions = StateMachine.get();
         cmpBody;
         time = 0;
-        movement = new ƒ.Vector3();
         constructor() {
             super();
             this.instructions = StateMachine.instructions; // setup instructions with the static set
@@ -243,19 +242,17 @@ var Script;
         }
         static async actFollow(_machine) {
             if (Script.avatar) {
-                _machine.node.mtxLocal.translate(ƒ.Vector3.SCALE(_machine.movement, ƒ.Loop.timeFrameGame / 1000));
+                _machine.node.mtxLocal.translate(ƒ.Vector3.SCALE(ƒ.Vector3.Z(), ƒ.Loop.timeFrameGame / 1000));
                 if (_machine.time > ƒ.Time.game.get()) {
                     return;
                 }
                 _machine.time = ƒ.Time.game.get() + 1000;
-                const vector = Script.avatar.mtxLocal.translation.clone;
-                vector.subtract(_machine.node.mtxLocal.translation);
-                vector.normalize();
-                _machine.movement = vector;
+                _machine.node.mtxLocal.lookAt(Script.avatar.mtxLocal.translation, ƒ.Vector3.Y(), true);
             }
         }
         static async actStand(_machine) {
             console.log("stand");
+            _machine.transit(JOB.FOLLOW);
         }
         static async actTeleport(_machine) {
             _machine.node.mtxLocal.translation = ƒ.Random.default.getVector3(new ƒ.Vector3(29, 0, 29), new ƒ.Vector3(-29, 0, -29));
