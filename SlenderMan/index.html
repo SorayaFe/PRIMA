@@ -1,19 +1,37 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
+  <head>
     <title>SlenderMan</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="styles.css" />
 
     <!--Editor settings of this project-->
-    <meta type="settings" autoview="Graph|2022-04-14T12:59:19.588Z|86127" project="{'name':'SlenderMan','includeAutoViewScript':true,'graphAutoView':'Graph|2022-04-14T12:59:19.588Z|86127'}" panels="[{'type':'PanelProject','state':{}},{'type':'PanelGraph','state':{'graph':'Graph|2022-04-14T12:59:19.588Z|86127'}}]" />
+    <meta
+      type="settings"
+      autoview="Graph|2022-04-14T12:59:19.588Z|86127"
+      project="{'name':'SlenderMan','includeAutoViewScript':true,'graphAutoView':'Graph|2022-04-14T12:59:19.588Z|86127'}"
+      panels="[{'type':'PanelProject','state':{}},{'type':'PanelGraph','state':{'graph':'Graph|2022-04-14T12:59:19.588Z|86127'}}]"
+    />
 
     <!--Activate the following line to include the FUDGE-version of Oimo-Physics. You may want to download a local copy to work offline and be independent from future changes!-->
-    <script type="text/javascript" src="https://jirkadelloro.github.io/FUDGE/Physics/OimoPhysics.js"></script>
+    <script
+      type="text/javascript"
+      src="https://jirkadelloro.github.io/FUDGE/Physics/OimoPhysics.js"
+    ></script>
 
     <!--Load FUDGE. You may want to download local copies to work offline and be independent from future changes! Developers working on FUDGE itself may want to create symlinks-->
-    <script type="text/javascript" src="https://jirkadelloro.github.io/FUDGE/Core/Build/FudgeCore.js"></script>
-    <script type="text/javascript" src="https://jirkadelloro.github.io/FUDGE/Aid/Build/FudgeAid.js"></script>
+    <script
+      type="text/javascript"
+      src="https://jirkadelloro.github.io/FUDGE/Core/Build/FudgeCore.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://jirkadelloro.github.io/FUDGE/Aid/Build/FudgeAid.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="https://jirkadelloro.github.io/FUDGE/UserInterface/Build/FudgeUserInterface.js"
+    ></script>
 
     <!--Link internal resources. The editor only loads the first, but at runtime, multiple files can contribute-->
     <link type="resources" src="Internal.json" />
@@ -36,6 +54,7 @@
           dialog.querySelector("h1").textContent = document.title;
           dialog.addEventListener("click", function (_event) {
             // @ts-ignore until HTMLDialog is implemented by all browsers and available in dom.d.ts
+            document.getElementById("vui").style.visibility = "visible";
             dialog.close();
             startInteractiveViewport();
           });
@@ -89,18 +108,26 @@
     <dialog>
       <h1>Title (will be replaced by autoView)</h1>
       <p>click to start</p>
+      <p>Move: WASD</p>
+      <p>Sprint: Shift</p>
+      <p>Right Click: Toggle Flashlight</p>
     </dialog>
     <!--Canvas for FUDGE to render to-->
     <canvas class="fullscreen"> </canvas>
-  
 
-
-
-
-
-
-
-
-
-</body>
+    <div id="vui">
+      <div class="element">
+        <span>Pages:</span>
+        <input type="text" key="pages" value="0" disabled />
+      </div>
+      <div class="element">
+        <span>Battery:</span>
+        <input type="range" key="battery" value="1" min="0" max="1" step="0.001" disabled />
+      </div>
+      <div class="element">
+        <span>Stamina:</span>
+        <input type="range" key="stamina" value="1" min="0" max="1" step="0.001" disabled />
+      </div>
+    </div>
+  </body>
 </html>

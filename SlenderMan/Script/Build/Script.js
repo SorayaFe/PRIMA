@@ -93,32 +93,56 @@ var Script;
 var Script;
 (function (Script) {
     var ƒ = FudgeCore;
+    var ƒUi = FudgeUserInterface;
+    class GameState extends ƒ.Mutable {
+        battery = 1;
+        stamina = 1;
+        constructor() {
+            super();
+            const domVui = document.querySelector("div#vui");
+            console.log("Vui-Controller", new ƒUi.Controller(this, domVui));
+        }
+        reduceMutator(_mutator) { }
+    }
+    Script.GameState = GameState;
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
     ƒ.Debug.info("Main Program Template running!");
     let viewport;
     let camera;
     let graph;
+    let light;
     const speedRotY = -0.1;
     const speedRotX = 0.2;
     let rotationX = 0;
     let cntrWalk = new ƒ.Control("cntrWalk", 2, 0 /* PROPORTIONAL */, 300);
+    let gameState;
     document.addEventListener("interactiveViewportStarted", start);
     function start(_event) {
         viewport = _event.detail;
         graph = viewport.getBranch();
         Script.avatar = graph.getChildrenByName("Avatar")[0];
         camera = Script.avatar.getChild(0).getComponent(ƒ.ComponentCamera);
+        light = Script.avatar.getChildrenByName("Flashlight")[0].getComponent(ƒ.ComponentLight);
         viewport.camera = camera;
         Script.avatar.getComponent(ƒ.ComponentRigidbody).effectRotation = new ƒ.Vector3(0, 0, 0);
         let canvas = viewport.getCanvas();
         canvas.addEventListener("pointermove", hndPointerMove);
         canvas.requestPointerLock();
+        canvas.addEventListener("click", hndClick);
         addTrees();
+        gameState = new Script.GameState();
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
     function update(_event) {
         ƒ.Physics.simulate(); // if physics is included and used
         controlWalk();
+        if (light.isActive) {
+            gameState.battery -= 0.001;
+        }
         viewport.draw();
         ƒ.AudioManager.default.update();
     }
@@ -131,10 +155,18 @@ var Script;
         rotationX = Math.min(60, Math.max(-60, rotationX));
         camera.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
     }
+    function hndClick(_event) {
+        if (_event.button === 2) {
+            light.activate(!light.isActive);
+        }
+    }
     function controlWalk() {
         const input = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W, ƒ.KEYBOARD_CODE.ARROW_UP], [ƒ.KEYBOARD_CODE.S, ƒ.KEYBOARD_CODE.ARROW_DOWN]);
         cntrWalk.setInput(input);
-        cntrWalk.setFactor(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) ? 5 : 2);
+        cntrWalk.setFactor(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) && gameState.stamina > 0 ? 5 : 2);
+        if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) && input) {
+            gameState.stamina -= 0.001;
+        }
         const input2 = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT], [ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.ARROW_RIGHT]);
         // variante mit physics
         const vector = new ƒ.Vector3((1.5 * input2 * ƒ.Loop.timeFrameGame) / 20, 0, (cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 20);
@@ -252,7 +284,6 @@ var Script;
         }
         static async actStand(_machine) {
             console.log("stand");
-            _machine.transit(JOB.FOLLOW);
         }
         static async actTeleport(_machine) {
             _machine.node.mtxLocal.translation = ƒ.Random.default.getVector3(new ƒ.Vector3(29, 0, 29), new ƒ.Vector3(-29, 0, -29));

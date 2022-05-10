@@ -60,7 +60,6 @@ namespace Script {
 
     private static async actStand(_machine: StateMachine): Promise<void> {
       console.log("stand");
-      _machine.transit(JOB.FOLLOW);
     }
 
     private static async actTeleport(_machine: StateMachine): Promise<void> {

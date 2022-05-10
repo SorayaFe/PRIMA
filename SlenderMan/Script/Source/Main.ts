@@ -6,11 +6,14 @@ namespace Script {
   export let avatar: ƒ.Node;
   let camera: ƒ.ComponentCamera;
   let graph: ƒ.Node;
+  let light: ƒ.ComponentLight;
 
   const speedRotY: number = -0.1;
   const speedRotX: number = 0.2;
   let rotationX: number = 0;
   let cntrWalk: ƒ.Control = new ƒ.Control("cntrWalk", 2, ƒ.CONTROL_TYPE.PROPORTIONAL, 300);
+
+  let gameState: GameState;
 
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
@@ -19,6 +22,7 @@ namespace Script {
     graph = viewport.getBranch();
     avatar = graph.getChildrenByName("Avatar")[0];
     camera = avatar.getChild(0).getComponent(ƒ.ComponentCamera);
+    light = avatar.getChildrenByName("Flashlight")[0].getComponent(ƒ.ComponentLight);
     viewport.camera = camera;
 
     avatar.getComponent(ƒ.ComponentRigidbody).effectRotation = new ƒ.Vector3(0, 0, 0);
@@ -27,7 +31,11 @@ namespace Script {
     canvas.addEventListener("pointermove", hndPointerMove);
     canvas.requestPointerLock();
 
+    canvas.addEventListener("click", hndClick);
+
     addTrees();
+
+    gameState = new GameState();
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -36,6 +44,10 @@ namespace Script {
   function update(_event: Event): void {
     ƒ.Physics.simulate(); // if physics is included and used
     controlWalk();
+
+    if (light.isActive) {
+      gameState.battery -= 0.001;
+    }
 
     viewport.draw();
     ƒ.AudioManager.default.update();
@@ -54,6 +66,12 @@ namespace Script {
     camera.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
   }
 
+  function hndClick(_event: MouseEvent) {
+    if (_event.button === 2) {
+      light.activate(!light.isActive);
+    }
+  }
+
   function controlWalk(): void {
     const input: number = ƒ.Keyboard.mapToTrit(
       [ƒ.KEYBOARD_CODE.W, ƒ.KEYBOARD_CODE.ARROW_UP],
@@ -61,7 +79,13 @@ namespace Script {
     );
 
     cntrWalk.setInput(input);
-    cntrWalk.setFactor(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) ? 5 : 2);
+    cntrWalk.setFactor(
+      ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) && gameState.stamina > 0 ? 5 : 2
+    );
+
+    if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) && input) {
+      gameState.stamina -= 0.001;
+    }
 
     const input2: number = ƒ.Keyboard.mapToTrit(
       [ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT],

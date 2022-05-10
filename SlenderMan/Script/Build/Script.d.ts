@@ -22,6 +22,15 @@ declare namespace Script {
 }
 declare namespace Script {
     import ƒ = FudgeCore;
+    class GameState extends ƒ.Mutable {
+        battery: number;
+        stamina: number;
+        constructor();
+        protected reduceMutator(_mutator: ƒ.Mutator): void;
+    }
+}
+declare namespace Script {
+    import ƒ = FudgeCore;
     let avatar: ƒ.Node;
 }
 declare namespace Script {
