@@ -3,7 +3,7 @@ namespace Script {
   ƒ.Debug.info("Main Program Template running!");
 
   let viewport: ƒ.Viewport;
-  let avatar: ƒ.Node;
+  export let avatar: ƒ.Node;
   let camera: ƒ.ComponentCamera;
   let graph: ƒ.Node;
 

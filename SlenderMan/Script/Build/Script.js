@@ -70,14 +70,14 @@ var Script;
                 DropToGroundMove.meshTerrain = DropToGroundMove.cmpMeshTerrain.mesh;
             }
             let distance = 0;
-            if (this.node.getComponent(ƒ.ComponentRigidbody)) {
+            if (this.node.name === "Avatar") {
                 distance = DropToGroundMove.meshTerrain.getTerrainInfo(this.node.getComponent(ƒ.ComponentRigidbody).getPosition(), DropToGroundMove.cmpMeshTerrain.mtxWorld)?.distance;
             }
             else {
                 distance = DropToGroundMove.meshTerrain.getTerrainInfo(this.node.mtxLocal.translation, DropToGroundMove.cmpMeshTerrain.mtxWorld)?.distance;
             }
             if (distance) {
-                if (this.node.getComponent(ƒ.ComponentRigidbody)) {
+                if (this.node.name === "Avatar") {
                     this.node
                         .getComponent(ƒ.ComponentRigidbody)
                         .translateBody(new ƒ.Vector3(0, -distance, 0));
@@ -95,7 +95,6 @@ var Script;
     var ƒ = FudgeCore;
     ƒ.Debug.info("Main Program Template running!");
     let viewport;
-    let avatar;
     let camera;
     let graph;
     const speedRotY = -0.1;
@@ -106,10 +105,10 @@ var Script;
     function start(_event) {
         viewport = _event.detail;
         graph = viewport.getBranch();
-        avatar = graph.getChildrenByName("Avatar")[0];
-        camera = avatar.getChild(0).getComponent(ƒ.ComponentCamera);
+        Script.avatar = graph.getChildrenByName("Avatar")[0];
+        camera = Script.avatar.getChild(0).getComponent(ƒ.ComponentCamera);
         viewport.camera = camera;
-        avatar.getComponent(ƒ.ComponentRigidbody).effectRotation = new ƒ.Vector3(0, 0, 0);
+        Script.avatar.getComponent(ƒ.ComponentRigidbody).effectRotation = new ƒ.Vector3(0, 0, 0);
         let canvas = viewport.getCanvas();
         canvas.addEventListener("pointermove", hndPointerMove);
         canvas.requestPointerLock();
@@ -127,7 +126,7 @@ var Script;
         // variante ohne physics
         // avatar.mtxLocal.rotateY(_event.movementX * speedRotY);
         // variante mit physics
-        avatar.getComponent(ƒ.ComponentRigidbody).rotateBody(ƒ.Vector3.Y(_event.movementX * speedRotY));
+        Script.avatar.getComponent(ƒ.ComponentRigidbody).rotateBody(ƒ.Vector3.Y(_event.movementX * speedRotY));
         rotationX += _event.movementY * speedRotX;
         rotationX = Math.min(60, Math.max(-60, rotationX));
         camera.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
@@ -139,8 +138,8 @@ var Script;
         const input2 = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT], [ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.ARROW_RIGHT]);
         // variante mit physics
         const vector = new ƒ.Vector3((1.5 * input2 * ƒ.Loop.timeFrameGame) / 20, 0, (cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 20);
-        vector.transform(avatar.mtxLocal, false);
-        avatar.getComponent(ƒ.ComponentRigidbody).setVelocity(vector);
+        vector.transform(Script.avatar.mtxLocal, false);
+        Script.avatar.getComponent(ƒ.ComponentRigidbody).setVelocity(vector);
         // funktioniert auch
         // avatar
         //   .getComponent(ƒ.ComponentRigidbody)
@@ -202,6 +201,97 @@ var Script;
         };
     }
     Script.MoveSlenderMan = MoveSlenderMan;
+})(Script || (Script = {}));
+var Script;
+(function (Script) {
+    var ƒ = FudgeCore;
+    var ƒAid = FudgeAid;
+    ƒ.Project.registerScriptNamespace(Script); // Register the namespace to FUDGE for serialization
+    let JOB;
+    (function (JOB) {
+        JOB[JOB["FOLLOW"] = 0] = "FOLLOW";
+        JOB[JOB["STAND"] = 1] = "STAND";
+        JOB[JOB["TELEPORT"] = 2] = "TELEPORT";
+    })(JOB || (JOB = {}));
+    class StateMachine extends ƒAid.ComponentStateMachine {
+        static iSubclass = ƒ.Component.registerSubclass(StateMachine);
+        static instructions = StateMachine.get();
+        cmpBody;
+        time = 0;
+        movement = new ƒ.Vector3();
+        constructor() {
+            super();
+            this.instructions = StateMachine.instructions; // setup instructions with the static set
+            // Don't start when running in editor
+            if (ƒ.Project.mode == ƒ.MODE.EDITOR)
+                return;
+            // Listen to this component being added to or removed from a node
+            this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
+            this.addEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+            this.addEventListener("nodeDeserialized" /* NODE_DESERIALIZED */, this.hndEvent);
+        }
+        static get() {
+            let setup = new ƒAid.StateMachineInstructions();
+            setup.transitDefault = StateMachine.transitDefault;
+            setup.setAction(JOB.FOLLOW, this.actFollow);
+            setup.setAction(JOB.STAND, this.actStand);
+            setup.setAction(JOB.TELEPORT, this.actTeleport);
+            return setup;
+        }
+        static transitDefault(_machine) {
+            console.log("Transit to", _machine.stateNext);
+        }
+        static async actFollow(_machine) {
+            if (Script.avatar) {
+                _machine.node.mtxLocal.translate(ƒ.Vector3.SCALE(_machine.movement, ƒ.Loop.timeFrameGame / 1000));
+                if (_machine.time > ƒ.Time.game.get()) {
+                    return;
+                }
+                _machine.time = ƒ.Time.game.get() + 1000;
+                const vector = Script.avatar.mtxLocal.translation.clone;
+                vector.subtract(_machine.node.mtxLocal.translation);
+                vector.normalize();
+                _machine.movement = vector;
+            }
+        }
+        static async actStand(_machine) {
+            console.log("stand");
+        }
+        static async actTeleport(_machine) {
+            _machine.node.mtxLocal.translation = ƒ.Random.default.getVector3(new ƒ.Vector3(29, 0, 29), new ƒ.Vector3(-29, 0, -29));
+            _machine.transit(JOB.FOLLOW);
+        }
+        // Activate the functions of this component as response to events
+        hndEvent = (_event) => {
+            switch (_event.type) {
+                case "componentAdd" /* COMPONENT_ADD */:
+                    ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
+                    this.transit(JOB.FOLLOW);
+                    break;
+                case "componentRemove" /* COMPONENT_REMOVE */:
+                    this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
+                    this.removeEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+                    ƒ.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, this.update);
+                    break;
+                case "nodeDeserialized" /* NODE_DESERIALIZED */:
+                    this.cmpBody = this.node.getComponent(ƒ.ComponentRigidbody);
+                    this.cmpBody.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
+                        if (_event.cmpRigidbody.node.name == "Avatar")
+                            this.transit(JOB.STAND);
+                    });
+                    new ƒ.Timer(ƒ.Time.game, 25000, 0, () => {
+                        if (this.stateCurrent != JOB.STAND) {
+                            this.transit(JOB.TELEPORT);
+                        }
+                    });
+                    break;
+            }
+        };
+        update = (_event) => {
+            this.act();
+        };
+    }
+    Script.StateMachine = StateMachine;
 })(Script || (Script = {}));
 var Script;
 (function (Script) {

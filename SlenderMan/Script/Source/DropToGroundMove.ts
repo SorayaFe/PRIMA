@@ -39,7 +39,7 @@ namespace Script {
 
       let distance: number = 0;
 
-      if (this.node.getComponent(ƒ.ComponentRigidbody)) {
+      if (this.node.name === "Avatar") {
         distance = DropToGroundMove.meshTerrain.getTerrainInfo(
           this.node.getComponent(ƒ.ComponentRigidbody).getPosition(),
           DropToGroundMove.cmpMeshTerrain.mtxWorld
@@ -52,7 +52,7 @@ namespace Script {
       }
 
       if (distance) {
-        if (this.node.getComponent(ƒ.ComponentRigidbody)) {
+        if (this.node.name === "Avatar") {
           this.node
             .getComponent(ƒ.ComponentRigidbody)
             .translateBody(new ƒ.Vector3(0, -distance, 0));
