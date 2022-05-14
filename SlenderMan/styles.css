@@ -63,3 +63,11 @@ input[type="range"]::-webkit-slider-thumb {
   background: #5a5a5a;
   box-shadow: -120px 0 0 120px #048836;
 }
+
+#overlay {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  transition: box-shadow 5s ease-in;
+}

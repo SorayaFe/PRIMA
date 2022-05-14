@@ -86,7 +86,10 @@ namespace Script {
           this.cmpBody = this.node.getComponent(ƒ.ComponentRigidbody);
 
           this.cmpBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
-            if (_event.cmpRigidbody.node.name == "Avatar") this.transit(JOB.STAND);
+            if (_event.cmpRigidbody.node.name == "Avatar") {
+              this.node.dispatchEvent(new Event("enterSlender", { bubbles: true }));
+              this.transit(JOB.STAND);
+            }
           });
 
           new ƒ.Timer(ƒ.Time.game, 25000, 0, () => {

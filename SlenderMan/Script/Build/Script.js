@@ -119,8 +119,9 @@ var Script;
     let rotationX = 0;
     let cntrWalk = new ƒ.Control("cntrWalk", 2, 0 /* PROPORTIONAL */, 300);
     let gameState;
+    let config;
     document.addEventListener("interactiveViewportStarted", start);
-    function start(_event) {
+    async function start(_event) {
         viewport = _event.detail;
         graph = viewport.getBranch();
         Script.avatar = graph.getChildrenByName("Avatar")[0];
@@ -132,8 +133,11 @@ var Script;
         canvas.addEventListener("pointermove", hndPointerMove);
         canvas.requestPointerLock();
         canvas.addEventListener("click", hndClick);
+        graph.addEventListener("enterSlender", hndEnterSlender);
         addTrees();
         gameState = new Script.GameState();
+        const response = await fetch("config.json");
+        config = await response.json();
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
@@ -141,7 +145,7 @@ var Script;
         ƒ.Physics.simulate(); // if physics is included and used
         controlWalk();
         if (light.isActive) {
-            gameState.battery -= 0.001;
+            gameState.battery -= config.drain;
         }
         viewport.draw();
         ƒ.AudioManager.default.update();
@@ -156,9 +160,16 @@ var Script;
         camera.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
     }
     function hndClick(_event) {
-        if (_event.button === 2) {
+        if (_event.button === 2 && gameState.battery > 0) {
             light.activate(!light.isActive);
         }
+    }
+    function hndEnterSlender(_event) {
+        const overlay = document.getElementById("overlay");
+        overlay.style.boxShadow = "inset white 0px 0px 300px 200px";
+        new ƒ.Timer(ƒ.Time.game, 5000, 1, () => {
+            window.location.reload();
+        });
     }
     function controlWalk() {
         const input = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W, ƒ.KEYBOARD_CODE.ARROW_UP], [ƒ.KEYBOARD_CODE.S, ƒ.KEYBOARD_CODE.ARROW_DOWN]);
@@ -304,8 +315,10 @@ var Script;
                 case "nodeDeserialized" /* NODE_DESERIALIZED */:
                     this.cmpBody = this.node.getComponent(ƒ.ComponentRigidbody);
                     this.cmpBody.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
-                        if (_event.cmpRigidbody.node.name == "Avatar")
+                        if (_event.cmpRigidbody.node.name == "Avatar") {
+                            this.node.dispatchEvent(new Event("enterSlender", { bubbles: true }));
                             this.transit(JOB.STAND);
+                        }
                     });
                     new ƒ.Timer(ƒ.Time.game, 25000, 0, () => {
                         if (this.stateCurrent != JOB.STAND) {

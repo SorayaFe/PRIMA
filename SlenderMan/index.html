@@ -113,20 +113,23 @@
       <p>Right Click: Toggle Flashlight</p>
     </dialog>
     <!--Canvas for FUDGE to render to-->
+
     <canvas class="fullscreen"> </canvas>
+
+    <div id="overlay"></div>
 
     <div id="vui">
       <div class="element">
         <span>Pages:</span>
-        <input type="text" key="pages" value="0" disabled />
+        <input type="text" key="pages" value="0" disabled="" />
       </div>
       <div class="element">
         <span>Battery:</span>
-        <input type="range" key="battery" value="1" min="0" max="1" step="0.001" disabled />
+        <input type="range" key="battery" value="1" min="0" max="1" step="0.001" disabled="" />
       </div>
       <div class="element">
         <span>Stamina:</span>
-        <input type="range" key="stamina" value="1" min="0" max="1" step="0.001" disabled />
+        <input type="range" key="stamina" value="1" min="0" max="1" step="0.001" disabled="" />
       </div>
     </div>
   </body>

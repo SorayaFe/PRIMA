@@ -2,6 +2,10 @@ namespace Script {
   import ƒ = FudgeCore;
   ƒ.Debug.info("Main Program Template running!");
 
+  interface Config {
+    drain: number;
+  }
+
   let viewport: ƒ.Viewport;
   export let avatar: ƒ.Node;
   let camera: ƒ.ComponentCamera;
@@ -14,10 +18,11 @@ namespace Script {
   let cntrWalk: ƒ.Control = new ƒ.Control("cntrWalk", 2, ƒ.CONTROL_TYPE.PROPORTIONAL, 300);
 
   let gameState: GameState;
+  let config: Config;
 
-  document.addEventListener("interactiveViewportStarted", <EventListener>start);
+  document.addEventListener("interactiveViewportStarted", <EventListener>(<unknown>start));
 
-  function start(_event: CustomEvent): void {
+  async function start(_event: CustomEvent): Promise<void> {
     viewport = _event.detail;
     graph = viewport.getBranch();
     avatar = graph.getChildrenByName("Avatar")[0];
@@ -32,10 +37,14 @@ namespace Script {
     canvas.requestPointerLock();
 
     canvas.addEventListener("click", hndClick);
+    graph.addEventListener("enterSlender", hndEnterSlender);
 
     addTrees();
 
     gameState = new GameState();
+
+    const response: Response = await fetch("config.json");
+    config = await response.json();
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
@@ -46,7 +55,7 @@ namespace Script {
     controlWalk();
 
     if (light.isActive) {
-      gameState.battery -= 0.001;
+      gameState.battery -= config.drain;
     }
 
     viewport.draw();
@@ -66,10 +75,20 @@ namespace Script {
     camera.mtxPivot.rotation = ƒ.Vector3.X(rotationX);
   }
 
-  function hndClick(_event: MouseEvent) {
-    if (_event.button === 2) {
+  function hndClick(_event: MouseEvent): void {
+    if (_event.button === 2 && gameState.battery > 0) {
       light.activate(!light.isActive);
     }
+  }
+
+  function hndEnterSlender(_event: Event): void {
+    const overlay = document.getElementById("overlay");
+
+    overlay.style.boxShadow = "inset white 0px 0px 300px 200px";
+
+    new ƒ.Timer(ƒ.Time.game, 5000, 1, () => {
+      window.location.reload();
+    });
   }
 
   function controlWalk(): void {
