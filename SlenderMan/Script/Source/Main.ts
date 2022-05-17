@@ -46,6 +46,8 @@ namespace Script {
     const response: Response = await fetch("config.json");
     config = await response.json();
 
+    initAnim();
+
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }
@@ -103,13 +105,17 @@ namespace Script {
     );
 
     if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) && input) {
-      gameState.stamina -= 0.001;
+      gameState.stamina -= 0.003;
     }
 
     const input2: number = ƒ.Keyboard.mapToTrit(
       [ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT],
       [ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.ARROW_RIGHT]
     );
+
+    if (input === 0 && input2 === 0 && gameState.stamina < 1) {
+      gameState.stamina += 0.0007;
+    }
 
     // variante mit physics
 
@@ -167,5 +173,48 @@ namespace Script {
         trees.addChild(new Tree("Tree", roundedPosition));
       }
     }
+  }
+
+  function initAnim(): void {
+    let animseq: ƒ.AnimationSequence = new ƒ.AnimationSequence();
+    animseq.addKey(new ƒ.AnimationKey(0, 0));
+    animseq.addKey(new ƒ.AnimationKey(2000, 1));
+
+    let animseq2: ƒ.AnimationSequence = new ƒ.AnimationSequence();
+    animseq2.addKey(new ƒ.AnimationKey(0, 0));
+    animseq2.addKey(new ƒ.AnimationKey(2000, 45));
+
+    let animStructure: ƒ.AnimationStructure = {
+      components: {
+        ComponentTransform: [
+          {
+            "ƒ.ComponentTransform": {
+              mtxLocal: {
+                translation: {
+                  y: animseq,
+                },
+                rotation: {
+                  y: animseq2,
+                },
+              },
+            },
+          },
+        ],
+      },
+    };
+    let animation: ƒ.Animation = new ƒ.Animation("testAnimation", animStructure, 60);
+
+    let cmpAnimator: ƒ.ComponentAnimator = new ƒ.ComponentAnimator(
+      animation,
+      ƒ.ANIMATION_PLAYMODE.LOOP,
+      ƒ.ANIMATION_PLAYBACK.TIMEBASED_CONTINOUS
+    );
+
+    graph
+      .getChildrenByName("Environment")[0]
+      .getChildrenByName("Rocks")[0]
+      .getChildrenByName("Rock")[0]
+      .addComponent(cmpAnimator);
+    cmpAnimator.activate(true);
   }
 }

@@ -138,6 +138,7 @@ var Script;
         gameState = new Script.GameState();
         const response = await fetch("config.json");
         config = await response.json();
+        initAnim();
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
     }
@@ -176,9 +177,12 @@ var Script;
         cntrWalk.setInput(input);
         cntrWalk.setFactor(ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) && gameState.stamina > 0 ? 5 : 2);
         if (ƒ.Keyboard.isPressedOne([ƒ.KEYBOARD_CODE.SHIFT_LEFT]) && input) {
-            gameState.stamina -= 0.001;
+            gameState.stamina -= 0.003;
         }
         const input2 = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT], [ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.ARROW_RIGHT]);
+        if (input === 0 && input2 === 0 && gameState.stamina < 1) {
+            gameState.stamina += 0.0007;
+        }
         // variante mit physics
         const vector = new ƒ.Vector3((1.5 * input2 * ƒ.Loop.timeFrameGame) / 20, 0, (cntrWalk.getOutput() * ƒ.Loop.timeFrameGame) / 20);
         vector.transform(Script.avatar.mtxLocal, false);
@@ -212,6 +216,40 @@ var Script;
                 trees.addChild(new Script.Tree("Tree", roundedPosition));
             }
         }
+    }
+    function initAnim() {
+        let animseq = new ƒ.AnimationSequence();
+        animseq.addKey(new ƒ.AnimationKey(0, 0));
+        animseq.addKey(new ƒ.AnimationKey(2000, 1));
+        let animseq2 = new ƒ.AnimationSequence();
+        animseq2.addKey(new ƒ.AnimationKey(0, 0));
+        animseq2.addKey(new ƒ.AnimationKey(2000, 45));
+        let animStructure = {
+            components: {
+                ComponentTransform: [
+                    {
+                        "ƒ.ComponentTransform": {
+                            mtxLocal: {
+                                translation: {
+                                    y: animseq,
+                                },
+                                rotation: {
+                                    y: animseq2,
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        };
+        let animation = new ƒ.Animation("testAnimation", animStructure, 60);
+        let cmpAnimator = new ƒ.ComponentAnimator(animation, ƒ.ANIMATION_PLAYMODE.LOOP, ƒ.ANIMATION_PLAYBACK.TIMEBASED_CONTINOUS);
+        graph
+            .getChildrenByName("Environment")[0]
+            .getChildrenByName("Rocks")[0]
+            .getChildrenByName("Rock")[0]
+            .addComponent(cmpAnimator);
+        cmpAnimator.activate(true);
     }
 })(Script || (Script = {}));
 var Script;
