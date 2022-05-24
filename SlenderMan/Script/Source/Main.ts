@@ -1,10 +1,14 @@
 namespace Script {
   import ƒ = FudgeCore;
+  //import ƒClient = FudgeNet.FudgeClient;
+
   ƒ.Debug.info("Main Program Template running!");
 
   interface Config {
     drain: number;
   }
+
+  //let client: ƒClient = new ƒClient();
 
   let viewport: ƒ.Viewport;
   export let avatar: ƒ.Node;
@@ -31,6 +35,8 @@ namespace Script {
     viewport.camera = camera;
 
     avatar.getComponent(ƒ.ComponentRigidbody).effectRotation = new ƒ.Vector3(0, 0, 0);
+
+    //connectToServer();
 
     let canvas: HTMLCanvasElement = viewport.getCanvas();
     canvas.addEventListener("pointermove", hndPointerMove);
@@ -59,6 +65,12 @@ namespace Script {
     if (light.isActive) {
       gameState.battery -= config.drain;
     }
+
+    // client.dispatch({
+    //   idRoom: "Lobby",
+    //   route: FudgeNet.ROUTE.SERVER,
+    //   content: { text: "test" },
+    // });
 
     viewport.draw();
     ƒ.AudioManager.default.update();
@@ -217,4 +229,23 @@ namespace Script {
       .addComponent(cmpAnimator);
     cmpAnimator.activate(true);
   }
+
+  // async function connectToServer(): Promise<void> {
+  //   try {
+  //     // connect to a server with the given url
+  //     client.connectToServer("ws://localhost:8080");
+  //     client.addEventListener(FudgeNet.EVENT.MESSAGE_RECEIVED, receiveMessage);
+  //   } catch (_error) {
+  //     console.log(_error);
+  //     console.log("Make sure, FudgeServer is running and accessable");
+  //   }
+  // }
+
+  // async function receiveMessage(_event: any): Promise<void> {
+  //   if (_event instanceof MessageEvent) {
+  //     let message: FudgeNet.Message = JSON.parse(_event.data);
+
+  //     console.log(message);
+  //   }
+  // }
 }
