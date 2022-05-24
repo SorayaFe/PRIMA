@@ -109,9 +109,9 @@ var Script;
 var Script;
 (function (Script) {
     var ƒ = FudgeCore;
-    var ƒClient = FudgeNet.FudgeClient;
+    //import ƒClient = FudgeNet.FudgeClient;
     ƒ.Debug.info("Main Program Template running!");
-    let client = new ƒClient();
+    //let client: ƒClient = new ƒClient();
     let viewport;
     let camera;
     let graph;
@@ -131,7 +131,7 @@ var Script;
         light = Script.avatar.getChildrenByName("Flashlight")[0].getComponent(ƒ.ComponentLight);
         viewport.camera = camera;
         Script.avatar.getComponent(ƒ.ComponentRigidbody).effectRotation = new ƒ.Vector3(0, 0, 0);
-        connectToServer();
+        //connectToServer();
         let canvas = viewport.getCanvas();
         canvas.addEventListener("pointermove", hndPointerMove);
         canvas.requestPointerLock();
@@ -151,11 +151,11 @@ var Script;
         if (light.isActive) {
             gameState.battery -= config.drain;
         }
-        client.dispatch({
-            idRoom: "Lobby",
-            route: FudgeNet.ROUTE.SERVER,
-            content: { text: "test" },
-        });
+        // client.dispatch({
+        //   idRoom: "Lobby",
+        //   route: FudgeNet.ROUTE.SERVER,
+        //   content: { text: "test" },
+        // });
         viewport.draw();
         ƒ.AudioManager.default.update();
     }
@@ -259,23 +259,22 @@ var Script;
             .addComponent(cmpAnimator);
         cmpAnimator.activate(true);
     }
-    async function connectToServer() {
-        try {
-            // connect to a server with the given url
-            client.connectToServer("ws://localhost:8080");
-            client.addEventListener(FudgeNet.EVENT.MESSAGE_RECEIVED, receiveMessage);
-        }
-        catch (_error) {
-            console.log(_error);
-            console.log("Make sure, FudgeServer is running and accessable");
-        }
-    }
-    async function receiveMessage(_event) {
-        if (_event instanceof MessageEvent) {
-            let message = JSON.parse(_event.data);
-            console.log(message);
-        }
-    }
+    // async function connectToServer(): Promise<void> {
+    //   try {
+    //     // connect to a server with the given url
+    //     client.connectToServer("ws://localhost:8080");
+    //     client.addEventListener(FudgeNet.EVENT.MESSAGE_RECEIVED, receiveMessage);
+    //   } catch (_error) {
+    //     console.log(_error);
+    //     console.log("Make sure, FudgeServer is running and accessable");
+    //   }
+    // }
+    // async function receiveMessage(_event: any): Promise<void> {
+    //   if (_event instanceof MessageEvent) {
+    //     let message: FudgeNet.Message = JSON.parse(_event.data);
+    //     console.log(message);
+    //   }
+    // }
 })(Script || (Script = {}));
 var Script;
 (function (Script) {
