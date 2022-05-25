@@ -1,8 +1,11 @@
 declare namespace Greed {
     import ƒ = FudgeCore;
     class Avatar extends ƒ.Node {
+        private walkX;
+        private walkY;
         constructor(_name: string);
         private createAvatar;
+        private controlWalk;
         private hndHit;
     }
 }
@@ -28,8 +31,55 @@ declare namespace Greed {
         private createProjectile;
     }
 }
-declare module "Interfaces/SpriteInfo.interface" {
-    export interface SpriteInfo {
+declare namespace Greed {
+    import ƒAid = FudgeAid;
+    class Sprite {
+        static animations: ƒAid.SpriteSheetAnimations;
+        static loadSprites(_spriteInfo: SpriteInfo): Promise<void>;
+        private static generateSprites;
+        static setSprite(_node: ƒ.Node, _name: string): void;
+    }
+}
+declare namespace Greed {
+    import ƒ = FudgeCore;
+    class Enemy extends ƒ.Node {
+        static enemies: EnemyInterface[];
+        enemy: EnemyInterface;
+        constructor(_name: string, _enemy: EnemyInterface);
+        private createEnemy;
+        private addScripts;
+        private hndHit;
+        private die;
+    }
+}
+declare namespace Greed {
+    enum EnemyType {
+        FOLLOW = "follow",
+        FOLLOW_SHOOT = "follow_shoot",
+        SHOOT_4 = "shoot_4",
+        SHOOT_2 = "shoot_2",
+        AIM = "aim"
+    }
+    interface EnemyInterface {
+        health: number;
+        size: number;
+        type: EnemyType;
+        isBoss: boolean;
+        sprite: SpriteInfo;
+    }
+}
+declare namespace Greed {
+    interface Item {
+        name: string;
+        effects: string[];
+        values: number[];
+        price: number;
+        increaseSize: boolean;
+        sprite: SpriteInfo;
+    }
+}
+declare namespace Greed {
+    interface SpriteInfo {
         path: string;
         name: string;
         x: number;
@@ -41,65 +91,22 @@ declare module "Interfaces/SpriteInfo.interface" {
         offsetNext: number;
     }
 }
-declare module "Interfaces/Enemy.interface" {
-    import { SpriteInfo } from "Interfaces/SpriteInfo.interface";
-    export enum EnemyType {
-        FOLLOW = "follow",
-        FOLLOW_SHOOT = "follow_shoot",
-        SHOOT_4 = "shoot_4",
-        SHOOT_2 = "shoot_2",
-        AIM = "aim"
-    }
-    export interface EnemyInterface {
-        health: number;
-        size: number;
-        type: EnemyType;
-        isBoss: boolean;
-        sprite: SpriteInfo;
+declare namespace Greed {
+    class HeartSlot extends ItemSlot {
+        constructor(_name: string);
+        protected getItem(): void;
+        protected applyItemEffects(): void;
     }
 }
-declare module "Enemies/Enemy" {
-    import { EnemyInterface } from "Interfaces/Enemy.interface";
+declare namespace Greed {
     import ƒ = FudgeCore;
-    export class Enemy extends ƒ.Node {
-        static enemies: EnemyInterface[];
-        enemy: EnemyInterface;
-        constructor(_name: string, _enemy: EnemyInterface);
-        private createEnemy;
-        private addScripts;
-        private hndHit;
-        private die;
-    }
-}
-declare module "Interfaces/Item.interface" {
-    import { SpriteInfo } from "Interfaces/SpriteInfo.interface";
-    export interface Item {
-        name: string;
-        effects: string[];
-        values: number[];
-        price: number;
-        increaseSize: boolean;
-        sprite: SpriteInfo;
-    }
-}
-declare module "Items/ItemSlot" {
-    import { Item } from "Interfaces/Item.interface";
-    import ƒ = FudgeCore;
-    export class ItemSlot extends ƒ.Node {
+    class ItemSlot extends ƒ.Node {
         static items: Item[];
         private activeItem;
         constructor(_name: string);
         protected getItem(): void;
         restock(item: Item): void;
         private applyNewItem;
-        protected applyItemEffects(): void;
-    }
-}
-declare module "Items/HeartSlot" {
-    import { ItemSlot } from "Items/ItemSlot";
-    export class HeartSlot extends ItemSlot {
-        constructor(_name: string);
-        protected getItem(): void;
         protected applyItemEffects(): void;
     }
 }

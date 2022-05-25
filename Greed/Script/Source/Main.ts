@@ -7,6 +7,8 @@ namespace Greed {
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
   let viewport: ƒ.Viewport;
+  let graph: ƒ.Node;
+  let avatar: ƒ.Node;
 
   function init(_event: Event) {
     dialog = document.querySelector("dialog");
@@ -37,7 +39,7 @@ namespace Greed {
     const canvas: HTMLCanvasElement = document.querySelector("canvas");
     const viewport: ƒ.Viewport = new ƒ.Viewport();
     viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
-
+    FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
     viewport.draw();
     canvas.dispatchEvent(
       new CustomEvent("interactiveViewportStarted", { bubbles: true, detail: viewport })
@@ -46,15 +48,19 @@ namespace Greed {
 
   function start(_event: CustomEvent): void {
     viewport = _event.detail;
-    viewport.camera.mtxPivot.translate(new ƒ.Vector3(20, 30, 50));
-    viewport.camera.mtxPivot.rotateY(180);
+    // viewport.camera.mtxPivot.translate(new ƒ.Vector3(10, 20, 25));
+    // viewport.camera.mtxPivot.rotateY(180);
+    graph = viewport.getBranch();
+
+    avatar = new Avatar("Avatar");
+    graph.addChild(avatar);
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
   }
 
   function update(_event: Event): void {
-    // ƒ.Physics.simulate();  // if physics is included and used
+    ƒ.Physics.simulate(); // if physics is included and used
     viewport.draw();
   }
 }
