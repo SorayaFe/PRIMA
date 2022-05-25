@@ -5,7 +5,7 @@ declare namespace Greed {
         private walkY;
         constructor(_name: string);
         private createAvatar;
-        private controlWalk;
+        controlWalk(): void;
         private hndHit;
     }
 }

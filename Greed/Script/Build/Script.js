@@ -12,7 +12,7 @@ var Greed;
         async createAvatar() {
             const cmpTransform = new ƒ.ComponentTransform();
             cmpTransform.mtxLocal.translation = new ƒ.Vector3(10, 20, 0.5);
-            this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+            this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshCube()));
             this.addComponent(cmpTransform);
             const spriteInfo = {
                 path: "Assets/avatar2.png",
@@ -27,28 +27,27 @@ var Greed;
             };
             await Greed.Sprite.loadSprites(spriteInfo);
             Greed.Sprite.setSprite(this, "avatar");
-            const rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.SPHERE, undefined, this.mtxLocal);
+            const rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.CUBE, undefined, this.mtxLocal);
             this.addComponent(rigidBody);
             rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
                 // if abfrage dazu
                 this.hndHit();
             });
-            // ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.controlWalk);
         }
         controlWalk() {
-            // const input: number = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.S]);
-            // this.walkY.setInput(input);
-            // this.walkY.setFactor(3);
-            // const input2: number = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.A], [ƒ.KEYBOARD_CODE.D]);
-            // this.walkX.setInput(input2);
-            // this.walkX.setFactor(3);
-            // const vector = new ƒ.Vector3(
-            //   (this.walkX.getOutput() * ƒ.Loop.timeFrameGame) / 20,
-            //   0,
-            //   (this.walkY.getOutput() * ƒ.Loop.timeFrameGame) / 20
-            // );
-            // vector.transform(this.mtxLocal, false);
-            // this.getComponent(ƒ.ComponentRigidbody).setVelocity(vector);
+            const rigidBody = this.getComponent(ƒ.ComponentRigidbody);
+            if (rigidBody) {
+                rigidBody.applyForce(new ƒ.Vector3(0, 9.8, 0));
+                const input = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.S]);
+                this.walkY.setInput(input);
+                this.walkY.setFactor(3);
+                const input2 = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.D], [ƒ.KEYBOARD_CODE.A]);
+                this.walkX.setInput(input2);
+                this.walkX.setFactor(3);
+                const vector = new ƒ.Vector3((this.walkX.getOutput() * ƒ.Loop.timeFrameGame) / 20, (this.walkY.getOutput() * ƒ.Loop.timeFrameGame) / 20, 0);
+                vector.transform(this.mtxLocal, false);
+                this.getComponent(ƒ.ComponentRigidbody).setVelocity(vector);
+            }
         }
         hndHit() {
             //handle projectile hit
@@ -128,6 +127,7 @@ var Greed;
     }
     function update(_event) {
         ƒ.Physics.simulate(); // if physics is included and used
+        avatar.controlWalk();
         viewport.draw();
     }
 })(Greed || (Greed = {}));

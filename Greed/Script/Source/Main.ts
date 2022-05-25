@@ -8,7 +8,7 @@ namespace Greed {
 
   let viewport: ƒ.Viewport;
   let graph: ƒ.Node;
-  let avatar: ƒ.Node;
+  let avatar: Avatar;
 
   function init(_event: Event) {
     dialog = document.querySelector("dialog");
@@ -61,6 +61,7 @@ namespace Greed {
 
   function update(_event: Event): void {
     ƒ.Physics.simulate(); // if physics is included and used
+    avatar.controlWalk();
     viewport.draw();
   }
 }
