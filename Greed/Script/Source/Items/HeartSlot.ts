@@ -1,3 +1,4 @@
+/// <reference path="./ItemSlot.ts" />
 namespace Greed {
   export class HeartSlot extends ItemSlot {
     constructor(_name: string) {

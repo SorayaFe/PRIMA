@@ -3,8 +3,9 @@ var Greed;
 (function (Greed) {
     var ƒ = FudgeCore;
     class Avatar extends ƒ.Node {
-        walkX = new ƒ.Control("walkX", 2, 0 /* PROPORTIONAL */, 300);
-        walkY = new ƒ.Control("walkY", 2, 0 /* PROPORTIONAL */, 300);
+        sprite;
+        walkX = new ƒ.Control("walkX", 2, 0 /* PROPORTIONAL */, 150);
+        walkY = new ƒ.Control("walkY", 2, 0 /* PROPORTIONAL */, 150);
         constructor(_name) {
             super(_name);
             this.createAvatar();
@@ -14,8 +15,9 @@ var Greed;
             cmpTransform.mtxLocal.translation = new ƒ.Vector3(10, 20, 0.5);
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshCube()));
             this.addComponent(cmpTransform);
+            // create sprite
             const spriteInfo = {
-                path: "Assets/avatar2.png",
+                path: "Assets/avatar.png",
                 name: "avatar",
                 x: 0,
                 y: 0,
@@ -25,9 +27,12 @@ var Greed;
                 resolutionQuad: 32,
                 offsetNext: 96,
             };
-            await Greed.Sprite.loadSprites(spriteInfo);
-            Greed.Sprite.setSprite(this, "avatar");
+            await Greed.loadSprites(spriteInfo);
+            Greed.setSprite(this, "avatar");
+            this.sprite = this.getChildrenByName("Sprite")[0];
+            // add rigid body
             const rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.CUBE, undefined, this.mtxLocal);
+            rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
             this.addComponent(rigidBody);
             rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
                 // if abfrage dazu
@@ -46,7 +51,8 @@ var Greed;
                 this.walkX.setFactor(3);
                 const vector = new ƒ.Vector3((this.walkX.getOutput() * ƒ.Loop.timeFrameGame) / 20, (this.walkY.getOutput() * ƒ.Loop.timeFrameGame) / 20, 0);
                 vector.transform(this.mtxLocal, false);
-                this.getComponent(ƒ.ComponentRigidbody).setVelocity(vector);
+                rigidBody.setVelocity(vector);
+                this.sprite.setFrameDirection(input === 0 && input2 === 0 ? 0 : 1);
             }
         }
         hndHit() {
@@ -85,7 +91,6 @@ var Greed;
     window.addEventListener("load", init);
     document.addEventListener("interactiveViewportStarted", start);
     let viewport;
-    let graph;
     let avatar;
     function init(_event) {
         dialog = document.querySelector("dialog");
@@ -111,22 +116,23 @@ var Greed;
         const canvas = document.querySelector("canvas");
         const viewport = new ƒ.Viewport();
         viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
-        FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
+        //FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
         viewport.draw();
         canvas.dispatchEvent(new CustomEvent("interactiveViewportStarted", { bubbles: true, detail: viewport }));
     }
     function start(_event) {
         viewport = _event.detail;
-        // viewport.camera.mtxPivot.translate(new ƒ.Vector3(10, 20, 25));
-        // viewport.camera.mtxPivot.rotateY(180);
-        graph = viewport.getBranch();
+        viewport.camera.mtxPivot.translate(new ƒ.Vector3(10, 20, 25));
+        viewport.camera.mtxPivot.rotateY(180);
+        Greed.graph = viewport.getBranch();
+        Greed.gameState = new Greed.GameState();
         avatar = new Greed.Avatar("Avatar");
-        graph.addChild(avatar);
+        Greed.graph.addChild(avatar);
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
-        ƒ.Loop.start(); // start the game loop to continously draw the viewport, update the audiosystem and drive the physics i/a
+        ƒ.Loop.start();
     }
     function update(_event) {
-        ƒ.Physics.simulate(); // if physics is included and used
+        ƒ.Physics.simulate();
         avatar.controlWalk();
         viewport.draw();
     }
@@ -146,28 +152,27 @@ var Greed;
 var Greed;
 (function (Greed) {
     var ƒAid = FudgeAid;
-    class Sprite {
-        static animations = {};
-        static async loadSprites(_spriteInfo) {
-            let imgSpriteSheet = new ƒ.TextureImage();
-            await imgSpriteSheet.load(_spriteInfo.path);
-            let spriteSheet = new ƒ.CoatTextured(undefined, imgSpriteSheet);
-            this.generateSprites(spriteSheet, _spriteInfo);
-        }
-        static generateSprites(_spriteSheet, _spriteInfo) {
-            const sheetAnimation = new ƒAid.SpriteSheetAnimation(_spriteInfo.name, _spriteSheet);
-            sheetAnimation.generateByGrid(ƒ.Rectangle.GET(_spriteInfo.x, _spriteInfo.y, _spriteInfo.width, _spriteInfo.height), _spriteInfo.frames, _spriteInfo.resolutionQuad, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(_spriteInfo.offsetNext));
-            Sprite.animations[_spriteInfo.name] = sheetAnimation;
-        }
-        static setSprite(_node, _name) {
-            const sprite = new ƒAid.NodeSprite("Sprite");
-            sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
-            sprite.setAnimation(Sprite.animations[_name]);
-            sprite.setFrameDirection(1);
-            _node.addChild(sprite);
-        }
+    const animations = {};
+    async function loadSprites(_spriteInfo) {
+        let imgSpriteSheet = new ƒ.TextureImage();
+        await imgSpriteSheet.load(_spriteInfo.path);
+        let spriteSheet = new ƒ.CoatTextured(undefined, imgSpriteSheet);
+        generateSprites(spriteSheet, _spriteInfo);
     }
-    Greed.Sprite = Sprite;
+    Greed.loadSprites = loadSprites;
+    function generateSprites(_spriteSheet, _spriteInfo) {
+        const sheetAnimation = new ƒAid.SpriteSheetAnimation(_spriteInfo.name, _spriteSheet);
+        sheetAnimation.generateByGrid(ƒ.Rectangle.GET(_spriteInfo.x, _spriteInfo.y, _spriteInfo.width, _spriteInfo.height), _spriteInfo.frames, _spriteInfo.resolutionQuad, ƒ.ORIGIN2D.CENTER, ƒ.Vector2.X(_spriteInfo.offsetNext));
+        animations[_spriteInfo.name] = sheetAnimation;
+    }
+    function setSprite(_node, _name) {
+        const sprite = new ƒAid.NodeSprite("Sprite");
+        sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
+        sprite.setAnimation(animations[_name]);
+        sprite.setFrameDirection(1);
+        _node.addChild(sprite);
+    }
+    Greed.setSprite = setSprite;
 })(Greed || (Greed = {}));
 var Greed;
 (function (Greed) {
@@ -210,23 +215,6 @@ var Greed;
 })(Greed || (Greed = {}));
 var Greed;
 (function (Greed) {
-    class HeartSlot extends Greed.ItemSlot {
-        constructor(_name) {
-            super(_name);
-        }
-        getItem() {
-            // create heart
-            //TODO replace {} as any
-            super.restock({});
-        }
-        applyItemEffects() {
-            // apply heart effect
-        }
-    }
-    Greed.HeartSlot = HeartSlot;
-})(Greed || (Greed = {}));
-var Greed;
-(function (Greed) {
     var ƒ = FudgeCore;
     class ItemSlot extends ƒ.Node {
         static items = [];
@@ -254,6 +242,25 @@ var Greed;
         }
     }
     Greed.ItemSlot = ItemSlot;
+})(Greed || (Greed = {}));
+/// <reference path="./ItemSlot.ts" />
+var Greed;
+/// <reference path="./ItemSlot.ts" />
+(function (Greed) {
+    class HeartSlot extends Greed.ItemSlot {
+        constructor(_name) {
+            super(_name);
+        }
+        getItem() {
+            // create heart
+            //TODO replace {} as any
+            super.restock({});
+        }
+        applyItemEffects() {
+            // apply heart effect
+        }
+    }
+    Greed.HeartSlot = HeartSlot;
 })(Greed || (Greed = {}));
 var Greed;
 (function (Greed) {

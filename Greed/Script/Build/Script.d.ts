@@ -1,6 +1,7 @@
 declare namespace Greed {
     import ƒ = FudgeCore;
     class Avatar extends ƒ.Node {
+        private sprite;
         private walkX;
         private walkY;
         constructor(_name: string);
@@ -23,6 +24,9 @@ declare namespace Greed {
     }
 }
 declare namespace Greed {
+    import ƒ = FudgeCore;
+    let gameState: GameState;
+    let graph: ƒ.Node;
 }
 declare namespace Greed {
     import ƒ = FudgeCore;
@@ -32,13 +36,8 @@ declare namespace Greed {
     }
 }
 declare namespace Greed {
-    import ƒAid = FudgeAid;
-    class Sprite {
-        static animations: ƒAid.SpriteSheetAnimations;
-        static loadSprites(_spriteInfo: SpriteInfo): Promise<void>;
-        private static generateSprites;
-        static setSprite(_node: ƒ.Node, _name: string): void;
-    }
+    function loadSprites(_spriteInfo: SpriteInfo): Promise<void>;
+    function setSprite(_node: ƒ.Node, _name: string): void;
 }
 declare namespace Greed {
     import ƒ = FudgeCore;
@@ -92,13 +91,6 @@ declare namespace Greed {
     }
 }
 declare namespace Greed {
-    class HeartSlot extends ItemSlot {
-        constructor(_name: string);
-        protected getItem(): void;
-        protected applyItemEffects(): void;
-    }
-}
-declare namespace Greed {
     import ƒ = FudgeCore;
     class ItemSlot extends ƒ.Node {
         static items: Item[];
@@ -107,6 +99,13 @@ declare namespace Greed {
         protected getItem(): void;
         restock(item: Item): void;
         private applyNewItem;
+        protected applyItemEffects(): void;
+    }
+}
+declare namespace Greed {
+    class HeartSlot extends ItemSlot {
+        constructor(_name: string);
+        protected getItem(): void;
         protected applyItemEffects(): void;
     }
 }
