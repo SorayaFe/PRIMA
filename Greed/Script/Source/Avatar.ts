@@ -4,17 +4,23 @@ namespace Greed {
 
   export class Avatar extends ƒ.Node {
     private sprite: ƒAid.NodeSprite;
+    private camera: ƒ.ComponentCamera;
+
     private walkX: ƒ.Control = new ƒ.Control("walkX", 2, ƒ.CONTROL_TYPE.PROPORTIONAL, 150);
     private walkY: ƒ.Control = new ƒ.Control("walkY", 2, ƒ.CONTROL_TYPE.PROPORTIONAL, 150);
 
-    constructor(_name: string) {
+    private isInShop: boolean = false;
+
+    constructor(_name: string, _camera: ƒ.ComponentCamera) {
       super(_name);
+
+      this.camera = _camera;
       this.createAvatar();
     }
 
     private async createAvatar() {
       const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
-      cmpTransform.mtxLocal.translation = new ƒ.Vector3(10, 20, 0.5);
+      cmpTransform.mtxLocal.translation = new ƒ.Vector3(7.5, 14.5, 0.5);
 
       this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshCube()));
       this.addComponent(cmpTransform);
@@ -40,7 +46,7 @@ namespace Greed {
       const rigidBody: ƒ.ComponentRigidbody = new ƒ.ComponentRigidbody(
         1,
         ƒ.BODY_TYPE.DYNAMIC,
-        ƒ.COLLIDER_TYPE.CUBE,
+        ƒ.COLLIDER_TYPE.SPHERE,
         undefined,
         this.mtxLocal
       );
@@ -50,8 +56,12 @@ namespace Greed {
 
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
         // if abfrage dazu
-
         this.hndHit();
+      });
+      rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_EXIT, (_event: ƒ.EventPhysics) => {
+        if (_event.cmpRigidbody.node.name == "Door") {
+          this.moveCamera(this.isInShop ? "leave" : "enter");
+        }
       });
     }
 
@@ -63,11 +73,11 @@ namespace Greed {
 
         const input: number = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.S]);
         this.walkY.setInput(input);
-        this.walkY.setFactor(3);
+        this.walkY.setFactor(2 * gameState.speed);
 
         const input2: number = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.D], [ƒ.KEYBOARD_CODE.A]);
         this.walkX.setInput(input2);
-        this.walkX.setFactor(3);
+        this.walkX.setFactor(2 * gameState.speed);
 
         const vector = new ƒ.Vector3(
           (this.walkX.getOutput() * ƒ.Loop.timeFrameGame) / 20,
@@ -77,8 +87,25 @@ namespace Greed {
 
         vector.transform(this.mtxLocal, false);
         rigidBody.setVelocity(vector);
-
         this.sprite.setFrameDirection(input === 0 && input2 === 0 ? 0 : 1);
+
+        if (!this.isInShop) {
+          this.moveCamera();
+        }
+      }
+    }
+
+    private moveCamera(transitionShop?: string): void {
+      if (transitionShop) {
+        if (transitionShop === "enter") {
+          this.isInShop = true;
+          this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 27, 20);
+        } else {
+          this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 14.5, 20);
+          this.isInShop = false;
+        }
+      } else if (this.mtxLocal.translation.y < 14.5 && this.mtxLocal.translation.y > 5.3) {
+        this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, this.mtxLocal.translation.y, 20);
       }
     }
 

@@ -7,9 +7,9 @@ namespace Greed {
   document.addEventListener("interactiveViewportStarted", <EventListener>start);
 
   export let gameState: GameState;
+  export let graph: ƒ.Node;
 
   let viewport: ƒ.Viewport;
-  export let graph: ƒ.Node;
   let avatar: Avatar;
 
   function init(_event: Event) {
@@ -41,7 +41,7 @@ namespace Greed {
     const canvas: HTMLCanvasElement = document.querySelector("canvas");
     const viewport: ƒ.Viewport = new ƒ.Viewport();
     viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
-    //FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
+    // FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
     viewport.draw();
     canvas.dispatchEvent(
       new CustomEvent("interactiveViewportStarted", { bubbles: true, detail: viewport })
@@ -50,13 +50,12 @@ namespace Greed {
 
   function start(_event: CustomEvent): void {
     viewport = _event.detail;
-    viewport.camera.mtxPivot.translate(new ƒ.Vector3(10, 20, 25));
     viewport.camera.mtxPivot.rotateY(180);
     graph = viewport.getBranch();
 
     gameState = new GameState();
 
-    avatar = new Avatar("Avatar");
+    avatar = new Avatar("Avatar", viewport.camera);
     graph.addChild(avatar);
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);

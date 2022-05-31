@@ -2,11 +2,14 @@ declare namespace Greed {
     import ƒ = FudgeCore;
     class Avatar extends ƒ.Node {
         private sprite;
+        private camera;
         private walkX;
         private walkY;
-        constructor(_name: string);
+        private isInShop;
+        constructor(_name: string, _camera: ƒ.ComponentCamera);
         private createAvatar;
         controlWalk(): void;
+        private moveCamera;
         private hndHit;
     }
 }
@@ -95,7 +98,7 @@ declare namespace Greed {
     class ItemSlot extends ƒ.Node {
         static items: Item[];
         private activeItem;
-        constructor(_name: string);
+        constructor(_name: string, _position: ƒ.Vector3);
         protected getItem(): void;
         restock(item: Item): void;
         private applyNewItem;
@@ -104,7 +107,7 @@ declare namespace Greed {
 }
 declare namespace Greed {
     class HeartSlot extends ItemSlot {
-        constructor(_name: string);
+        constructor(_name: string, _position: ƒ.Vector3);
         protected getItem(): void;
         protected applyItemEffects(): void;
     }

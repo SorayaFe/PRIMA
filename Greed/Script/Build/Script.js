@@ -4,15 +4,18 @@ var Greed;
     var ƒ = FudgeCore;
     class Avatar extends ƒ.Node {
         sprite;
+        camera;
         walkX = new ƒ.Control("walkX", 2, 0 /* PROPORTIONAL */, 150);
         walkY = new ƒ.Control("walkY", 2, 0 /* PROPORTIONAL */, 150);
-        constructor(_name) {
+        isInShop = false;
+        constructor(_name, _camera) {
             super(_name);
+            this.camera = _camera;
             this.createAvatar();
         }
         async createAvatar() {
             const cmpTransform = new ƒ.ComponentTransform();
-            cmpTransform.mtxLocal.translation = new ƒ.Vector3(10, 20, 0.5);
+            cmpTransform.mtxLocal.translation = new ƒ.Vector3(7.5, 14.5, 0.5);
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshCube()));
             this.addComponent(cmpTransform);
             // create sprite
@@ -31,12 +34,17 @@ var Greed;
             Greed.setSprite(this, "avatar");
             this.sprite = this.getChildrenByName("Sprite")[0];
             // add rigid body
-            const rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.CUBE, undefined, this.mtxLocal);
+            const rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.SPHERE, undefined, this.mtxLocal);
             rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
             this.addComponent(rigidBody);
             rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
                 // if abfrage dazu
                 this.hndHit();
+            });
+            rigidBody.addEventListener("TriggerLeftCollision" /* TRIGGER_EXIT */, (_event) => {
+                if (_event.cmpRigidbody.node.name == "Door") {
+                    this.moveCamera(this.isInShop ? "leave" : "enter");
+                }
             });
         }
         controlWalk() {
@@ -45,14 +53,32 @@ var Greed;
                 rigidBody.applyForce(new ƒ.Vector3(0, 9.8, 0));
                 const input = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.S]);
                 this.walkY.setInput(input);
-                this.walkY.setFactor(3);
+                this.walkY.setFactor(2 * Greed.gameState.speed);
                 const input2 = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.D], [ƒ.KEYBOARD_CODE.A]);
                 this.walkX.setInput(input2);
-                this.walkX.setFactor(3);
+                this.walkX.setFactor(2 * Greed.gameState.speed);
                 const vector = new ƒ.Vector3((this.walkX.getOutput() * ƒ.Loop.timeFrameGame) / 20, (this.walkY.getOutput() * ƒ.Loop.timeFrameGame) / 20, 0);
                 vector.transform(this.mtxLocal, false);
                 rigidBody.setVelocity(vector);
                 this.sprite.setFrameDirection(input === 0 && input2 === 0 ? 0 : 1);
+                if (!this.isInShop) {
+                    this.moveCamera();
+                }
+            }
+        }
+        moveCamera(transitionShop) {
+            if (transitionShop) {
+                if (transitionShop === "enter") {
+                    this.isInShop = true;
+                    this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 27, 20);
+                }
+                else {
+                    this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 14.5, 20);
+                    this.isInShop = false;
+                }
+            }
+            else if (this.mtxLocal.translation.y < 14.5 && this.mtxLocal.translation.y > 5.3) {
+                this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, this.mtxLocal.translation.y, 20);
             }
         }
         hndHit() {
@@ -116,17 +142,16 @@ var Greed;
         const canvas = document.querySelector("canvas");
         const viewport = new ƒ.Viewport();
         viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
-        //FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
+        // FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
         viewport.draw();
         canvas.dispatchEvent(new CustomEvent("interactiveViewportStarted", { bubbles: true, detail: viewport }));
     }
     function start(_event) {
         viewport = _event.detail;
-        viewport.camera.mtxPivot.translate(new ƒ.Vector3(10, 20, 25));
         viewport.camera.mtxPivot.rotateY(180);
         Greed.graph = viewport.getBranch();
         Greed.gameState = new Greed.GameState();
-        avatar = new Greed.Avatar("Avatar");
+        avatar = new Greed.Avatar("Avatar", viewport.camera);
         Greed.graph.addChild(avatar);
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start();
@@ -219,7 +244,7 @@ var Greed;
     class ItemSlot extends ƒ.Node {
         static items = [];
         activeItem;
-        constructor(_name) {
+        constructor(_name, _position) {
             super(_name);
             this.getItem();
         }
@@ -248,8 +273,8 @@ var Greed;
 /// <reference path="./ItemSlot.ts" />
 (function (Greed) {
     class HeartSlot extends Greed.ItemSlot {
-        constructor(_name) {
-            super(_name);
+        constructor(_name, _position) {
+            super(_name, _position);
         }
         getItem() {
             // create heart

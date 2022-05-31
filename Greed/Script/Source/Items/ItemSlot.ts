@@ -6,7 +6,7 @@ namespace Greed {
 
     private activeItem: Item;
 
-    constructor(_name: string) {
+    constructor(_name: string, _position: ƒ.Vector3) {
       super(_name);
       this.getItem();
     }
