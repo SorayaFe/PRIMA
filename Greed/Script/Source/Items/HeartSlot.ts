@@ -8,8 +8,8 @@ namespace Greed {
     protected getItem(): void {
       // create heart
 
-      //TODO replace {} as any
-      super.restock({} as any);
+      // restock item
+      super.restock();
     }
 
     protected applyItemEffects(): void {

@@ -15,7 +15,7 @@ var Greed;
         }
         async createAvatar() {
             const cmpTransform = new ƒ.ComponentTransform();
-            cmpTransform.mtxLocal.translation = new ƒ.Vector3(7.5, 14.5, 0.5);
+            cmpTransform.mtxLocal.translation = new ƒ.Vector3(7.5, 15.5, 0.1);
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshCube()));
             this.addComponent(cmpTransform);
             // create sprite
@@ -38,7 +38,7 @@ var Greed;
             rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
             this.addComponent(rigidBody);
             rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
-                // if abfrage dazu
+                // TODO if abfrage dazu
                 this.hndHit();
             });
             rigidBody.addEventListener("TriggerLeftCollision" /* TRIGGER_EXIT */, (_event) => {
@@ -73,11 +73,11 @@ var Greed;
                     this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 27, 20);
                 }
                 else {
-                    this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 14.5, 20);
+                    this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 15.5, 20);
                     this.isInShop = false;
                 }
             }
-            else if (this.mtxLocal.translation.y < 14.5 && this.mtxLocal.translation.y > 5.3) {
+            else if (this.mtxLocal.translation.y < 15.5 && this.mtxLocal.translation.y > 4.3) {
                 this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, this.mtxLocal.translation.y, 20);
             }
         }
@@ -118,12 +118,14 @@ var Greed;
     document.addEventListener("interactiveViewportStarted", start);
     let viewport;
     let avatar;
+    let bars;
     function init(_event) {
         dialog = document.querySelector("dialog");
         dialog.querySelector("h1").textContent = document.title;
         dialog.addEventListener("click", function (_event) {
             // @ts-ignore until HTMLDialog is implemented by all browsers and available in dom.d.ts
             dialog.close();
+            document.getElementById("vui").style.visibility = "visible";
             startInteractiveViewport();
         });
         //@ts-ignore
@@ -137,22 +139,46 @@ var Greed;
             alert("Nothing to render. Create a graph with at least a mesh, material and probably some light");
             return;
         }
-        // setup the viewport
         const cmpCamera = new ƒ.ComponentCamera();
         const canvas = document.querySelector("canvas");
+        //TODO
+        //canvas.requestPointerLock();
         const viewport = new ƒ.Viewport();
         viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
+        //TODO
         // FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
         viewport.draw();
         canvas.dispatchEvent(new CustomEvent("interactiveViewportStarted", { bubbles: true, detail: viewport }));
     }
-    function start(_event) {
+    async function start(_event) {
         viewport = _event.detail;
         viewport.camera.mtxPivot.rotateY(180);
         Greed.graph = viewport.getBranch();
+        // load config
+        const items = await fetch("items.json");
+        Greed.ItemSlot.items = (await items.json()).items;
+        const enemies = await fetch("enemies.json");
+        Greed.Enemy.enemies = (await enemies.json()).enemies;
         Greed.gameState = new Greed.GameState();
+        const room = Greed.graph.getChildrenByName("Room")[0];
+        // assign variables and add nodes
+        bars = room.getChildrenByName("Door")[0].getChild(0);
+        bars.activate(false);
         avatar = new Greed.Avatar("Avatar", viewport.camera);
         Greed.graph.addChild(avatar);
+        const itemSlots = Greed.graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
+        itemSlots.addChild(new Greed.ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1)));
+        itemSlots.addChild(new Greed.ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1)));
+        itemSlots.addChild(new Greed.ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1)));
+        // button trigger listener
+        const button = room.getChildrenByName("Button")[0];
+        button
+            .getComponent(ƒ.ComponentRigidbody)
+            .addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
+            if (_event.cmpRigidbody.node.name == "Avatar") {
+                hndButtonTrigger(button);
+            }
+        });
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start();
     }
@@ -160,6 +186,10 @@ var Greed;
         ƒ.Physics.simulate();
         avatar.controlWalk();
         viewport.draw();
+    }
+    function hndButtonTrigger(_buttonNode) {
+        _buttonNode.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
+        bars.activate(true);
     }
 })(Greed || (Greed = {}));
 var Greed;
@@ -240,30 +270,67 @@ var Greed;
 })(Greed || (Greed = {}));
 var Greed;
 (function (Greed) {
+    let Effects;
+    (function (Effects) {
+        Effects["HEALTH"] = "health";
+        Effects["COINS"] = "coins";
+        Effects["SPEED"] = "speed";
+        Effects["DAMAGE"] = "damage";
+        Effects["SHOT_SPEED"] = "shotSpeed";
+        Effects["PROJECTILE_SIZE"] = "projectileSize";
+    })(Effects = Greed.Effects || (Greed.Effects = {}));
+})(Greed || (Greed = {}));
+var Greed;
+(function (Greed) {
     var ƒ = FudgeCore;
     class ItemSlot extends ƒ.Node {
         static items = [];
-        activeItem;
+        activeItemIndex;
         constructor(_name, _position) {
             super(_name);
+            this.createItemSlot(_position);
+        }
+        createItemSlot(_position) {
+            const cmpTransform = new ƒ.ComponentTransform();
+            cmpTransform.mtxLocal.translation = _position;
+            this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+            this.addComponent(cmpTransform);
+            // add rigid body
+            const rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.STATIC, ƒ.COLLIDER_TYPE.SPHERE, undefined, this.mtxLocal);
+            rigidBody.isTrigger = true;
+            this.addComponent(rigidBody);
+            rigidBody.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
+                if (_event.cmpRigidbody.node.name == "Avatar") {
+                    this.applyNewItem();
+                }
+            });
             this.getItem();
         }
         getItem() {
             // get random item
-            //TODO replace {} as any
-            this.restock({});
+            this.activeItemIndex = ƒ.Random.default.getIndex(ItemSlot.items);
+            // restock item
+            this.restock();
         }
-        restock(item) {
-            this.activeItem = item;
-            // set item to display
+        async restock() {
+            // create sprite
+            await Greed.loadSprites(ItemSlot.items[this.activeItemIndex].sprite);
+            Greed.setSprite(this, ItemSlot.items[this.activeItemIndex].sprite.name);
         }
         applyNewItem() {
-            // remove item from display and remove from array
             this.applyItemEffects();
-            this.getItem();
+            // remove item from display and remove from array
+            this.removeChild(this.getChildrenByName("Sprite")[0]);
+            ItemSlot.items.splice(this.activeItemIndex, 1);
+            new ƒ.Timer(ƒ.Time.game, 2000, 1, () => {
+                this.getItem();
+            });
         }
         applyItemEffects() {
-            // apply effect
+            const item = ItemSlot.items[this.activeItemIndex];
+            for (let index = 0; index < item.effects.length; index++) {
+                Greed.gameState[item.effects[index]] = item.values[index];
+            }
         }
     }
     Greed.ItemSlot = ItemSlot;
@@ -278,8 +345,8 @@ var Greed;
         }
         getItem() {
             // create heart
-            //TODO replace {} as any
-            super.restock({});
+            // restock item
+            super.restock();
         }
         applyItemEffects() {
             // apply heart effect

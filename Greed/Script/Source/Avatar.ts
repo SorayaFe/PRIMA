@@ -1,7 +1,6 @@
 namespace Greed {
   import ƒ = FudgeCore;
   import ƒAid = FudgeAid;
-
   export class Avatar extends ƒ.Node {
     private sprite: ƒAid.NodeSprite;
     private camera: ƒ.ComponentCamera;
@@ -13,14 +12,13 @@ namespace Greed {
 
     constructor(_name: string, _camera: ƒ.ComponentCamera) {
       super(_name);
-
       this.camera = _camera;
       this.createAvatar();
     }
 
     private async createAvatar() {
       const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
-      cmpTransform.mtxLocal.translation = new ƒ.Vector3(7.5, 14.5, 0.5);
+      cmpTransform.mtxLocal.translation = new ƒ.Vector3(7.5, 15.5, 0.1);
 
       this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshCube()));
       this.addComponent(cmpTransform);
@@ -55,7 +53,7 @@ namespace Greed {
       this.addComponent(rigidBody);
 
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
-        // if abfrage dazu
+        // TODO if abfrage dazu
         this.hndHit();
       });
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_EXIT, (_event: ƒ.EventPhysics) => {
@@ -101,10 +99,10 @@ namespace Greed {
           this.isInShop = true;
           this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 27, 20);
         } else {
-          this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 14.5, 20);
+          this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 15.5, 20);
           this.isInShop = false;
         }
-      } else if (this.mtxLocal.translation.y < 14.5 && this.mtxLocal.translation.y > 5.3) {
+      } else if (this.mtxLocal.translation.y < 15.5 && this.mtxLocal.translation.y > 4.3) {
         this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, this.mtxLocal.translation.y, 20);
       }
     }

@@ -71,9 +71,17 @@ declare namespace Greed {
     }
 }
 declare namespace Greed {
+    enum Effects {
+        HEALTH = "health",
+        COINS = "coins",
+        SPEED = "speed",
+        DAMAGE = "damage",
+        SHOT_SPEED = "shotSpeed",
+        PROJECTILE_SIZE = "projectileSize"
+    }
     interface Item {
         name: string;
-        effects: string[];
+        effects: Effects[];
         values: number[];
         price: number;
         increaseSize: boolean;
@@ -97,10 +105,11 @@ declare namespace Greed {
     import ƒ = FudgeCore;
     class ItemSlot extends ƒ.Node {
         static items: Item[];
-        private activeItem;
+        private activeItemIndex;
         constructor(_name: string, _position: ƒ.Vector3);
+        private createItemSlot;
         protected getItem(): void;
-        restock(item: Item): void;
+        restock(): Promise<void>;
         private applyNewItem;
         protected applyItemEffects(): void;
     }

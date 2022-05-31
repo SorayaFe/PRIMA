@@ -4,13 +4,14 @@ namespace Greed {
 
   let dialog: HTMLDialogElement;
   window.addEventListener("load", init);
-  document.addEventListener("interactiveViewportStarted", <EventListener>start);
+  document.addEventListener("interactiveViewportStarted", <EventListener>(<unknown>start));
 
   export let gameState: GameState;
   export let graph: ƒ.Node;
 
   let viewport: ƒ.Viewport;
   let avatar: Avatar;
+  let bars: ƒ.Node;
 
   function init(_event: Event) {
     dialog = document.querySelector("dialog");
@@ -18,6 +19,7 @@ namespace Greed {
     dialog.addEventListener("click", function (_event) {
       // @ts-ignore until HTMLDialog is implemented by all browsers and available in dom.d.ts
       dialog.close();
+      document.getElementById("vui").style.visibility = "visible";
       startInteractiveViewport();
     });
     //@ts-ignore
@@ -36,11 +38,14 @@ namespace Greed {
       );
       return;
     }
-    // setup the viewport
+
     const cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     const canvas: HTMLCanvasElement = document.querySelector("canvas");
+    //TODO
+    //canvas.requestPointerLock();
     const viewport: ƒ.Viewport = new ƒ.Viewport();
     viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
+    //TODO
     // FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
     viewport.draw();
     canvas.dispatchEvent(
@@ -48,15 +53,39 @@ namespace Greed {
     );
   }
 
-  function start(_event: CustomEvent): void {
+  async function start(_event: CustomEvent): Promise<void> {
     viewport = _event.detail;
     viewport.camera.mtxPivot.rotateY(180);
     graph = viewport.getBranch();
 
-    gameState = new GameState();
+    // load config
+    const items: Response = await fetch("items.json");
+    ItemSlot.items = (await items.json()).items;
+    const enemies: Response = await fetch("enemies.json");
+    Enemy.enemies = (await enemies.json()).enemies;
 
+    gameState = new GameState();
+    const room: ƒ.Node = graph.getChildrenByName("Room")[0];
+
+    // assign variables and add nodes
+    bars = room.getChildrenByName("Door")[0].getChild(0);
+    bars.activate(false);
     avatar = new Avatar("Avatar", viewport.camera);
     graph.addChild(avatar);
+    const itemSlots = graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
+    itemSlots.addChild(new ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1)));
+    itemSlots.addChild(new ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1)));
+    itemSlots.addChild(new ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1)));
+
+    // button trigger listener
+    const button: ƒ.Node = room.getChildrenByName("Button")[0];
+    button
+      .getComponent(ƒ.ComponentRigidbody)
+      .addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
+        if (_event.cmpRigidbody.node.name == "Avatar") {
+          hndButtonTrigger(button);
+        }
+      });
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start();
@@ -66,5 +95,10 @@ namespace Greed {
     ƒ.Physics.simulate();
     avatar.controlWalk();
     viewport.draw();
+  }
+
+  function hndButtonTrigger(_buttonNode: ƒ.Node): void {
+    _buttonNode.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
+    bars.activate(true);
   }
 }

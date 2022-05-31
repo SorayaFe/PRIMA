@@ -1,0 +1,94 @@
+{
+  "items": [
+    {
+      "name": "item1",
+      "effects": ["damage"],
+      "values": [0.5],
+      "price": 5,
+      "increaseSize": false,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "Test",
+        "x": 0,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "item2",
+      "effects": ["damage"],
+      "values": [0.5],
+      "price": 5,
+      "increaseSize": false,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "Test",
+        "x": 0,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "item3",
+      "effects": ["damage"],
+      "values": [0.5],
+      "price": 5,
+      "increaseSize": false,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "Test",
+        "x": 0,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "item4",
+      "effects": ["damage"],
+      "values": [0.5],
+      "price": 5,
+      "increaseSize": false,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "Test",
+        "x": 0,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "",
+      "effects": ["damage"],
+      "values": [0.5],
+      "price": 5,
+      "increaseSize": false,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "Test",
+        "x": 0,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    }
+  ]
+}
