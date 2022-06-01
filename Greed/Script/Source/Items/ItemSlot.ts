@@ -4,7 +4,7 @@ namespace Greed {
   export class ItemSlot extends ƒ.Node {
     public static items: Item[] = [];
 
-    private activeItemIndex: number;
+    private activeItem: Item;
 
     constructor(_name: string, _position: ƒ.Vector3) {
       super(_name);
@@ -41,16 +41,18 @@ namespace Greed {
 
     protected getItem(): void {
       // get random item
-      this.activeItemIndex = ƒ.Random.default.getIndex(ItemSlot.items);
+      this.activeItem = ƒ.Random.default.getElement(ItemSlot.items);
 
       // restock item
       this.restock();
     }
 
     public async restock(): Promise<void> {
-      // create sprite
-      await loadSprites(ItemSlot.items[this.activeItemIndex].sprite);
-      setSprite(this, ItemSlot.items[this.activeItemIndex].sprite.name);
+      if (ItemSlot.items.length) {
+        // create sprite
+        await loadSprites(this.activeItem.sprite);
+        setSprite(this, this.activeItem.sprite.name);
+      }
     }
 
     private applyNewItem(): void {
@@ -58,7 +60,10 @@ namespace Greed {
 
       // remove item from display and remove from array
       this.removeChild(this.getChildrenByName("Sprite")[0]);
-      ItemSlot.items.splice(this.activeItemIndex, 1);
+      ItemSlot.items.splice(
+        ItemSlot.items.findIndex((i) => i === this.activeItem),
+        1
+      );
 
       new ƒ.Timer(ƒ.Time.game, 2000, 1, () => {
         this.getItem();
@@ -66,10 +71,8 @@ namespace Greed {
     }
 
     protected applyItemEffects(): void {
-      const item: Item = ItemSlot.items[this.activeItemIndex];
-
-      for (let index = 0; index < item.effects.length; index++) {
-        gameState[item.effects[index]] = item.values[index];
+      for (let index = 0; index < this.activeItem.effects.length; index++) {
+        gameState[this.activeItem.effects[index]] += this.activeItem.values[index];
       }
     }
   }
