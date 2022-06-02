@@ -2,6 +2,7 @@
   "items": [
     {
       "name": "item1",
+      "description": "item1",
       "effects": ["damage"],
       "values": [0.5],
       "price": 5,
@@ -20,6 +21,7 @@
     },
     {
       "name": "item2",
+      "description": "item1",
       "effects": ["damage"],
       "values": [0.5],
       "price": 5,
@@ -38,6 +40,7 @@
     },
     {
       "name": "item3",
+      "description": "item1",
       "effects": ["damage"],
       "values": [0.5],
       "price": 5,
@@ -56,6 +59,7 @@
     },
     {
       "name": "item4",
+      "description": "item1",
       "effects": ["damage"],
       "values": [0.5],
       "price": 5,
@@ -73,7 +77,8 @@
       }
     },
     {
-      "name": "",
+      "name": "asads",
+      "description": "item1",
       "effects": ["damage"],
       "values": [0.5],
       "price": 5,

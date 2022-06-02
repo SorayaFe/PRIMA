@@ -38,12 +38,18 @@ var Greed;
             rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
             this.addComponent(rigidBody);
             rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
-                // TODO if abfrage dazu
-                this.hndHit();
+                if (_event.cmpRigidbody.node.name == "Enemy") {
+                    this.hndHit();
+                }
             });
             rigidBody.addEventListener("TriggerLeftCollision" /* TRIGGER_EXIT */, (_event) => {
                 if (_event.cmpRigidbody.node.name == "Door") {
                     this.moveCamera(this.isInShop ? "leave" : "enter");
+                }
+            });
+            rigidBody.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
+                if (_event.cmpRigidbody.node.name == "ProjectileEnemy") {
+                    this.hndHit();
                 }
             });
         }
@@ -66,6 +72,26 @@ var Greed;
                 }
             }
         }
+        controlShoot() {
+            if (Greed.gameState.canShoot) {
+                const input = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_UP], [ƒ.KEYBOARD_CODE.ARROW_DOWN]);
+                const input2 = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.ARROW_RIGHT], [ƒ.KEYBOARD_CODE.ARROW_LEFT]);
+                if (input || input2) {
+                    Greed.gameState.setShotTimeout();
+                    //create projectile
+                    let direction = "";
+                    if (input) {
+                        direction = input > 0 ? "y" : "-y";
+                    }
+                    else if (input2) {
+                        direction = input2 > 0 ? "x" : "-x";
+                    }
+                    const projectile = new Greed.Projectile("ProjectileAvatar", direction, this.mtxLocal.translation);
+                    Greed.graph.getChildrenByName("Room")[0].addChild(projectile);
+                    projectile.moveProjectile();
+                }
+            }
+        }
         moveCamera(transitionShop) {
             if (transitionShop) {
                 if (transitionShop === "enter") {
@@ -82,7 +108,8 @@ var Greed;
             }
         }
         hndHit() {
-            //handle projectile hit
+            // TODO handle projectile hit
+            Greed.gameState.availableHealth -= 1;
         }
     }
     Greed.Avatar = Avatar;
@@ -92,13 +119,16 @@ var Greed;
     var ƒ = FudgeCore;
     var ƒUi = FudgeUserInterface;
     class GameState extends ƒ.Mutable {
-        health = 3;
+        availableHealth = 3;
         coins = 0;
+        health = 3;
         speed = 1;
         damage = 3.5;
-        shotSpeed = 1;
-        projectileSize = 1;
-        //evtl range: number = 1;
+        fireRate = 2000;
+        shotSpeed = 1.5;
+        projectileSize = 0.5;
+        range = 5;
+        canShoot = true;
         //evtl luck: number = 1; //possibly more coins with more luck
         constructor() {
             super();
@@ -106,6 +136,13 @@ var Greed;
             console.log("Vui-Controller", new ƒUi.Controller(this, domVui));
         }
         reduceMutator(_mutator) { }
+        setShotTimeout() {
+            this.canShoot = false;
+            const timeout = 3000 - this.fireRate;
+            new ƒ.Timer(ƒ.Time.game, timeout > 0 ? timeout : 10, 1, () => {
+                this.canShoot = true;
+            });
+        }
     }
     Greed.GameState = GameState;
 })(Greed || (Greed = {}));
@@ -155,10 +192,12 @@ var Greed;
         viewport.camera.mtxPivot.rotateY(180);
         Greed.graph = viewport.getBranch();
         // load config
-        const items = await fetch("items.json");
+        const items = await fetch("Script/Source/Config/items.json");
+        const enemies = await fetch("Script/Source/Config/enemies.json");
+        const enemiesArray = (await enemies.json()).enemies;
         Greed.ItemSlot.items = (await items.json()).items;
-        const enemies = await fetch("enemies.json");
-        Greed.Enemy.enemies = (await enemies.json()).enemies;
+        Greed.Enemy.enemies = enemiesArray.filter((e) => !e.isBoss);
+        Greed.Boss.bosses = enemiesArray.filter((e) => e.isBoss);
         Greed.gameState = new Greed.GameState();
         const room = Greed.graph.getChildrenByName("Room")[0];
         // assign variables and add nodes
@@ -170,6 +209,7 @@ var Greed;
         itemSlots.addChild(new Greed.ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1)));
         itemSlots.addChild(new Greed.ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1)));
         itemSlots.addChild(new Greed.ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1)));
+        itemSlots.addChild(new Greed.ItemSlot("Heart", new ƒ.Vector3(12, 25, 0.1)));
         // button trigger listener
         const button = room.getChildrenByName("Button")[0];
         button
@@ -185,6 +225,7 @@ var Greed;
     function update(_event) {
         ƒ.Physics.simulate();
         avatar.controlWalk();
+        avatar.controlShoot();
         viewport.draw();
     }
     function hndButtonTrigger(_buttonNode) {
@@ -196,11 +237,71 @@ var Greed;
 (function (Greed) {
     var ƒ = FudgeCore;
     class Projectile extends ƒ.Node {
-        constructor(_name) {
+        direction;
+        initialPosition;
+        rigidBody;
+        stop = false;
+        constructor(_name, _direction, _position) {
             super(_name);
-            this.createProjectile();
+            this.direction = _direction;
+            this.initialPosition = _position;
+            this.createProjectile(_position);
         }
-        createProjectile() { }
+        createProjectile(_position) {
+            const cmpTransform = new ƒ.ComponentTransform();
+            cmpTransform.mtxLocal.translation = _position;
+            cmpTransform.mtxLocal.scale(new ƒ.Vector3(Greed.gameState.projectileSize, Greed.gameState.projectileSize, Greed.gameState.projectileSize));
+            const material = new ƒ.Material("MaterialProjectile", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("white")));
+            this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+            this.addComponent(new ƒ.ComponentMaterial(material));
+            this.addComponent(cmpTransform);
+            // add rigid body
+            this.rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.SPHERE, undefined, this.mtxLocal);
+            this.rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
+            this.rigidBody.isTrigger = true;
+            this.addComponent(this.rigidBody);
+            this.rigidBody.addEventListener("TriggerLeftCollision" /* TRIGGER_EXIT */, (_event) => {
+                if (_event.cmpRigidbody.node.name == "Enemy") {
+                    this.removeProjectile();
+                }
+            });
+        }
+        moveProjectile() {
+            ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, () => {
+                if (this.rigidBody && !this.stop) {
+                    this.rigidBody.applyForce(new ƒ.Vector3(0, 9.8, 0));
+                    let vector = new ƒ.Vector3();
+                    switch (this.direction) {
+                        case "x":
+                            vector = ƒ.Vector3.X(Greed.gameState.shotSpeed);
+                            break;
+                        case "-x":
+                            vector = ƒ.Vector3.X(-Greed.gameState.shotSpeed);
+                            break;
+                        case "y":
+                            vector = ƒ.Vector3.Y(Greed.gameState.shotSpeed);
+                            break;
+                        case "-y":
+                            vector = ƒ.Vector3.Y(-Greed.gameState.shotSpeed);
+                            break;
+                        default:
+                            break;
+                    }
+                    this.rigidBody.setVelocity(vector);
+                    const distanceTraveled = this.mtxLocal.translation.getDistance(this.initialPosition);
+                    if (distanceTraveled >= Greed.gameState.range) {
+                        this.removeProjectile();
+                    }
+                }
+            });
+        }
+        removeProjectile() {
+            this.stop = true;
+            this.rigidBody.setVelocity(new ƒ.Vector3(0, -1, 0));
+            setTimeout(() => {
+                Greed.graph.getChildrenByName("Room")[0].removeChild(this);
+            }, 100);
+        }
     }
     Greed.Projectile = Projectile;
 })(Greed || (Greed = {}));
@@ -232,6 +333,14 @@ var Greed;
 var Greed;
 (function (Greed) {
     var ƒ = FudgeCore;
+    class Boss extends ƒ.Node {
+        static bosses = [];
+    }
+    Greed.Boss = Boss;
+})(Greed || (Greed = {}));
+var Greed;
+(function (Greed) {
+    var ƒ = FudgeCore;
     class Enemy extends ƒ.Node {
         static enemies = [];
         enemy;
@@ -242,6 +351,8 @@ var Greed;
         }
         createEnemy() {
             // create enemy
+            // rigid body listender
+            this.hndHit();
             this.addScripts();
         }
         addScripts() {
@@ -249,6 +360,9 @@ var Greed;
         }
         hndHit() {
             // handle projectile hit
+            if (this.enemy.health <= 0) {
+                this.die();
+            }
         }
         die() {
             // remove enemy and check if it was the last remaining enemy
@@ -277,7 +391,9 @@ var Greed;
         Effects["SPEED"] = "speed";
         Effects["DAMAGE"] = "damage";
         Effects["SHOT_SPEED"] = "shotSpeed";
+        Effects["FIRE_RATE"] = "fireRate";
         Effects["PROJECTILE_SIZE"] = "projectileSize";
+        Effects["RANGE"] = "range";
     })(Effects = Greed.Effects || (Greed.Effects = {}));
 })(Greed || (Greed = {}));
 var Greed;
@@ -285,7 +401,7 @@ var Greed;
     var ƒ = FudgeCore;
     class ItemSlot extends ƒ.Node {
         static items = [];
-        activeItemIndex;
+        activeItem;
         constructor(_name, _position) {
             super(_name);
             this.createItemSlot(_position);
@@ -308,28 +424,29 @@ var Greed;
         }
         getItem() {
             // get random item
-            this.activeItemIndex = ƒ.Random.default.getIndex(ItemSlot.items);
+            this.activeItem = ƒ.Random.default.getElement(ItemSlot.items);
             // restock item
             this.restock();
         }
         async restock() {
-            // create sprite
-            await Greed.loadSprites(ItemSlot.items[this.activeItemIndex].sprite);
-            Greed.setSprite(this, ItemSlot.items[this.activeItemIndex].sprite.name);
+            if (ItemSlot.items.length) {
+                // create sprite
+                await Greed.loadSprites(this.activeItem.sprite);
+                Greed.setSprite(this, this.activeItem.sprite.name);
+            }
         }
         applyNewItem() {
             this.applyItemEffects();
             // remove item from display and remove from array
             this.removeChild(this.getChildrenByName("Sprite")[0]);
-            ItemSlot.items.splice(this.activeItemIndex, 1);
+            ItemSlot.items.splice(ItemSlot.items.findIndex((i) => i === this.activeItem), 1);
             new ƒ.Timer(ƒ.Time.game, 2000, 1, () => {
                 this.getItem();
             });
         }
         applyItemEffects() {
-            const item = ItemSlot.items[this.activeItemIndex];
-            for (let index = 0; index < item.effects.length; index++) {
-                Greed.gameState[item.effects[index]] = item.values[index];
+            for (let index = 0; index < this.activeItem.effects.length; index++) {
+                Greed.gameState[this.activeItem.effects[index]] += this.activeItem.values[index];
             }
         }
     }

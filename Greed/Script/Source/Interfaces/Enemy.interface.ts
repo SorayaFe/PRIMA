@@ -9,7 +9,8 @@ namespace Greed {
 
   export interface EnemyInterface {
     health: number;
-    size: number;
+    sizeX: number;
+    sizeY: number;
     type: EnemyType;
     isBoss: boolean;
     sprite: SpriteInfo;

@@ -2,7 +2,8 @@
   "enemies": [
     {
       "health": "10",
-      "size": "1",
+      "sizeX": "1",
+      "sizeY": "1",
       "type": "follow",
       "isBoss": false,
       "sprite": {

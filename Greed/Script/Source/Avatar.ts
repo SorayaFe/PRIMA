@@ -53,12 +53,18 @@ namespace Greed {
       this.addComponent(rigidBody);
 
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
-        // TODO if abfrage dazu
-        this.hndHit();
+        if (_event.cmpRigidbody.node.name == "Enemy") {
+          this.hndHit();
+        }
       });
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_EXIT, (_event: ƒ.EventPhysics) => {
         if (_event.cmpRigidbody.node.name == "Door") {
           this.moveCamera(this.isInShop ? "leave" : "enter");
+        }
+      });
+      rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
+        if (_event.cmpRigidbody.node.name == "ProjectileEnemy") {
+          this.hndHit();
         }
       });
     }
@@ -93,6 +99,38 @@ namespace Greed {
       }
     }
 
+    public controlShoot(): void {
+      if (gameState.canShoot) {
+        const input: number = ƒ.Keyboard.mapToTrit(
+          [ƒ.KEYBOARD_CODE.ARROW_UP],
+          [ƒ.KEYBOARD_CODE.ARROW_DOWN]
+        );
+        const input2: number = ƒ.Keyboard.mapToTrit(
+          [ƒ.KEYBOARD_CODE.ARROW_RIGHT],
+          [ƒ.KEYBOARD_CODE.ARROW_LEFT]
+        );
+
+        if (input || input2) {
+          gameState.setShotTimeout();
+          //create projectile
+          let direction = "";
+          if (input) {
+            direction = input > 0 ? "y" : "-y";
+          } else if (input2) {
+            direction = input2 > 0 ? "x" : "-x";
+          }
+
+          const projectile: Projectile = new Projectile(
+            "ProjectileAvatar",
+            direction,
+            this.mtxLocal.translation
+          );
+          graph.getChildrenByName("Room")[0].addChild(projectile);
+          projectile.moveProjectile();
+        }
+      }
+    }
+
     private moveCamera(transitionShop?: string): void {
       if (transitionShop) {
         if (transitionShop === "enter") {
@@ -108,7 +146,8 @@ namespace Greed {
     }
 
     private hndHit(): void {
-      //handle projectile hit
+      // TODO handle projectile hit
+      gameState.availableHealth -= 1;
     }
   }
 }

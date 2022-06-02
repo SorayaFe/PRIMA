@@ -9,6 +9,7 @@ declare namespace Greed {
         constructor(_name: string, _camera: ƒ.ComponentCamera);
         private createAvatar;
         controlWalk(): void;
+        controlShoot(): void;
         private moveCamera;
         private hndHit;
     }
@@ -16,14 +17,19 @@ declare namespace Greed {
 declare namespace Greed {
     import ƒ = FudgeCore;
     class GameState extends ƒ.Mutable {
-        health: number;
+        availableHealth: number;
         coins: number;
+        health: number;
         speed: number;
         damage: number;
+        fireRate: number;
         shotSpeed: number;
         projectileSize: number;
+        range: number;
+        canShoot: boolean;
         constructor();
         protected reduceMutator(_mutator: ƒ.Mutator): void;
+        setShotTimeout(): void;
     }
 }
 declare namespace Greed {
@@ -34,13 +40,25 @@ declare namespace Greed {
 declare namespace Greed {
     import ƒ = FudgeCore;
     class Projectile extends ƒ.Node {
-        constructor(_name: string);
+        private direction;
+        private initialPosition;
+        private rigidBody;
+        private stop;
+        constructor(_name: string, _direction: string, _position: ƒ.Vector3);
         private createProjectile;
+        moveProjectile(): void;
+        private removeProjectile;
     }
 }
 declare namespace Greed {
     function loadSprites(_spriteInfo: SpriteInfo): Promise<void>;
     function setSprite(_node: ƒ.Node, _name: string): void;
+}
+declare namespace Greed {
+    import ƒ = FudgeCore;
+    class Boss extends ƒ.Node {
+        static bosses: EnemyInterface[];
+    }
 }
 declare namespace Greed {
     import ƒ = FudgeCore;
@@ -64,7 +82,8 @@ declare namespace Greed {
     }
     interface EnemyInterface {
         health: number;
-        size: number;
+        sizeX: number;
+        sizeY: number;
         type: EnemyType;
         isBoss: boolean;
         sprite: SpriteInfo;
@@ -77,10 +96,13 @@ declare namespace Greed {
         SPEED = "speed",
         DAMAGE = "damage",
         SHOT_SPEED = "shotSpeed",
-        PROJECTILE_SIZE = "projectileSize"
+        FIRE_RATE = "fireRate",
+        PROJECTILE_SIZE = "projectileSize",
+        RANGE = "range"
     }
     interface Item {
         name: string;
+        description: string;
         effects: Effects[];
         values: number[];
         price: number;
@@ -105,7 +127,7 @@ declare namespace Greed {
     import ƒ = FudgeCore;
     class ItemSlot extends ƒ.Node {
         static items: Item[];
-        private activeItemIndex;
+        private activeItem;
         constructor(_name: string, _position: ƒ.Vector3);
         private createItemSlot;
         protected getItem(): void;

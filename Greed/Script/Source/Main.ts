@@ -59,10 +59,12 @@ namespace Greed {
     graph = viewport.getBranch();
 
     // load config
-    const items: Response = await fetch("items.json");
+    const items: Response = await fetch("Script/Source/Config/items.json");
+    const enemies: Response = await fetch("Script/Source/Config/enemies.json");
+    const enemiesArray: EnemyInterface[] = (await enemies.json()).enemies;
     ItemSlot.items = (await items.json()).items;
-    const enemies: Response = await fetch("enemies.json");
-    Enemy.enemies = (await enemies.json()).enemies;
+    Enemy.enemies = enemiesArray.filter((e) => !e.isBoss);
+    Boss.bosses = enemiesArray.filter((e) => e.isBoss);
 
     gameState = new GameState();
     const room: ƒ.Node = graph.getChildrenByName("Room")[0];
@@ -76,6 +78,7 @@ namespace Greed {
     itemSlots.addChild(new ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1)));
     itemSlots.addChild(new ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1)));
     itemSlots.addChild(new ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1)));
+    itemSlots.addChild(new ItemSlot("Heart", new ƒ.Vector3(12, 25, 0.1)));
 
     // button trigger listener
     const button: ƒ.Node = room.getChildrenByName("Button")[0];
@@ -94,6 +97,7 @@ namespace Greed {
   function update(_event: Event): void {
     ƒ.Physics.simulate();
     avatar.controlWalk();
+    avatar.controlShoot();
     viewport.draw();
   }
 

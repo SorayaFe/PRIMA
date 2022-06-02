@@ -16,6 +16,9 @@ namespace Greed {
     private createEnemy(): void {
       // create enemy
 
+      // rigid body listender
+      this.hndHit();
+
       this.addScripts();
     }
 
@@ -25,6 +28,9 @@ namespace Greed {
 
     private hndHit(): void {
       // handle projectile hit
+      if (this.enemy.health <= 0) {
+        this.die();
+      }
     }
 
     private die(): void {
