@@ -14,7 +14,6 @@ namespace Greed {
         effects: [],
         values: [],
         price: 3,
-        increaseSize: false,
         sprite: {
           path: "Assets/heart.png",
           name: "Heart",

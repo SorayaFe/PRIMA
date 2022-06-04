@@ -33,7 +33,10 @@ namespace Greed {
       this.addComponent(rigidBody);
 
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name == "Avatar" && gameState.coins >= this.activeItem.price) {
+        if (
+          _event.cmpRigidbody.node.name === "Avatar" &&
+          gameState.coins >= this.activeItem.price
+        ) {
           if (this.name === "SlotHeart" && gameState.availableHealth === gameState.health) {
             return;
           }
@@ -85,6 +88,7 @@ namespace Greed {
       for (let index = 0; index < this.activeItem.effects.length; index++) {
         gameState[this.activeItem.effects[index]] += this.activeItem.values[index];
         if (this.activeItem.effects[index] === Effects.HEALTH) {
+          gameState.availableHealth += this.activeItem.values[index];
           gameState.updateHealth();
         }
       }

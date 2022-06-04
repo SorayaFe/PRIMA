@@ -70,7 +70,7 @@ namespace Greed {
     const room: ƒ.Node = graph.getChildrenByName("Room")[0];
 
     // assign variables and add nodes
-    bars = room.getChildrenByName("Door")[0].getChild(0);
+    bars = room.getChildrenByName("Door")[0];
     bars.activate(false);
     avatar = new Avatar("Avatar", viewport.camera);
     graph.addChild(avatar);
@@ -82,7 +82,7 @@ namespace Greed {
     button
       .getComponent(ƒ.ComponentRigidbody)
       .addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name == "Avatar") {
+        if (_event.cmpRigidbody.node.name === "Avatar") {
           hndButtonTrigger(button);
         }
       });

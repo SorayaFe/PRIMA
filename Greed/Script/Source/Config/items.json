@@ -23,7 +23,7 @@
       "name": "item2",
       "description": "item1",
       "effects": ["fireRate"],
-      "values": [0.5],
+      "values": [200],
       "price": 5,
       "increaseSize": false,
       "sprite": {
@@ -87,6 +87,25 @@
         "path": "Assets/items.png",
         "name": "Test",
         "x": 128,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "asads",
+      "description": "item1",
+      "effects": ["projectileSize"],
+      "values": [0.1],
+      "price": 10,
+      "increaseSize": false,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "Test",
+        "x": 160,
         "y": 0,
         "width": 32,
         "height": 32,

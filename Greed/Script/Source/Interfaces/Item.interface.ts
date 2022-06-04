@@ -15,7 +15,6 @@ namespace Greed {
     effects: Effects[];
     values: number[];
     price: number;
-    increaseSize: boolean;
     sprite: SpriteInfo;
   }
 }

@@ -662,151 +662,6 @@
               },
               {
                 "ƒ.Node": {
-                  "name": "Door",
-                  "active": true,
-                  "components": {
-                    "ComponentMesh": [
-                      {
-                        "ƒ.ComponentMesh": {
-                          "idMesh": "MeshCube|2022-05-24T16:51:41.302Z|55531",
-                          "pivot": {
-                            "translation": "[7.750001430511475, 20.499998092651367, 0.5]",
-                            "rotation": "[0, 0, 0]",
-                            "scaling": "[1.5000001192092896, 0.49999991059303284, 1]"
-                          },
-                          "Component": {
-                            "active": true
-                          }
-                        }
-                      }
-                    ],
-                    "ComponentTransform": [
-                      {
-                        "ƒ.ComponentTransform": {
-                          "local": {
-                            "translation": "[0, 0, 0]",
-                            "rotation": "[0, 0, 0]",
-                            "scaling": "[1, 1, 1]"
-                          },
-                          "Component": {
-                            "active": true
-                          }
-                        }
-                      }
-                    ],
-                    "ComponentRigidbody": [
-                      {
-                        "ƒ.ComponentRigidbody": {
-                          "initialization": "TO_MESH",
-                          "friction": 0.2,
-                          "restitution": 0.2,
-                          "mass": 1,
-                          "dampTranslation": 0.1,
-                          "dampRotation": 0.1,
-                          "effectGravity": 1,
-                          "typeBody": "STATIC",
-                          "typeCollider": "CUBE",
-                          "isTrigger": true,
-                          "id": 1,
-                          "pivot": {
-                            "translation": "[7.750001430511475, 20.499998092651367, 0.5]",
-                            "rotation": "[0, 0, 0]",
-                            "scaling": "[1.5000001192092896, 0.49999991059303284, 1]"
-                          },
-                          "Component": {
-                            "active": true
-                          }
-                        }
-                      }
-                    ]
-                  },
-                  "children": [
-                    {
-                      "ƒ.Node": {
-                        "name": "Bars",
-                        "active": true,
-                        "components": {
-                          "ComponentMesh": [
-                            {
-                              "ƒ.ComponentMesh": {
-                                "idMesh": "MeshCube|2022-05-24T16:51:41.302Z|55531",
-                                "pivot": {
-                                  "translation": "[7.750000476837158, 20.500001907348633, 0.5]",
-                                  "rotation": "[0, 0, 0]",
-                                  "scaling": "[1.5000001192092896, 1, 1]"
-                                },
-                                "Component": {
-                                  "active": true
-                                }
-                              }
-                            }
-                          ],
-                          "ComponentMaterial": [
-                            {
-                              "ƒ.ComponentMaterial": {
-                                "sortForAlpha": false,
-                                "clrPrimary": "[1, 1, 1, 1]",
-                                "clrSecondary": "[1, 1, 1, 1]",
-                                "pivot": {
-                                  "translation": "[0, 0]",
-                                  "rotation": 0,
-                                  "scaling": "[1, 1]"
-                                },
-                                "Component": {
-                                  "active": true
-                                },
-                                "idMaterial": "Material|2022-05-31T13:54:00.633Z|12708"
-                              }
-                            }
-                          ],
-                          "ComponentTransform": [
-                            {
-                              "ƒ.ComponentTransform": {
-                                "local": {
-                                  "translation": "[0, 0, 0]",
-                                  "rotation": "[0, 0, 0]",
-                                  "scaling": "[1, 1, 1]"
-                                },
-                                "Component": {
-                                  "active": true
-                                }
-                              }
-                            }
-                          ],
-                          "ComponentRigidbody": [
-                            {
-                              "ƒ.ComponentRigidbody": {
-                                "initialization": "TO_MESH",
-                                "friction": 0.2,
-                                "restitution": 0.2,
-                                "mass": 1,
-                                "dampTranslation": 0.1,
-                                "dampRotation": 0.1,
-                                "effectGravity": 1,
-                                "typeBody": "STATIC",
-                                "typeCollider": "CUBE",
-                                "isTrigger": false,
-                                "id": 2,
-                                "pivot": {
-                                  "translation": "[7.750000476837158, 20.500001907348633, 0.5]",
-                                  "rotation": "[0, 0, 0]",
-                                  "scaling": "[1.5000001192092896, 1, 1]"
-                                },
-                                "Component": {
-                                  "active": true
-                                }
-                              }
-                            }
-                          ]
-                        },
-                        "children": []
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "ƒ.Node": {
                   "name": "Button",
                   "active": true,
                   "components": {
@@ -875,6 +730,87 @@
                             "translation": "[7.499999523162842, 10.500000953674316, 0.10000001639127731]",
                             "rotation": "[0, 0, 0]",
                             "scaling": "[0.49999991059303284, 0.49999991059303284, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": []
+                }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "Door",
+                  "active": true,
+                  "components": {
+                    "ComponentMesh": [
+                      {
+                        "ƒ.ComponentMesh": {
+                          "idMesh": "MeshCube|2022-05-24T16:51:41.302Z|55531",
+                          "pivot": {
+                            "translation": "[7.750000476837158, 20.500001907348633, 0.5]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1.5000001192092896, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentMaterial": [
+                      {
+                        "ƒ.ComponentMaterial": {
+                          "sortForAlpha": false,
+                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrSecondary": "[1, 1, 1, 1]",
+                          "pivot": {
+                            "translation": "[0, 0]",
+                            "rotation": 0,
+                            "scaling": "[1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          },
+                          "idMaterial": "Material|2022-05-31T13:54:00.633Z|12708"
+                        }
+                      }
+                    ],
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[0, 0, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentRigidbody": [
+                      {
+                        "ƒ.ComponentRigidbody": {
+                          "initialization": "TO_MESH",
+                          "friction": 0.2,
+                          "restitution": 0.2,
+                          "mass": 1,
+                          "dampTranslation": 0.1,
+                          "dampRotation": 0.1,
+                          "effectGravity": 1,
+                          "typeBody": "STATIC",
+                          "typeCollider": "CUBE",
+                          "isTrigger": false,
+                          "id": 2,
+                          "pivot": {
+                            "translation": "[7.750000476837158, 20.500001907348633, 0.5]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1.5000001192092896, 1, 1]"
                           },
                           "Component": {
                             "active": true

@@ -39,17 +39,12 @@ var Greed;
             rigidBody.mtxPivot.translateY(-0.2);
             this.addComponent(rigidBody);
             rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
-                if (_event.cmpRigidbody.node.name == "Enemy") {
+                if (_event.cmpRigidbody.node.name === "Enemy") {
                     this.hndHit();
                 }
             });
-            rigidBody.addEventListener("TriggerLeftCollision" /* TRIGGER_EXIT */, (_event) => {
-                if (_event.cmpRigidbody.node.name == "Door") {
-                    this.moveCamera(this.isInShop ? "leave" : "enter");
-                }
-            });
             rigidBody.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
-                if (_event.cmpRigidbody.node.name == "ProjectileEnemy") {
+                if (_event.cmpRigidbody.node.name === "ProjectileEnemy") {
                     this.hndHit();
                 }
             });
@@ -68,9 +63,7 @@ var Greed;
                 vector.transform(this.mtxLocal, false);
                 rigidBody.setVelocity(vector);
                 this.sprite.setFrameDirection(input === 0 && input2 === 0 ? 0 : 1);
-                if (!this.isInShop) {
-                    this.moveCamera();
-                }
+                this.moveCamera();
             }
         }
         controlShoot() {
@@ -93,16 +86,14 @@ var Greed;
                 }
             }
         }
-        moveCamera(transitionShop) {
-            if (transitionShop) {
-                if (transitionShop === "enter") {
-                    this.isInShop = true;
-                    this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 25, 20);
-                }
-                else {
-                    this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 15.5, 20);
-                    this.isInShop = false;
-                }
+        moveCamera() {
+            if (this.mtxLocal.translation.y > 21 && !this.isInShop) {
+                this.isInShop = true;
+                this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 25, 20);
+            }
+            else if (this.mtxLocal.translation.y < 21 && this.isInShop) {
+                this.isInShop = false;
+                this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 15.5, 20);
             }
             else if (this.mtxLocal.translation.y < 15.5 && this.mtxLocal.translation.y > 4.3) {
                 this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, this.mtxLocal.translation.y, 20);
@@ -144,7 +135,7 @@ var Greed;
         setShotTimeout() {
             this.canShoot = false;
             const timeout = 3000 - this.fireRate;
-            new ƒ.Timer(ƒ.Time.game, timeout > 0 ? timeout : 10, 1, () => {
+            new ƒ.Timer(ƒ.Time.game, timeout > 300 ? timeout : 300, 1, () => {
                 this.canShoot = true;
             });
         }
@@ -216,7 +207,7 @@ var Greed;
         Greed.gameState = new Greed.GameState();
         const room = Greed.graph.getChildrenByName("Room")[0];
         // assign variables and add nodes
-        bars = room.getChildrenByName("Door")[0].getChild(0);
+        bars = room.getChildrenByName("Door")[0];
         bars.activate(false);
         avatar = new Greed.Avatar("Avatar", viewport.camera);
         Greed.graph.addChild(avatar);
@@ -226,7 +217,7 @@ var Greed;
         button
             .getComponent(ƒ.ComponentRigidbody)
             .addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
-            if (_event.cmpRigidbody.node.name == "Avatar") {
+            if (_event.cmpRigidbody.node.name === "Avatar") {
                 hndButtonTrigger(button);
             }
         });
@@ -287,7 +278,7 @@ var Greed;
             this.rigidBody.isTrigger = true;
             this.addComponent(this.rigidBody);
             this.rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
-                if (_event.cmpRigidbody.node.name == "Enemy" || _event.cmpRigidbody.node.name == "Wall") {
+                if (_event.cmpRigidbody.node.name === "Enemy" || _event.cmpRigidbody.node.name === "Wall") {
                     this.removeProjectile();
                 }
             });
@@ -444,7 +435,8 @@ var Greed;
             rigidBody.isTrigger = true;
             this.addComponent(rigidBody);
             rigidBody.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
-                if (_event.cmpRigidbody.node.name == "Avatar" && Greed.gameState.coins >= this.activeItem.price) {
+                if (_event.cmpRigidbody.node.name === "Avatar" &&
+                    Greed.gameState.coins >= this.activeItem.price) {
                     if (this.name === "SlotHeart" && Greed.gameState.availableHealth === Greed.gameState.health) {
                         return;
                     }
@@ -487,6 +479,7 @@ var Greed;
             for (let index = 0; index < this.activeItem.effects.length; index++) {
                 Greed.gameState[this.activeItem.effects[index]] += this.activeItem.values[index];
                 if (this.activeItem.effects[index] === Greed.Effects.HEALTH) {
+                    Greed.gameState.availableHealth += this.activeItem.values[index];
                     Greed.gameState.updateHealth();
                 }
             }
@@ -510,7 +503,6 @@ var Greed;
                 effects: [],
                 values: [],
                 price: 3,
-                increaseSize: false,
                 sprite: {
                     path: "Assets/heart.png",
                     name: "Heart",

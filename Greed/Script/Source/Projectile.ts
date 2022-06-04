@@ -44,7 +44,7 @@ namespace Greed {
       this.addComponent(this.rigidBody);
 
       this.rigidBody.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name == "Enemy" || _event.cmpRigidbody.node.name == "Wall") {
+        if (_event.cmpRigidbody.node.name === "Enemy" || _event.cmpRigidbody.node.name === "Wall") {
           this.removeProjectile();
         }
       });

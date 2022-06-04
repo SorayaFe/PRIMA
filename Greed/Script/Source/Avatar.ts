@@ -54,17 +54,12 @@ namespace Greed {
       this.addComponent(rigidBody);
 
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name == "Enemy") {
+        if (_event.cmpRigidbody.node.name === "Enemy") {
           this.hndHit();
         }
       });
-      rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_EXIT, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name == "Door") {
-          this.moveCamera(this.isInShop ? "leave" : "enter");
-        }
-      });
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name == "ProjectileEnemy") {
+        if (_event.cmpRigidbody.node.name === "ProjectileEnemy") {
           this.hndHit();
         }
       });
@@ -94,9 +89,7 @@ namespace Greed {
         rigidBody.setVelocity(vector);
         this.sprite.setFrameDirection(input === 0 && input2 === 0 ? 0 : 1);
 
-        if (!this.isInShop) {
-          this.moveCamera();
-        }
+        this.moveCamera();
       }
     }
 
@@ -132,15 +125,13 @@ namespace Greed {
       }
     }
 
-    private moveCamera(transitionShop?: string): void {
-      if (transitionShop) {
-        if (transitionShop === "enter") {
-          this.isInShop = true;
-          this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 25, 20);
-        } else {
-          this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 15.5, 20);
-          this.isInShop = false;
-        }
+    private moveCamera(): void {
+      if (this.mtxLocal.translation.y > 21 && !this.isInShop) {
+        this.isInShop = true;
+        this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 25, 20);
+      } else if (this.mtxLocal.translation.y < 21 && this.isInShop) {
+        this.isInShop = false;
+        this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 15.5, 20);
       } else if (this.mtxLocal.translation.y < 15.5 && this.mtxLocal.translation.y > 4.3) {
         this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, this.mtxLocal.translation.y, 20);
       }

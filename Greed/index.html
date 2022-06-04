@@ -1,37 +1,20 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
+<head>
     <title>Greed</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="styles.css" />
 
     <!--Editor settings of this project-->
-    <meta
-      type="settings"
-      autoview="Graph|2022-05-24T16:14:09.425Z|32411"
-      project="{'name':'Greed','includeAutoViewScript':false,'graphAutoView':'Graph|2022-05-24T16:14:09.425Z|32411'}"
-      panels="[{'type':'PanelProject','state':{}},{'type':'PanelGraph','state':{'graph':'Graph|2022-05-24T16:14:09.425Z|32411'}}]"
-    />
+    <meta type="settings" autoview="Graph|2022-05-24T16:14:09.425Z|32411" project="{'name':'Greed','includeAutoViewScript':false,'graphAutoView':'Graph|2022-05-24T16:14:09.425Z|32411'}" panels="[{'type':'PanelProject','state':{}},{'type':'PanelGraph','state':{'graph':'Graph|2022-05-24T16:14:09.425Z|32411'}}]" />
 
     <!--Activate the following line to include the FUDGE-version of Oimo-Physics. You may want to download a local copy to work offline and be independent from future changes!-->
-    <script
-      type="text/javascript"
-      src="https://jirkadelloro.github.io/FUDGE/Physics/OimoPhysics.js"
-    ></script>
+    <script type="text/javascript" src="https://jirkadelloro.github.io/FUDGE/Physics/OimoPhysics.js"></script>
 
     <!--Load FUDGE. You may want to download local copies to work offline and be independent from future changes! Developers working on FUDGE itself may want to create symlinks-->
-    <script
-      type="text/javascript"
-      src="https://jirkadelloro.github.io/FUDGE/Core/Build/FudgeCore.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="https://jirkadelloro.github.io/FUDGE/Aid/Build/FudgeAid.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="https://jirkadelloro.github.io/FUDGE/UserInterface/Build/FudgeUserInterface.js"
-    ></script>
+    <script type="text/javascript" src="https://jirkadelloro.github.io/FUDGE/Core/Build/FudgeCore.js"></script>
+    <script type="text/javascript" src="https://jirkadelloro.github.io/FUDGE/Aid/Build/FudgeAid.js"></script>
+    <script type="text/javascript" src="https://jirkadelloro.github.io/FUDGE/UserInterface/Build/FudgeUserInterface.js"></script>
 
     <!--Link internal resources. The editor only loads the first, but at runtime, multiple files can contribute-->
     <link type="resources" src="Internal.json" />
@@ -50,32 +33,33 @@
 
     <div id="vui">
       <div class="grid">
-        <div id="hearts"></div>
+        <div id="hearts">
+</div>
 
         <div id="stats">
           <div class="stat">
             <span>Damage:</span>
-            <input type="text" key="damage" value="0" readonly />
+            <input type="text" key="damage" value="0" readonly="" />
           </div>
           <div class="stat">
             <span>Speed:</span>
-            <input type="text" key="speed" value="0" readonly />
+            <input type="text" key="speed" value="0" readonly="" />
           </div>
           <div class="stat">
             <span>Fire rate:</span>
-            <input type="text" key="fireRate" value="0" readonly />
+            <input type="text" key="fireRate" value="0" readonly="" />
           </div>
           <div class="stat">
             <span>Shot speed:</span>
-            <input type="text" key="shotSpeed" value="0" readonly />
+            <input type="text" key="shotSpeed" value="0" readonly="" />
           </div>
           <div class="stat">
             <span>Projectile size:</span>
-            <input type="text" key="projectileSize" value="0" readonly />
+            <input type="text" key="projectileSize" value="0" readonly="" />
           </div>
           <div class="stat">
             <span>Range:</span>
-            <input type="text" key="range" value="0" readonly />
+            <input type="text" key="range" value="0" readonly="" />
           </div>
         </div>
       </div>
@@ -83,9 +67,11 @@
       <div id="coins">
         <div class="coin">
           <img src="Assets/coin.png" width="20px" alt="coin" />
-          <input type="text" key="coins" value="0" readonly />
+          <input type="text" key="coins" value="0" readonly="" />
         </div>
       </div>
     </div>
-  </body>
+  
+
+</body>
 </html>

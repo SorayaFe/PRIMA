@@ -31,7 +31,7 @@ namespace Greed {
     public setShotTimeout(): void {
       this.canShoot = false;
       const timeout = 3000 - this.fireRate;
-      new ƒ.Timer(ƒ.Time.game, timeout > 0 ? timeout : 10, 1, () => {
+      new ƒ.Timer(ƒ.Time.game, timeout > 300 ? timeout : 300, 1, () => {
         this.canShoot = true;
       });
     }
