@@ -10,7 +10,7 @@ namespace Greed {
     constructor(_name: string, _direction: string, _position: ƒ.Vector3) {
       super(_name);
       this.direction = _direction;
-      this.initialPosition = _position;
+      this.initialPosition = _position.clone;
       this.createProjectile(_position);
     }
 
@@ -43,8 +43,8 @@ namespace Greed {
 
       this.addComponent(this.rigidBody);
 
-      this.rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_EXIT, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name == "Enemy") {
+      this.rigidBody.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
+        if (_event.cmpRigidbody.node.name == "Enemy" || _event.cmpRigidbody.node.name == "Wall") {
           this.removeProjectile();
         }
       });
@@ -91,7 +91,7 @@ namespace Greed {
       this.stop = true;
       this.rigidBody.setVelocity(new ƒ.Vector3(0, -1, 0));
       setTimeout(() => {
-        graph.getChildrenByName("Room")[0].removeChild(this);
+        graph.removeChild(this);
       }, 100);
     }
   }

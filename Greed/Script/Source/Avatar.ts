@@ -32,7 +32,7 @@ namespace Greed {
         width: 28,
         height: 32,
         frames: 3,
-        resolutionQuad: 32,
+        resolutionQuad: 28,
         offsetNext: 96,
       };
       await loadSprites(spriteInfo);
@@ -49,6 +49,7 @@ namespace Greed {
         this.mtxLocal
       );
       rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
+      rigidBody.mtxPivot.translateY(-0.2);
 
       this.addComponent(rigidBody);
 
@@ -125,7 +126,7 @@ namespace Greed {
             direction,
             this.mtxLocal.translation
           );
-          graph.getChildrenByName("Room")[0].addChild(projectile);
+          graph.addChild(projectile);
           projectile.moveProjectile();
         }
       }
@@ -135,7 +136,7 @@ namespace Greed {
       if (transitionShop) {
         if (transitionShop === "enter") {
           this.isInShop = true;
-          this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 27, 20);
+          this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 25, 20);
         } else {
           this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 15.5, 20);
           this.isInShop = false;
@@ -148,6 +149,7 @@ namespace Greed {
     private hndHit(): void {
       // TODO handle projectile hit
       gameState.availableHealth -= 1;
+      gameState.updateHealth();
     }
   }
 }

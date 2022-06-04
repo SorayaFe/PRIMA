@@ -27,9 +27,11 @@ declare namespace Greed {
         projectileSize: number;
         range: number;
         canShoot: boolean;
+        heartsContainer: HTMLElement;
         constructor();
         protected reduceMutator(_mutator: ƒ.Mutator): void;
         setShotTimeout(): void;
+        updateHealth(): void;
     }
 }
 declare namespace Greed {
@@ -127,8 +129,9 @@ declare namespace Greed {
     import ƒ = FudgeCore;
     class ItemSlot extends ƒ.Node {
         static items: Item[];
-        private activeItem;
-        constructor(_name: string, _position: ƒ.Vector3);
+        protected activeItem: Item;
+        private priceTag;
+        constructor(_name: string, _position: ƒ.Vector3, _priceTag: PriceTag);
         private createItemSlot;
         protected getItem(): void;
         restock(): Promise<void>;
@@ -138,9 +141,18 @@ declare namespace Greed {
 }
 declare namespace Greed {
     class HeartSlot extends ItemSlot {
-        constructor(_name: string, _position: ƒ.Vector3);
+        constructor(_name: string, _position: ƒ.Vector3, _priceTag: PriceTag);
         protected getItem(): void;
         protected applyItemEffects(): void;
+    }
+}
+declare namespace Greed {
+    import ƒ = FudgeCore;
+    class PriceTag extends ƒ.Node {
+        private sprite;
+        constructor(_name: string, _position: ƒ.Vector3);
+        createPriceTag(_position: ƒ.Vector3): Promise<void>;
+        setPrice(_price: number): void;
     }
 }
 declare namespace Greed {

@@ -27,7 +27,7 @@ var Greed;
                 width: 28,
                 height: 32,
                 frames: 3,
-                resolutionQuad: 32,
+                resolutionQuad: 28,
                 offsetNext: 96,
             };
             await Greed.loadSprites(spriteInfo);
@@ -36,6 +36,7 @@ var Greed;
             // add rigid body
             const rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.SPHERE, undefined, this.mtxLocal);
             rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
+            rigidBody.mtxPivot.translateY(-0.2);
             this.addComponent(rigidBody);
             rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
                 if (_event.cmpRigidbody.node.name == "Enemy") {
@@ -87,7 +88,7 @@ var Greed;
                         direction = input2 > 0 ? "x" : "-x";
                     }
                     const projectile = new Greed.Projectile("ProjectileAvatar", direction, this.mtxLocal.translation);
-                    Greed.graph.getChildrenByName("Room")[0].addChild(projectile);
+                    Greed.graph.addChild(projectile);
                     projectile.moveProjectile();
                 }
             }
@@ -96,7 +97,7 @@ var Greed;
             if (transitionShop) {
                 if (transitionShop === "enter") {
                     this.isInShop = true;
-                    this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 27, 20);
+                    this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 25, 20);
                 }
                 else {
                     this.camera.mtxPivot.translation = new ƒ.Vector3(7.5, 15.5, 20);
@@ -110,6 +111,7 @@ var Greed;
         hndHit() {
             // TODO handle projectile hit
             Greed.gameState.availableHealth -= 1;
+            Greed.gameState.updateHealth();
         }
     }
     Greed.Avatar = Avatar;
@@ -120,20 +122,23 @@ var Greed;
     var ƒUi = FudgeUserInterface;
     class GameState extends ƒ.Mutable {
         availableHealth = 3;
-        coins = 0;
+        //TODO coins amount
+        coins = 100;
         health = 3;
         speed = 1;
         damage = 3.5;
-        fireRate = 2000;
-        shotSpeed = 1.5;
-        projectileSize = 0.5;
+        fireRate = 1900;
+        shotSpeed = 2.3;
+        projectileSize = 0.3;
         range = 5;
         canShoot = true;
-        //evtl luck: number = 1; //possibly more coins with more luck
+        heartsContainer;
         constructor() {
             super();
             const domVui = document.querySelector("div#vui");
             console.log("Vui-Controller", new ƒUi.Controller(this, domVui));
+            this.heartsContainer = document.getElementById("hearts");
+            this.updateHealth();
         }
         reduceMutator(_mutator) { }
         setShotTimeout() {
@@ -142,6 +147,16 @@ var Greed;
             new ƒ.Timer(ƒ.Time.game, timeout > 0 ? timeout : 10, 1, () => {
                 this.canShoot = true;
             });
+        }
+        updateHealth() {
+            let innerHtml = "";
+            for (let index = 0; index < this.availableHealth; index++) {
+                innerHtml += '<div class="heart"></div>';
+            }
+            for (let index = 0; index < this.health - this.availableHealth; index++) {
+                innerHtml += '<div class="heart empty"></div>';
+            }
+            this.heartsContainer.innerHTML = innerHtml;
         }
     }
     Greed.GameState = GameState;
@@ -205,11 +220,7 @@ var Greed;
         bars.activate(false);
         avatar = new Greed.Avatar("Avatar", viewport.camera);
         Greed.graph.addChild(avatar);
-        const itemSlots = Greed.graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
-        itemSlots.addChild(new Greed.ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1)));
-        itemSlots.addChild(new Greed.ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1)));
-        itemSlots.addChild(new Greed.ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1)));
-        itemSlots.addChild(new Greed.ItemSlot("Heart", new ƒ.Vector3(12, 25, 0.1)));
+        setItemSlots();
         // button trigger listener
         const button = room.getChildrenByName("Button")[0];
         button
@@ -221,6 +232,21 @@ var Greed;
         });
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start();
+    }
+    function setItemSlots() {
+        const itemSlots = Greed.graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
+        const priceTag1 = new Greed.PriceTag("PriceTag1", new ƒ.Vector3(3, 24.3, 0.1));
+        itemSlots.addChild(priceTag1);
+        itemSlots.addChild(new Greed.ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1), priceTag1));
+        const priceTag2 = new Greed.PriceTag("PriceTag2", new ƒ.Vector3(6, 24.3, 0.1));
+        itemSlots.addChild(priceTag2);
+        itemSlots.addChild(new Greed.ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1), priceTag2));
+        const priceTag3 = new Greed.PriceTag("PriceTag3", new ƒ.Vector3(9, 24.3, 0.1));
+        itemSlots.addChild(priceTag3);
+        itemSlots.addChild(new Greed.ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
+        const priceTag4 = new Greed.PriceTag("PriceTag4", new ƒ.Vector3(12, 24.3, 0.1));
+        itemSlots.addChild(priceTag4);
+        itemSlots.addChild(new Greed.HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
     }
     function update(_event) {
         ƒ.Physics.simulate();
@@ -244,7 +270,7 @@ var Greed;
         constructor(_name, _direction, _position) {
             super(_name);
             this.direction = _direction;
-            this.initialPosition = _position;
+            this.initialPosition = _position.clone;
             this.createProjectile(_position);
         }
         createProjectile(_position) {
@@ -260,8 +286,8 @@ var Greed;
             this.rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
             this.rigidBody.isTrigger = true;
             this.addComponent(this.rigidBody);
-            this.rigidBody.addEventListener("TriggerLeftCollision" /* TRIGGER_EXIT */, (_event) => {
-                if (_event.cmpRigidbody.node.name == "Enemy") {
+            this.rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
+                if (_event.cmpRigidbody.node.name == "Enemy" || _event.cmpRigidbody.node.name == "Wall") {
                     this.removeProjectile();
                 }
             });
@@ -299,7 +325,7 @@ var Greed;
             this.stop = true;
             this.rigidBody.setVelocity(new ƒ.Vector3(0, -1, 0));
             setTimeout(() => {
-                Greed.graph.getChildrenByName("Room")[0].removeChild(this);
+                Greed.graph.removeChild(this);
             }, 100);
         }
     }
@@ -402,11 +428,13 @@ var Greed;
     class ItemSlot extends ƒ.Node {
         static items = [];
         activeItem;
-        constructor(_name, _position) {
+        priceTag;
+        constructor(_name, _position, _priceTag) {
             super(_name);
+            this.priceTag = _priceTag;
             this.createItemSlot(_position);
         }
-        createItemSlot(_position) {
+        async createItemSlot(_position) {
             const cmpTransform = new ƒ.ComponentTransform();
             cmpTransform.mtxLocal.translation = _position;
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
@@ -416,7 +444,10 @@ var Greed;
             rigidBody.isTrigger = true;
             this.addComponent(rigidBody);
             rigidBody.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
-                if (_event.cmpRigidbody.node.name == "Avatar") {
+                if (_event.cmpRigidbody.node.name == "Avatar" && Greed.gameState.coins >= this.activeItem.price) {
+                    if (this.name === "SlotHeart" && Greed.gameState.availableHealth === Greed.gameState.health) {
+                        return;
+                    }
                     this.applyNewItem();
                 }
             });
@@ -430,23 +461,34 @@ var Greed;
         }
         async restock() {
             if (ItemSlot.items.length) {
+                // remove item from array
+                const index = ItemSlot.items.findIndex((i) => i === this.activeItem);
+                if (index !== -1) {
+                    ItemSlot.items.splice(index, 1);
+                }
                 // create sprite
                 await Greed.loadSprites(this.activeItem.sprite);
                 Greed.setSprite(this, this.activeItem.sprite.name);
+                this.priceTag.setPrice(this.activeItem.price);
+                this.priceTag.activate(true);
             }
         }
         applyNewItem() {
+            Greed.gameState.coins -= this.activeItem.price;
             this.applyItemEffects();
-            // remove item from display and remove from array
+            // remove item from display
             this.removeChild(this.getChildrenByName("Sprite")[0]);
-            ItemSlot.items.splice(ItemSlot.items.findIndex((i) => i === this.activeItem), 1);
-            new ƒ.Timer(ƒ.Time.game, 2000, 1, () => {
+            this.priceTag.activate(false);
+            new ƒ.Timer(ƒ.Time.game, 1700, 1, () => {
                 this.getItem();
             });
         }
         applyItemEffects() {
             for (let index = 0; index < this.activeItem.effects.length; index++) {
                 Greed.gameState[this.activeItem.effects[index]] += this.activeItem.values[index];
+                if (this.activeItem.effects[index] === Greed.Effects.HEALTH) {
+                    Greed.gameState.updateHealth();
+                }
             }
         }
     }
@@ -457,19 +499,88 @@ var Greed;
 /// <reference path="./ItemSlot.ts" />
 (function (Greed) {
     class HeartSlot extends Greed.ItemSlot {
-        constructor(_name, _position) {
-            super(_name, _position);
+        constructor(_name, _position, _priceTag) {
+            super(_name, _position, _priceTag);
         }
         getItem() {
             // create heart
+            this.activeItem = {
+                name: "Heart",
+                description: "",
+                effects: [],
+                values: [],
+                price: 3,
+                increaseSize: false,
+                sprite: {
+                    path: "Assets/heart.png",
+                    name: "Heart",
+                    x: 0,
+                    y: 0,
+                    width: 244,
+                    height: 199,
+                    frames: 1,
+                    resolutionQuad: 300,
+                    offsetNext: 0,
+                },
+            };
             // restock item
             super.restock();
         }
         applyItemEffects() {
             // apply heart effect
+            Greed.gameState.availableHealth += 1;
+            Greed.gameState.updateHealth();
         }
     }
     Greed.HeartSlot = HeartSlot;
+})(Greed || (Greed = {}));
+var Greed;
+(function (Greed) {
+    var ƒ = FudgeCore;
+    class PriceTag extends ƒ.Node {
+        sprite;
+        constructor(_name, _position) {
+            super(_name);
+            this.createPriceTag(_position);
+        }
+        async createPriceTag(_position) {
+            const cmpTransform = new ƒ.ComponentTransform();
+            cmpTransform.mtxLocal.translation = _position;
+            this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
+            this.addComponent(cmpTransform);
+            const spriteInfo = {
+                path: "Assets/prices.png",
+                name: "Prices",
+                x: 0,
+                y: 0,
+                width: 20,
+                height: 9,
+                frames: 3,
+                resolutionQuad: 32,
+                offsetNext: 22,
+            };
+            await Greed.loadSprites(spriteInfo);
+            Greed.setSprite(this, spriteInfo.name);
+            this.sprite = this.getChildrenByName("Sprite")[0];
+        }
+        setPrice(_price) {
+            switch (_price) {
+                case 3:
+                    this.sprite.showFrame(0);
+                    break;
+                case 5:
+                    this.sprite.showFrame(1);
+                    break;
+                case 10:
+                    this.sprite.showFrame(2);
+                    break;
+                default:
+                    break;
+            }
+            this.sprite.setFrameDirection(0);
+        }
+    }
+    Greed.PriceTag = PriceTag;
 })(Greed || (Greed = {}));
 var Greed;
 (function (Greed) {

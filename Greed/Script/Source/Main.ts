@@ -74,11 +74,8 @@ namespace Greed {
     bars.activate(false);
     avatar = new Avatar("Avatar", viewport.camera);
     graph.addChild(avatar);
-    const itemSlots = graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
-    itemSlots.addChild(new ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1)));
-    itemSlots.addChild(new ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1)));
-    itemSlots.addChild(new ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1)));
-    itemSlots.addChild(new ItemSlot("Heart", new ƒ.Vector3(12, 25, 0.1)));
+
+    setItemSlots();
 
     // button trigger listener
     const button: ƒ.Node = room.getChildrenByName("Button")[0];
@@ -92,6 +89,22 @@ namespace Greed {
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start();
+  }
+
+  function setItemSlots(): void {
+    const itemSlots = graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
+    const priceTag1 = new PriceTag("PriceTag1", new ƒ.Vector3(3, 24.3, 0.1));
+    itemSlots.addChild(priceTag1);
+    itemSlots.addChild(new ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1), priceTag1));
+    const priceTag2 = new PriceTag("PriceTag2", new ƒ.Vector3(6, 24.3, 0.1));
+    itemSlots.addChild(priceTag2);
+    itemSlots.addChild(new ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1), priceTag2));
+    const priceTag3 = new PriceTag("PriceTag3", new ƒ.Vector3(9, 24.3, 0.1));
+    itemSlots.addChild(priceTag3);
+    itemSlots.addChild(new ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
+    const priceTag4 = new PriceTag("PriceTag4", new ƒ.Vector3(12, 24.3, 0.1));
+    itemSlots.addChild(priceTag4);
+    itemSlots.addChild(new HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
   }
 
   function update(_event: Event): void {

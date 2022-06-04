@@ -3,8 +3,8 @@
     {
       "name": "item1",
       "description": "item1",
-      "effects": ["damage"],
-      "values": [0.5],
+      "effects": ["health"],
+      "values": [1],
       "price": 5,
       "increaseSize": false,
       "sprite": {
@@ -22,14 +22,14 @@
     {
       "name": "item2",
       "description": "item1",
-      "effects": ["damage"],
+      "effects": ["fireRate"],
       "values": [0.5],
       "price": 5,
       "increaseSize": false,
       "sprite": {
         "path": "Assets/items.png",
         "name": "Test",
-        "x": 0,
+        "x": 32,
         "y": 0,
         "width": 32,
         "height": 32,
@@ -48,7 +48,7 @@
       "sprite": {
         "path": "Assets/items.png",
         "name": "Test",
-        "x": 0,
+        "x": 64,
         "y": 0,
         "width": 32,
         "height": 32,
@@ -60,14 +60,14 @@
     {
       "name": "item4",
       "description": "item1",
-      "effects": ["damage"],
+      "effects": ["range"],
       "values": [0.5],
-      "price": 5,
+      "price": 10,
       "increaseSize": false,
       "sprite": {
         "path": "Assets/items.png",
         "name": "Test",
-        "x": 0,
+        "x": 96,
         "y": 0,
         "width": 32,
         "height": 32,
@@ -79,14 +79,14 @@
     {
       "name": "asads",
       "description": "item1",
-      "effects": ["damage"],
+      "effects": ["speed"],
       "values": [0.5],
-      "price": 5,
+      "price": 10,
       "increaseSize": false,
       "sprite": {
         "path": "Assets/items.png",
         "name": "Test",
-        "x": 0,
+        "x": 128,
         "y": 0,
         "width": 32,
         "height": 32,
