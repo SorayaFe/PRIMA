@@ -2,6 +2,17 @@ namespace Greed {
   import ƒ = FudgeCore;
 
   export class Projectile extends ƒ.Node {
+    private static mtrProjectileAvatar: ƒ.Material = new ƒ.Material(
+      "ProjectileAvatar",
+      ƒ.ShaderLitTextured,
+      new ƒ.CoatTextured(ƒ.Color.CSS("White"), new ƒ.TextureImage("./Assets/projectile-avatar.png"))
+    );
+    private static mtrProjectileEnemy: ƒ.Material = new ƒ.Material(
+      "ProjectileEnemy",
+      ƒ.ShaderLitTextured,
+      new ƒ.CoatTextured(ƒ.Color.CSS("White"), new ƒ.TextureImage("./Assets/projectile-enemy.png"))
+    );
+
     private direction: string;
     private initialPosition: ƒ.Vector3;
     private rigidBody: ƒ.ComponentRigidbody;
@@ -20,14 +31,15 @@ namespace Greed {
       cmpTransform.mtxLocal.scale(
         new ƒ.Vector3(gameState.projectileSize, gameState.projectileSize, gameState.projectileSize)
       );
-      const material: ƒ.Material = new ƒ.Material(
-        "MaterialProjectile",
-        ƒ.ShaderLit,
-        new ƒ.CoatColored(ƒ.Color.CSS("white"))
-      );
 
       this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
-      this.addComponent(new ƒ.ComponentMaterial(material));
+      this.addComponent(
+        new ƒ.ComponentMaterial(
+          this.name === "ProjectileAvatar"
+            ? Projectile.mtrProjectileAvatar
+            : Projectile.mtrProjectileEnemy
+        )
+      );
       this.addComponent(cmpTransform);
 
       // add rigid body

@@ -55,10 +55,10 @@ var Greed;
                 rigidBody.applyForce(new ƒ.Vector3(0, 9.8, 0));
                 const input = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.S]);
                 this.walkY.setInput(input);
-                this.walkY.setFactor(2 * Greed.gameState.speed);
+                this.walkY.setFactor(2.1 * Greed.gameState.speed);
                 const input2 = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.D], [ƒ.KEYBOARD_CODE.A]);
                 this.walkX.setInput(input2);
-                this.walkX.setFactor(2 * Greed.gameState.speed);
+                this.walkX.setFactor(2.1 * Greed.gameState.speed);
                 const vector = new ƒ.Vector3((this.walkX.getOutput() * ƒ.Loop.timeFrameGame) / 20, (this.walkY.getOutput() * ƒ.Loop.timeFrameGame) / 20, 0);
                 vector.transform(this.mtxLocal, false);
                 rigidBody.setVelocity(vector);
@@ -254,6 +254,8 @@ var Greed;
 (function (Greed) {
     var ƒ = FudgeCore;
     class Projectile extends ƒ.Node {
+        static mtrProjectileAvatar = new ƒ.Material("ProjectileAvatar", ƒ.ShaderLitTextured, new ƒ.CoatTextured(ƒ.Color.CSS("White"), new ƒ.TextureImage("./Assets/projectile-avatar.png")));
+        static mtrProjectileEnemy = new ƒ.Material("ProjectileEnemy", ƒ.ShaderLitTextured, new ƒ.CoatTextured(ƒ.Color.CSS("White"), new ƒ.TextureImage("./Assets/projectile-enemy.png")));
         direction;
         initialPosition;
         rigidBody;
@@ -268,9 +270,10 @@ var Greed;
             const cmpTransform = new ƒ.ComponentTransform();
             cmpTransform.mtxLocal.translation = _position;
             cmpTransform.mtxLocal.scale(new ƒ.Vector3(Greed.gameState.projectileSize, Greed.gameState.projectileSize, Greed.gameState.projectileSize));
-            const material = new ƒ.Material("MaterialProjectile", ƒ.ShaderLit, new ƒ.CoatColored(ƒ.Color.CSS("white")));
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
-            this.addComponent(new ƒ.ComponentMaterial(material));
+            this.addComponent(new ƒ.ComponentMaterial(this.name === "ProjectileAvatar"
+                ? Projectile.mtrProjectileAvatar
+                : Projectile.mtrProjectileEnemy));
             this.addComponent(cmpTransform);
             // add rigid body
             this.rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.SPHERE, undefined, this.mtxLocal);

@@ -73,11 +73,11 @@ namespace Greed {
 
         const input: number = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.S]);
         this.walkY.setInput(input);
-        this.walkY.setFactor(2 * gameState.speed);
+        this.walkY.setFactor(2.1 * gameState.speed);
 
         const input2: number = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.D], [ƒ.KEYBOARD_CODE.A]);
         this.walkX.setInput(input2);
-        this.walkX.setFactor(2 * gameState.speed);
+        this.walkX.setFactor(2.1 * gameState.speed);
 
         const vector = new ƒ.Vector3(
           (this.walkX.getOutput() * ƒ.Loop.timeFrameGame) / 20,

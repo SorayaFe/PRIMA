@@ -42,6 +42,8 @@ declare namespace Greed {
 declare namespace Greed {
     import ƒ = FudgeCore;
     class Projectile extends ƒ.Node {
+        private static mtrProjectileAvatar;
+        private static mtrProjectileEnemy;
         private direction;
         private initialPosition;
         private rigidBody;
