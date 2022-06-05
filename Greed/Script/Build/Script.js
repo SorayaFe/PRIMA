@@ -404,7 +404,6 @@ var Greed;
     let Effects;
     (function (Effects) {
         Effects["HEALTH"] = "health";
-        Effects["COINS"] = "coins";
         Effects["SPEED"] = "speed";
         Effects["DAMAGE"] = "damage";
         Effects["SHOT_SPEED"] = "shotSpeed";

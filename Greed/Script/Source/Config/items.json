@@ -1,15 +1,14 @@
 {
   "items": [
     {
-      "name": "item1",
-      "description": "item1",
-      "effects": ["health"],
-      "values": [1],
+      "name": "candy bar",
+      "description": "projectile size up (+0.05)",
+      "effects": ["projectileSize"],
+      "values": [0.05],
       "price": 5,
-      "increaseSize": false,
       "sprite": {
         "path": "Assets/items.png",
-        "name": "Test",
+        "name": "candyBar",
         "x": 0,
         "y": 0,
         "width": 32,
@@ -20,15 +19,14 @@
       }
     },
     {
-      "name": "item2",
-      "description": "item1",
-      "effects": ["fireRate"],
-      "values": [200],
+      "name": "american cheese",
+      "description": "range up (+0.5)",
+      "effects": ["range"],
+      "values": [0.5],
       "price": 5,
-      "increaseSize": false,
       "sprite": {
         "path": "Assets/items.png",
-        "name": "Test",
+        "name": "americanCheese",
         "x": 32,
         "y": 0,
         "width": 32,
@@ -39,15 +37,14 @@
       }
     },
     {
-      "name": "item3",
-      "description": "item1",
-      "effects": ["damage"],
-      "values": [0.5],
+      "name": "bacon",
+      "description": "shot speed up (+0.1)",
+      "effects": ["shotSpeed"],
+      "values": [0.1],
       "price": 5,
-      "increaseSize": false,
       "sprite": {
         "path": "Assets/items.png",
-        "name": "Test",
+        "name": "bacon",
         "x": 64,
         "y": 0,
         "width": 32,
@@ -58,15 +55,14 @@
       }
     },
     {
-      "name": "item4",
-      "description": "item1",
-      "effects": ["range"],
-      "values": [0.5],
+      "name": "salt",
+      "description": "fire rate down (-100)",
+      "effects": ["fireRate"],
+      "values": [-100],
       "price": 10,
-      "increaseSize": false,
       "sprite": {
         "path": "Assets/items.png",
-        "name": "Test",
+        "name": "salt",
         "x": 96,
         "y": 0,
         "width": 32,
@@ -77,16 +73,15 @@
       }
     },
     {
-      "name": "asads",
-      "description": "item1",
-      "effects": ["speed"],
-      "values": [0.5],
+      "name": "bananas",
+      "description": "health up (+2)",
+      "effects": ["health"],
+      "values": [2],
       "price": 10,
-      "increaseSize": false,
       "sprite": {
         "path": "Assets/items.png",
-        "name": "Test",
-        "x": 128,
+        "name": "bananas",
+        "x": 160,
         "y": 0,
         "width": 32,
         "height": 32,
@@ -96,16 +91,1095 @@
       }
     },
     {
-      "name": "asads",
-      "description": "item1",
+      "name": "band-aids",
+      "description": "health up (+1)",
+      "effects": ["health"],
+      "values": [1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "bandAids",
+        "x": 192,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "bbq sauce",
+      "description": "damage down (-0.2)",
+      "effects": ["damage"],
+      "values": [-0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "bbqSauce",
+        "x": 224,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "shopping basket",
+      "description": "range up (+1), speed down (-0.15)",
+      "effects": ["range", "speed"],
+      "values": [1, -0.15],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "shoppingBasket",
+        "x": 256,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "bathroom cleaner",
+      "description": "fire rate up (+100)",
+      "effects": ["fireRate"],
+      "values": [100],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "bathroomCleaner",
+        "x": 320,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "batteries",
+      "description": "fire rate up (+300)",
+      "effects": ["fireRate"],
+      "values": [300],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "batteries",
+        "x": 352,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "bell peppers",
+      "description": "health up (+1)",
+      "effects": ["health"],
+      "values": [1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "bellPeppers",
+        "x": 384,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "body lotion",
+      "description": "speed up (+ 1.0)",
+      "effects": ["speed"],
+      "values": [1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "bodyLotion",
+        "x": 448,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "bubble gum",
+      "description": "projectile size up (+0.1)",
       "effects": ["projectileSize"],
       "values": [0.1],
       "price": 10,
-      "increaseSize": false,
       "sprite": {
         "path": "Assets/items.png",
-        "name": "Test",
-        "x": 160,
+        "name": "bubbleGum",
+        "x": 512,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "butter",
+      "description": "speed down (-0.1)",
+      "effects": ["speed"],
+      "values": [-0.1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "butter",
+        "x": 576,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "cabbage",
+      "description": "health up (+1)",
+      "effects": ["health"],
+      "values": [1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "cabbage",
+        "x": 608,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "cornflakes",
+      "description": "damage down (-0.2)",
+      "effects": ["damage"],
+      "values": [-0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "cornflakes",
+        "x": 704,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "coffee",
+      "description": "speed up (+0.1)",
+      "effects": ["speed"],
+      "values": [0.1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "coffee",
+        "x": 896,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "chocolate chip cookies",
+      "description": "projectile size down (-0.1)",
+      "effects": ["projectileSize"],
+      "values": [-0.1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "cookies",
+        "x": 928,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "cooking oil",
+      "description": "speed up (+0.1)",
+      "effects": ["speed"],
+      "values": [0.1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "cookingOil",
+        "x": 960,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "laundry detergent",
+      "description": "shot speed up (+0.2)",
+      "effects": ["shotSpeed"],
+      "values": [0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "laundryDetergent",
+        "x": 1088,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "dog food",
+      "description": "health up (+1), range down (-0.3)",
+      "effects": ["health", "range"],
+      "values": [1, -0.3],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "dogFood",
+        "x": 1120,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "eggs",
+      "description": "range up (+0.5)",
+      "effects": ["range"],
+      "values": [0.5],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "eggs",
+        "x": 1184,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "protein bar",
+      "description": "health up (+2), fire rate down (-300)",
+      "effects": ["health", "fireRate"],
+      "values": [2, -300],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "proteinBar",
+        "x": 1312,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "eraser",
+      "description": "health down (-1)",
+      "effects": ["health"],
+      "values": [-1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "eraser",
+        "x": 1344,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "fish",
+      "description": "speed up (+0.1)",
+      "effects": ["speed"],
+      "values": [0.1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "fish",
+        "x": 1408,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "flour",
+      "description": "projectile size up (+0.1)",
+      "effects": ["projectileSize"],
+      "values": [0.1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "flour",
+        "x": 1472,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "canned fruit",
+      "description": "damage up (+0.2)",
+      "effects": ["damage"],
+      "values": [0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "cannedFruit",
+        "x": 1504,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "glue",
+      "description": "speed down (-0.1)",
+      "effects": ["speed"],
+      "values": [-0.1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "glue",
+        "x": 1600,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "grape juice",
+      "description": "range up (+0.2)",
+      "effects": ["range"],
+      "values": [0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "grapeJuice",
+        "x": 1696,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "green apples",
+      "description": "health down (-1)",
+      "effects": ["health"],
+      "values": [-1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "greenApples",
+        "x": 1728,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "green grapes",
+      "description": "fire rate up (+100)",
+      "effects": ["fireRate"],
+      "values": [100],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "greenGrapes",
+        "x": 1792,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "strawberry jam",
+      "description": "speed down (-0.05)",
+      "effects": ["speed"],
+      "values": [-0.05],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "strawberryJam",
+        "x": 1920,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "ketchup",
+      "description": "health down (-1), damage up (+0.6)",
+      "effects": ["health", "damage"],
+      "values": [-1, 0.6],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "ketchup",
+        "x": 1920,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "kitchen knives",
+      "description": "damage up (+1.0)",
+      "effects": ["damage"],
+      "values": [1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "kitchenKnives",
+        "x": 1952,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "soap",
+      "description": "speed up (+0.2)",
+      "effects": ["speed"],
+      "values": [0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "soap",
+        "x": 2048,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "cursed lightbulb",
+      "description": "cursed lighting",
+      "effects": [],
+      "values": [],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "cursedLightbulb",
+        "x": 2080,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "marshmallows",
+      "description": "speed down (-0.2)",
+      "effects": ["speed"],
+      "values": [-0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "marshmallows",
+        "x": 2144,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "steak",
+      "description": "damage up (+0.5)",
+      "effects": ["damage"],
+      "values": [0.5],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "steak",
+        "x": 2240,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "milk bottle",
+      "description": "speed up (+0.2)",
+      "effects": ["speed"],
+      "values": [0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "milkBottle",
+        "x": 2304,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "milk carton",
+      "description": "speed down (-0.2)",
+      "effects": ["speed"],
+      "values": [-0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "milkCarton",
+        "x": 2400,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "mushrooms",
+      "description": "projectile size down (-0.1)",
+      "effects": ["projectileSize"],
+      "values": [-0.1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "mushrooms",
+        "x": 2464,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "mustard",
+      "description": "range down (-0.4)",
+      "effects": ["range"],
+      "values": [-0.4],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "mustard",
+        "x": 2528,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "olive oil",
+      "description": "damage up (+0.2)",
+      "effects": ["damage"],
+      "values": [0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "oliveOil",
+        "x": 2560,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "orange juice",
+      "description": "shot speed up (+0.1)",
+      "effects": ["shotSpeed"],
+      "values": [0.1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "orangeJuice",
+        "x": 2592,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "peanut butter",
+      "description": "range down (-0.3)",
+      "effects": ["range"],
+      "values": [-0.3],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "peanutButter",
+        "x": 2656,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "yogurt",
+      "description": "projectile size up (+0.1)",
+      "effects": ["projectileSize"],
+      "values": [0.1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "yogurt",
+        "x": 2720,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "potatoes",
+      "description": "health up (+1)",
+      "effects": ["health"],
+      "values": [1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "potatoes",
+        "x": 2752,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "sour cream chips",
+      "description": "damage up (+0.5)",
+      "effects": ["damage"],
+      "values": [0.5],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "sourCreamChips",
+        "x": 2848,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "salt chips",
+      "description": "damage up (+1), speed down (-0.2)",
+      "effects": ["damage", "speed"],
+      "values": [1, -0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "saltChips",
+        "x": 2880,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "salt chips",
+      "description": "damage up (+1), speed down (-0.2)",
+      "effects": ["damage", "speed"],
+      "values": [1, -0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "saltChips",
+        "x": 2880,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "red apples",
+      "description": "health up (+1)",
+      "effects": ["health"],
+      "values": [1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "redApples",
+        "x": 3008,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "red grapes",
+      "description": "fire rate down (-100)",
+      "effects": ["fireRate"],
+      "values": [-100],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "redGrapes",
+        "x": 3072,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "ducktopus",
+      "description": "all stats up",
+      "effects": ["health", "damage", "fireRate", "projectileSize", "range", "shotSpeed", "speed"],
+      "values": [1, 0.6, 200, 0.1, 0.4, 0.1, 0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "redApples",
+        "x": 3200,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "scissors",
+      "description": "damage up (+0.5)",
+      "effects": ["damage"],
+      "values": [0.5],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "scissors",
+        "x": 3360,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "sliced bread",
+      "description": "health up (+1)",
+      "effects": ["health"],
+      "values": [1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "slicedBread",
+        "x": 3520,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "apple soda",
+      "description": "damage up (+0.5)",
+      "effects": ["damage"],
+      "values": [0.5],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "appleSoda",
+        "x": 3712,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "cherry soda",
+      "description": "speed up (+0.2)",
+      "effects": ["speed"],
+      "values": [0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "cherrySoda",
+        "x": 3744,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "lemon soda",
+      "description": "damage up (+0.5), health down (-1)",
+      "effects": ["damage", "health"],
+      "values": [0.5, -1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "lemonSoda",
+        "x": 3776,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "fresh strawberries",
+      "description": "health up (+2)",
+      "effects": ["health"],
+      "values": [2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "strawberries",
+        "x": 3872,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "sugar",
+      "description": "range up (+0.5)",
+      "effects": ["range"],
+      "values": [0.5],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "sugar",
+        "x": 4000,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "toilet paper",
+      "description": "range up (+1)",
+      "effects": ["range"],
+      "values": [1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "toiletPaper",
+        "x": 4096,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "vanilla ice cream",
+      "description": "range up (+1), damage down (-0.2)",
+      "effects": ["range", "damage"],
+      "values": [1, -0.2],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "iceCream",
+        "x": 4288,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "watermelon",
+      "description": "projectile size up (+0.1)",
+      "effects": ["projectileSize"],
+      "values": [0.1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "watermelon",
+        "x": 4384,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "wheel of cheese",
+      "description": "speed down (-0.1)",
+      "effects": ["speed"],
+      "values": [-0.1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "wheelOfCheese",
+        "x": 4544,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "red wine",
+      "description": "damage up (+1)",
+      "effects": ["damage"],
+      "values": [1],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "redWine",
+        "x": 4672,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 1,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "name": "white wine",
+      "description": "projectile size down (-0.15)",
+      "effects": ["projectileSize"],
+      "values": [-0.15],
+      "price": 10,
+      "sprite": {
+        "path": "Assets/items.png",
+        "name": "whiteWine",
+        "x": 4704,
         "y": 0,
         "width": 32,
         "height": 32,

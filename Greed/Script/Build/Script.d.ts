@@ -94,7 +94,6 @@ declare namespace Greed {
 declare namespace Greed {
     enum Effects {
         HEALTH = "health",
-        COINS = "coins",
         SPEED = "speed",
         DAMAGE = "damage",
         SHOT_SPEED = "shotSpeed",

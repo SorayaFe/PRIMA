@@ -1,7 +1,6 @@
 namespace Greed {
   export enum Effects {
     HEALTH = "health",
-    COINS = "coins",
     SPEED = "speed",
     DAMAGE = "damage",
     SHOT_SPEED = "shotSpeed",
