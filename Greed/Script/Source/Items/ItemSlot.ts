@@ -3,12 +3,16 @@ namespace Greed {
 
   export class ItemSlot extends ƒ.Node {
     public static items: Item[] = [];
+    public static overlay: HTMLElement;
 
     protected activeItem: Item;
     private priceTag: PriceTag;
 
     constructor(_name: string, _position: ƒ.Vector3, _priceTag: PriceTag) {
       super(_name);
+      if (!ItemSlot.overlay) {
+        ItemSlot.overlay = document.getElementById("item-info");
+      }
       this.priceTag = _priceTag;
       this.createItemSlot(_position);
     }
@@ -32,6 +36,7 @@ namespace Greed {
 
       this.addComponent(rigidBody);
 
+      // collet item
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
         if (
           _event.cmpRigidbody.node.name === "Avatar" &&
@@ -41,6 +46,13 @@ namespace Greed {
             return;
           }
           this.applyNewItem();
+        }
+      });
+
+      // display new item
+      rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_EXIT, (_event: ƒ.EventPhysics) => {
+        if (_event.cmpRigidbody.node.name === "Avatar" && !this.activeItem) {
+          this.getItem();
         }
       });
 
@@ -79,8 +91,18 @@ namespace Greed {
       this.removeChild(this.getChildrenByName("Sprite")[0]);
       this.priceTag.activate(false);
 
-      new ƒ.Timer(ƒ.Time.game, 1700, 1, () => {
-        this.getItem();
+      // show item info overlay
+      if (this.name !== "SlotHeart") {
+        ItemSlot.overlay.children[0].children[1].innerHTML = this.activeItem.name;
+        ItemSlot.overlay.children[1].innerHTML = this.activeItem.description;
+        ItemSlot.overlay.style.visibility = "visible";
+      }
+
+      this.activeItem = null;
+
+      // remove item info overlay
+      new ƒ.Timer(ƒ.Time.game, 2700, 1, () => {
+        ItemSlot.overlay.style.visibility = "hidden";
       });
     }
 

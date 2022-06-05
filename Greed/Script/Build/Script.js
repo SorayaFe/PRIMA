@@ -114,7 +114,7 @@ var Greed;
     class GameState extends ƒ.Mutable {
         availableHealth = 3;
         //TODO coins amount
-        coins = 100;
+        coins = 1000;
         health = 3;
         speed = 1;
         damage = 3.5;
@@ -168,7 +168,7 @@ var Greed;
         dialog.addEventListener("click", function (_event) {
             // @ts-ignore until HTMLDialog is implemented by all browsers and available in dom.d.ts
             dialog.close();
-            document.getElementById("vui").style.visibility = "visible";
+            document.getElementById("outer").style.visibility = "visible";
             startInteractiveViewport();
         });
         //@ts-ignore
@@ -278,7 +278,9 @@ var Greed;
             this.rigidBody.isTrigger = true;
             this.addComponent(this.rigidBody);
             this.rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
-                if (_event.cmpRigidbody.node.name === "Enemy" || _event.cmpRigidbody.node.name === "Wall") {
+                if (_event.cmpRigidbody.node.name === "Enemy" ||
+                    _event.cmpRigidbody.node.name === "Wall" ||
+                    _event.cmpRigidbody.node.name === "Door") {
                     this.removeProjectile();
                 }
             });
@@ -417,10 +419,14 @@ var Greed;
     var ƒ = FudgeCore;
     class ItemSlot extends ƒ.Node {
         static items = [];
+        static overlay;
         activeItem;
         priceTag;
         constructor(_name, _position, _priceTag) {
             super(_name);
+            if (!ItemSlot.overlay) {
+                ItemSlot.overlay = document.getElementById("item-info");
+            }
             this.priceTag = _priceTag;
             this.createItemSlot(_position);
         }
@@ -433,6 +439,7 @@ var Greed;
             const rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.STATIC, ƒ.COLLIDER_TYPE.SPHERE, undefined, this.mtxLocal);
             rigidBody.isTrigger = true;
             this.addComponent(rigidBody);
+            // collet item
             rigidBody.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
                 if (_event.cmpRigidbody.node.name === "Avatar" &&
                     Greed.gameState.coins >= this.activeItem.price) {
@@ -440,6 +447,12 @@ var Greed;
                         return;
                     }
                     this.applyNewItem();
+                }
+            });
+            // display new item
+            rigidBody.addEventListener("TriggerLeftCollision" /* TRIGGER_EXIT */, (_event) => {
+                if (_event.cmpRigidbody.node.name === "Avatar" && !this.activeItem) {
+                    this.getItem();
                 }
             });
             this.getItem();
@@ -470,8 +483,16 @@ var Greed;
             // remove item from display
             this.removeChild(this.getChildrenByName("Sprite")[0]);
             this.priceTag.activate(false);
-            new ƒ.Timer(ƒ.Time.game, 1700, 1, () => {
-                this.getItem();
+            // show item info overlay
+            if (this.name !== "SlotHeart") {
+                ItemSlot.overlay.children[0].children[1].innerHTML = this.activeItem.name;
+                ItemSlot.overlay.children[1].innerHTML = this.activeItem.description;
+                ItemSlot.overlay.style.visibility = "visible";
+            }
+            this.activeItem = null;
+            // remove item info overlay
+            new ƒ.Timer(ƒ.Time.game, 2700, 1, () => {
+                ItemSlot.overlay.style.visibility = "hidden";
             });
         }
         applyItemEffects() {

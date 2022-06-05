@@ -5,7 +5,7 @@ namespace Greed {
   export class GameState extends ƒ.Mutable {
     availableHealth: number = 3;
     //TODO coins amount
-    coins: number = 100;
+    coins: number = 1000;
 
     health: number = 3;
     speed: number = 1;

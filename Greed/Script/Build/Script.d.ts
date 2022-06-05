@@ -127,6 +127,7 @@ declare namespace Greed {
     import ƒ = FudgeCore;
     class ItemSlot extends ƒ.Node {
         static items: Item[];
+        static overlay: HTMLElement;
         protected activeItem: Item;
         private priceTag;
         constructor(_name: string, _position: ƒ.Vector3, _priceTag: PriceTag);

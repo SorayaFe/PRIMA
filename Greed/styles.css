@@ -11,6 +11,7 @@ body {
   height: 100%;
   overflow: hidden;
   font-family: upheaval;
+  color: white;
 }
 
 dialog {
@@ -22,8 +23,11 @@ canvas.fullscreen {
   height: 100vh;
 }
 
-#vui {
+#outer {
   visibility: hidden;
+}
+
+#vui {
   position: absolute;
   left: 0;
   top: 0;
@@ -38,11 +42,6 @@ canvas.fullscreen {
   grid-template-columns: 1;
   grid-template-rows: auto 1fr;
 }
-
-#stats,
-#coins {
-  color: white;
-}
 .stat {
   display: flex;
   align-items: center;
@@ -56,11 +55,12 @@ canvas.fullscreen {
 input {
   border: none;
   background-color: transparent;
-  color: white;
   width: 80px;
   outline: none;
   font-family: upheaval;
   font-size: 1.5rem;
+  color: white;
+  text-overflow: ellipsis;
 }
 
 #coins {
@@ -76,7 +76,7 @@ input {
 }
 
 #hearts {
-  margin-top: 100px;
+  margin: 100px 0px 0px 100px;
   display: flex;
   flex-wrap: wrap;
   width: 210px;
@@ -91,4 +91,33 @@ input {
 }
 .empty {
   border-image: radial-gradient(rgb(73, 70, 70) 69%, #0000 70%) 84.5% fill/100%;
+}
+
+#item-info {
+  visibility: hidden;
+  position: absolute;
+  top: 300px;
+  left: 0;
+  width: 100vw;
+}
+.img-grid {
+  display: grid;
+  align-items: center;
+}
+.bg-img {
+  margin: auto;
+  width: 65vw;
+}
+.name,
+.bg-img {
+  grid-row: 1;
+  grid-column: 1;
+  text-align: center;
+}
+.name {
+  font-size: 2rem;
+}
+.description {
+  text-align: center;
+  font-size: 1.4rem;
 }

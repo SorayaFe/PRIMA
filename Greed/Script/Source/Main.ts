@@ -19,7 +19,7 @@ namespace Greed {
     dialog.addEventListener("click", function (_event) {
       // @ts-ignore until HTMLDialog is implemented by all browsers and available in dom.d.ts
       dialog.close();
-      document.getElementById("vui").style.visibility = "visible";
+      document.getElementById("outer").style.visibility = "visible";
       startInteractiveViewport();
     });
     //@ts-ignore

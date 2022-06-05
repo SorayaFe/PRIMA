@@ -2,10 +2,10 @@
   "items": [
     {
       "name": "candy bar",
-      "description": "projectile size up (+0.05)",
+      "description": "projectile size up (+0.1)",
       "effects": ["projectileSize"],
-      "values": [0.05],
-      "price": 5,
+      "values": [0.1],
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "candyBar",
@@ -41,7 +41,7 @@
       "description": "shot speed up (+0.1)",
       "effects": ["shotSpeed"],
       "values": [0.1],
-      "price": 5,
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "bacon",
@@ -59,7 +59,7 @@
       "description": "fire rate down (-100)",
       "effects": ["fireRate"],
       "values": [-100],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "salt",
@@ -113,7 +113,7 @@
       "description": "damage down (-0.2)",
       "effects": ["damage"],
       "values": [-0.2],
-      "price": 10,
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "bbqSauce",
@@ -128,9 +128,9 @@
     },
     {
       "name": "shopping basket",
-      "description": "range up (+1), speed down (-0.15)",
+      "description": "range up (+1), speed down (-0.05)",
       "effects": ["range", "speed"],
-      "values": [1, -0.15],
+      "values": [1, -0.05],
       "price": 10,
       "sprite": {
         "path": "Assets/items.png",
@@ -146,10 +146,10 @@
     },
     {
       "name": "bathroom cleaner",
-      "description": "fire rate up (+100)",
+      "description": "fire rate up (+300)",
       "effects": ["fireRate"],
-      "values": [100],
-      "price": 10,
+      "values": [300],
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "bathroomCleaner",
@@ -185,7 +185,7 @@
       "description": "health up (+1)",
       "effects": ["health"],
       "values": [1],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "bellPeppers",
@@ -200,7 +200,7 @@
     },
     {
       "name": "body lotion",
-      "description": "speed up (+ 1.0)",
+      "description": "speed up (+1.0)",
       "effects": ["speed"],
       "values": [1],
       "price": 10,
@@ -221,7 +221,7 @@
       "description": "projectile size up (+0.1)",
       "effects": ["projectileSize"],
       "values": [0.1],
-      "price": 10,
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "bubbleGum",
@@ -239,7 +239,7 @@
       "description": "speed down (-0.1)",
       "effects": ["speed"],
       "values": [-0.1],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "butter",
@@ -257,7 +257,7 @@
       "description": "health up (+1)",
       "effects": ["health"],
       "values": [1],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "cabbage",
@@ -290,9 +290,9 @@
     },
     {
       "name": "coffee",
-      "description": "speed up (+0.1)",
+      "description": "speed up (+0.25)",
       "effects": ["speed"],
-      "values": [0.1],
+      "values": [0.25],
       "price": 10,
       "sprite": {
         "path": "Assets/items.png",
@@ -308,10 +308,10 @@
     },
     {
       "name": "chocolate chip cookies",
-      "description": "projectile size down (-0.1)",
+      "description": "projectile size down (-0.05)",
       "effects": ["projectileSize"],
-      "values": [-0.1],
-      "price": 10,
+      "values": [-0.05],
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "cookies",
@@ -326,10 +326,10 @@
     },
     {
       "name": "cooking oil",
-      "description": "speed up (+0.1)",
+      "description": "speed up (+0.15)",
       "effects": ["speed"],
-      "values": [0.1],
-      "price": 10,
+      "values": [0.15],
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "cookingOil",
@@ -347,7 +347,7 @@
       "description": "shot speed up (+0.2)",
       "effects": ["shotSpeed"],
       "values": [0.2],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "laundryDetergent",
@@ -383,7 +383,7 @@
       "description": "range up (+0.5)",
       "effects": ["range"],
       "values": [0.5],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "eggs",
@@ -398,9 +398,9 @@
     },
     {
       "name": "protein bar",
-      "description": "health up (+2), fire rate down (-300)",
+      "description": "health up (+2), fire rate down (-200)",
       "effects": ["health", "fireRate"],
-      "values": [2, -300],
+      "values": [2, -200],
       "price": 10,
       "sprite": {
         "path": "Assets/items.png",
@@ -419,7 +419,7 @@
       "description": "health down (-1)",
       "effects": ["health"],
       "values": [-1],
-      "price": 10,
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "eraser",
@@ -434,10 +434,10 @@
     },
     {
       "name": "fish",
-      "description": "speed up (+0.1)",
+      "description": "speed up (+0.2)",
       "effects": ["speed"],
-      "values": [0.1],
-      "price": 10,
+      "values": [0.2],
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "fish",
@@ -455,7 +455,7 @@
       "description": "projectile size up (+0.1)",
       "effects": ["projectileSize"],
       "values": [0.1],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "flour",
@@ -470,9 +470,9 @@
     },
     {
       "name": "canned fruit",
-      "description": "damage up (+0.2)",
+      "description": "damage up (+0.4)",
       "effects": ["damage"],
-      "values": [0.2],
+      "values": [0.4],
       "price": 10,
       "sprite": {
         "path": "Assets/items.png",
@@ -491,7 +491,7 @@
       "description": "speed down (-0.1)",
       "effects": ["speed"],
       "values": [-0.1],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "glue",
@@ -509,7 +509,7 @@
       "description": "range up (+0.2)",
       "effects": ["range"],
       "values": [0.2],
-      "price": 10,
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "grapeJuice",
@@ -527,7 +527,7 @@
       "description": "health down (-1)",
       "effects": ["health"],
       "values": [-1],
-      "price": 10,
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "greenApples",
@@ -542,10 +542,10 @@
     },
     {
       "name": "green grapes",
-      "description": "fire rate up (+100)",
+      "description": "fire rate up (+250)",
       "effects": ["fireRate"],
-      "values": [100],
-      "price": 10,
+      "values": [250],
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "greenGrapes",
@@ -563,7 +563,7 @@
       "description": "speed down (-0.05)",
       "effects": ["speed"],
       "values": [-0.05],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "strawberryJam",
@@ -581,7 +581,7 @@
       "description": "health down (-1), damage up (+0.6)",
       "effects": ["health", "damage"],
       "values": [-1, 0.6],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "ketchup",
@@ -617,7 +617,7 @@
       "description": "speed up (+0.2)",
       "effects": ["speed"],
       "values": [0.2],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "soap",
@@ -635,7 +635,7 @@
       "description": "cursed lighting",
       "effects": [],
       "values": [],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "cursedLightbulb",
@@ -650,10 +650,10 @@
     },
     {
       "name": "marshmallows",
-      "description": "speed down (-0.2)",
+      "description": "speed down (-0.1)",
       "effects": ["speed"],
-      "values": [-0.2],
-      "price": 10,
+      "values": [-0.1],
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "marshmallows",
@@ -689,7 +689,7 @@
       "description": "speed up (+0.2)",
       "effects": ["speed"],
       "values": [0.2],
-      "price": 10,
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "milkBottle",
@@ -707,7 +707,7 @@
       "description": "speed down (-0.2)",
       "effects": ["speed"],
       "values": [-0.2],
-      "price": 10,
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "milkCarton",
@@ -725,7 +725,7 @@
       "description": "projectile size down (-0.1)",
       "effects": ["projectileSize"],
       "values": [-0.1],
-      "price": 10,
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "mushrooms",
@@ -743,7 +743,7 @@
       "description": "range down (-0.4)",
       "effects": ["range"],
       "values": [-0.4],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "mustard",
@@ -761,7 +761,7 @@
       "description": "damage up (+0.2)",
       "effects": ["damage"],
       "values": [0.2],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "oliveOil",
@@ -779,7 +779,7 @@
       "description": "shot speed up (+0.1)",
       "effects": ["shotSpeed"],
       "values": [0.1],
-      "price": 10,
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "orangeJuice",
@@ -797,7 +797,7 @@
       "description": "range down (-0.3)",
       "effects": ["range"],
       "values": [-0.3],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "peanutButter",
@@ -812,10 +812,10 @@
     },
     {
       "name": "yogurt",
-      "description": "projectile size up (+0.1)",
+      "description": "projectile size up (+0.2)",
       "effects": ["projectileSize"],
-      "values": [0.1],
-      "price": 10,
+      "values": [0.2],
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "yogurt",
@@ -866,27 +866,9 @@
     },
     {
       "name": "salt chips",
-      "description": "damage up (+1), speed down (-0.2)",
+      "description": "damage up (+1), speed down (-0.1)",
       "effects": ["damage", "speed"],
-      "values": [1, -0.2],
-      "price": 10,
-      "sprite": {
-        "path": "Assets/items.png",
-        "name": "saltChips",
-        "x": 2880,
-        "y": 0,
-        "width": 32,
-        "height": 32,
-        "frames": 1,
-        "resolutionQuad": 32,
-        "offsetNext": 32
-      }
-    },
-    {
-      "name": "salt chips",
-      "description": "damage up (+1), speed down (-0.2)",
-      "effects": ["damage", "speed"],
-      "values": [1, -0.2],
+      "values": [1, -0.1],
       "price": 10,
       "sprite": {
         "path": "Assets/items.png",
@@ -905,7 +887,7 @@
       "description": "health up (+1)",
       "effects": ["health"],
       "values": [1],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "redApples",
@@ -923,7 +905,7 @@
       "description": "fire rate down (-100)",
       "effects": ["fireRate"],
       "values": [-100],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "redGrapes",
@@ -959,7 +941,7 @@
       "description": "damage up (+0.5)",
       "effects": ["damage"],
       "values": [0.5],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "scissors",
@@ -977,7 +959,7 @@
       "description": "health up (+1)",
       "effects": ["health"],
       "values": [1],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "slicedBread",
@@ -1103,7 +1085,7 @@
       "description": "range up (+1), damage down (-0.2)",
       "effects": ["range", "damage"],
       "values": [1, -0.2],
-      "price": 10,
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "iceCream",
@@ -1118,10 +1100,10 @@
     },
     {
       "name": "watermelon",
-      "description": "projectile size up (+0.1)",
+      "description": "projectile size up (+0.15)",
       "effects": ["projectileSize"],
-      "values": [0.1],
-      "price": 10,
+      "values": [0.15],
+      "price": 5,
       "sprite": {
         "path": "Assets/items.png",
         "name": "watermelon",
@@ -1139,7 +1121,7 @@
       "description": "speed down (-0.1)",
       "effects": ["speed"],
       "values": [-0.1],
-      "price": 10,
+      "price": 3,
       "sprite": {
         "path": "Assets/items.png",
         "name": "wheelOfCheese",
@@ -1172,9 +1154,9 @@
     },
     {
       "name": "white wine",
-      "description": "projectile size down (-0.15)",
+      "description": "projectile size down (-0.1)",
       "effects": ["projectileSize"],
-      "values": [-0.15],
+      "values": [-0.1],
       "price": 10,
       "sprite": {
         "path": "Assets/items.png",
