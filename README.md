@@ -13,7 +13,7 @@ Repository for the module "Prototyping interactive media-applications and games"
 - Link to the Game: [Greed](https://sorayafe.github.io/PRIMA/Greed/index.html)
 - Link to the source code: [Code](https://github.com/SorayaFe/PRIMA/tree/main/Greed)
 - Link to the design document:
-- Description for users on how to interact:
+- Description for users on how to interact: WASD to move, Arrow-keys to shoot
 
 ### Checklist
 

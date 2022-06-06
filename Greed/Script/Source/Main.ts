@@ -12,6 +12,12 @@ namespace Greed {
   let viewport: ƒ.Viewport;
   let avatar: Avatar;
   let bars: ƒ.Node;
+  let button: ƒ.Node;
+
+  let isFighting: boolean = false;
+  //let stage: number = 0;
+  let remainingRounds: number = 4;
+  let timer: ƒ.Timer;
 
   function init(_event: Event) {
     dialog = document.querySelector("dialog");
@@ -72,18 +78,21 @@ namespace Greed {
     // assign variables and add nodes
     bars = room.getChildrenByName("Door")[0];
     bars.activate(false);
+    button = room.getChildrenByName("Button")[0];
     avatar = new Avatar("Avatar", viewport.camera);
     graph.addChild(avatar);
+    room.addChild(new Timer("Timer"));
 
     setItemSlots();
 
     // button trigger listener
-    const button: ƒ.Node = room.getChildrenByName("Button")[0];
     button
       .getComponent(ƒ.ComponentRigidbody)
       .addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name === "Avatar") {
-          hndButtonTrigger(button);
+        if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting) {
+          button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
+          bars.activate(true);
+          setTimer();
         }
       });
 
@@ -95,16 +104,35 @@ namespace Greed {
     const itemSlots = graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
     const priceTag1 = new PriceTag("PriceTag1", new ƒ.Vector3(3, 24.3, 0.1));
     itemSlots.addChild(priceTag1);
-    itemSlots.addChild(new ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1), priceTag1));
     const priceTag2 = new PriceTag("PriceTag2", new ƒ.Vector3(6, 24.3, 0.1));
     itemSlots.addChild(priceTag2);
-    itemSlots.addChild(new ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1), priceTag2));
     const priceTag3 = new PriceTag("PriceTag3", new ƒ.Vector3(9, 24.3, 0.1));
     itemSlots.addChild(priceTag3);
-    itemSlots.addChild(new ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
     const priceTag4 = new PriceTag("PriceTag4", new ƒ.Vector3(12, 24.3, 0.1));
     itemSlots.addChild(priceTag4);
+    itemSlots.addChild(new ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1), priceTag1));
+    itemSlots.addChild(new ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1), priceTag2));
     itemSlots.addChild(new HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
+    itemSlots.addChild(new ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
+  }
+
+  function setTimer(): void {
+    if (timer) {
+      timer.clear();
+    }
+
+    isFighting = true;
+    startNewRound();
+
+    timer = new ƒ.Timer(ƒ.Time.game, 11000, remainingRounds, () => {
+      startNewRound();
+    });
+  }
+
+  function startNewRound(): void {
+    console.log("new round started");
+    remainingRounds--;
+    Timer.showFrame(20);
   }
 
   function update(_event: Event): void {
@@ -112,10 +140,5 @@ namespace Greed {
     avatar.controlWalk();
     avatar.controlShoot();
     viewport.draw();
-  }
-
-  function hndButtonTrigger(_buttonNode: ƒ.Node): void {
-    _buttonNode.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
-    bars.activate(true);
   }
 }

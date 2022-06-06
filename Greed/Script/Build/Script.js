@@ -162,6 +162,11 @@ var Greed;
     let viewport;
     let avatar;
     let bars;
+    let button;
+    let isFighting = false;
+    //let stage: number = 0;
+    let remainingRounds = 4;
+    let timer;
     function init(_event) {
         dialog = document.querySelector("dialog");
         dialog.querySelector("h1").textContent = document.title;
@@ -209,16 +214,19 @@ var Greed;
         // assign variables and add nodes
         bars = room.getChildrenByName("Door")[0];
         bars.activate(false);
+        button = room.getChildrenByName("Button")[0];
         avatar = new Greed.Avatar("Avatar", viewport.camera);
         Greed.graph.addChild(avatar);
+        room.addChild(new Greed.Timer("Timer"));
         setItemSlots();
         // button trigger listener
-        const button = room.getChildrenByName("Button")[0];
         button
             .getComponent(ƒ.ComponentRigidbody)
             .addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
-            if (_event.cmpRigidbody.node.name === "Avatar") {
-                hndButtonTrigger(button);
+            if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting) {
+                button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
+                bars.activate(true);
+                setTimer();
             }
         });
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
@@ -228,26 +236,37 @@ var Greed;
         const itemSlots = Greed.graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
         const priceTag1 = new Greed.PriceTag("PriceTag1", new ƒ.Vector3(3, 24.3, 0.1));
         itemSlots.addChild(priceTag1);
-        itemSlots.addChild(new Greed.ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1), priceTag1));
         const priceTag2 = new Greed.PriceTag("PriceTag2", new ƒ.Vector3(6, 24.3, 0.1));
         itemSlots.addChild(priceTag2);
-        itemSlots.addChild(new Greed.ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1), priceTag2));
         const priceTag3 = new Greed.PriceTag("PriceTag3", new ƒ.Vector3(9, 24.3, 0.1));
         itemSlots.addChild(priceTag3);
-        itemSlots.addChild(new Greed.ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
         const priceTag4 = new Greed.PriceTag("PriceTag4", new ƒ.Vector3(12, 24.3, 0.1));
         itemSlots.addChild(priceTag4);
+        itemSlots.addChild(new Greed.ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1), priceTag1));
+        itemSlots.addChild(new Greed.ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1), priceTag2));
         itemSlots.addChild(new Greed.HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
+        itemSlots.addChild(new Greed.ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
+    }
+    function setTimer() {
+        if (timer) {
+            timer.clear();
+        }
+        isFighting = true;
+        startNewRound();
+        timer = new ƒ.Timer(ƒ.Time.game, 11000, remainingRounds, () => {
+            startNewRound();
+        });
+    }
+    function startNewRound() {
+        console.log("new round started");
+        remainingRounds--;
+        Greed.Timer.showFrame(20);
     }
     function update(_event) {
         ƒ.Physics.simulate();
         avatar.controlWalk();
         avatar.controlShoot();
         viewport.draw();
-    }
-    function hndButtonTrigger(_buttonNode) {
-        _buttonNode.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
-        bars.activate(true);
     }
 })(Greed || (Greed = {}));
 var Greed;
@@ -355,6 +374,45 @@ var Greed;
 var Greed;
 (function (Greed) {
     var ƒ = FudgeCore;
+    class Timer extends ƒ.Node {
+        static sprite;
+        constructor(_name) {
+            super(_name);
+            this.createTimer();
+        }
+        async createTimer() {
+            const cmpTransform = new ƒ.ComponentTransform();
+            cmpTransform.mtxLocal.translation = new ƒ.Vector3(7.5, 10, 0.1);
+            this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshCube()));
+            this.addComponent(cmpTransform);
+            const spriteInfo = {
+                path: "Assets/timer.png",
+                name: "Timer",
+                x: 0,
+                y: 0,
+                width: 35,
+                height: 7,
+                frames: 31,
+                resolutionQuad: 35,
+                offsetNext: 35,
+            };
+            await Greed.loadSprites(spriteInfo);
+            Greed.setSprite(this, spriteInfo.name);
+            Timer.sprite = this.getChildrenByName("Sprite")[0];
+            Timer.sprite.framerate = 1;
+            Timer.sprite.setFrameDirection(0);
+            Timer.sprite.showFrame(30);
+        }
+        static showFrame(frame) {
+            Timer.sprite.showFrame(frame);
+            Timer.sprite.setFrameDirection(1);
+        }
+    }
+    Greed.Timer = Timer;
+})(Greed || (Greed = {}));
+var Greed;
+(function (Greed) {
+    var ƒ = FudgeCore;
     class Boss extends ƒ.Node {
         static bosses = [];
     }
@@ -445,6 +503,7 @@ var Greed;
             // collet item
             rigidBody.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
                 if (_event.cmpRigidbody.node.name === "Avatar" &&
+                    this.activeItem &&
                     Greed.gameState.coins >= this.activeItem.price) {
                     if (this.name === "SlotHeart" && Greed.gameState.availableHealth === Greed.gameState.health) {
                         return;

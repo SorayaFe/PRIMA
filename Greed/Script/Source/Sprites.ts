@@ -22,7 +22,6 @@ namespace Greed {
       ƒ.ORIGIN2D.CENTER,
       ƒ.Vector2.X(_spriteInfo.offsetNext)
     );
-
     animations[_spriteInfo.name] = sheetAnimation;
   }
 
@@ -31,6 +30,7 @@ namespace Greed {
     sprite.addComponent(new ƒ.ComponentTransform(new ƒ.Matrix4x4()));
     sprite.setAnimation(<ƒAid.SpriteSheetAnimation>animations[_name]);
     sprite.setFrameDirection(1);
+
     _node.addChild(sprite);
   }
 }

@@ -60,6 +60,15 @@ declare namespace Greed {
 }
 declare namespace Greed {
     import ƒ = FudgeCore;
+    class Timer extends ƒ.Node {
+        private static sprite;
+        constructor(_name: string);
+        private createTimer;
+        static showFrame(frame: number): void;
+    }
+}
+declare namespace Greed {
+    import ƒ = FudgeCore;
     class Boss extends ƒ.Node {
         static bosses: EnemyInterface[];
     }

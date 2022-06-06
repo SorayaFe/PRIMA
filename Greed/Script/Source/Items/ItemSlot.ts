@@ -40,6 +40,7 @@ namespace Greed {
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
         if (
           _event.cmpRigidbody.node.name === "Avatar" &&
+          this.activeItem &&
           gameState.coins >= this.activeItem.price
         ) {
           if (this.name === "SlotHeart" && gameState.availableHealth === gameState.health) {
