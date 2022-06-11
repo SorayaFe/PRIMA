@@ -29,14 +29,18 @@ namespace Greed {
   function init(_event: Event) {
     const dialog = document.getElementById("dialog");
     const start = document.querySelector("div.start");
+    let started = false;
 
     start.addEventListener("click", function (_event) {
-      start.children[0].classList.add("load");
-      startInteractiveViewport();
-      setTimeout(() => {
-        dialog.style.display = "none";
-        document.getElementById("outer").style.visibility = "visible";
-      }, 1500);
+      if (!started) {
+        started = true;
+        start.children[0].classList.add("load");
+        startInteractiveViewport();
+        setTimeout(() => {
+          dialog.style.display = "none";
+          document.getElementById("outer").style.visibility = "visible";
+        }, 1500);
+      }
     });
   }
 
