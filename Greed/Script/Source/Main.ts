@@ -2,7 +2,6 @@ namespace Greed {
   import ƒ = FudgeCore;
   ƒ.Debug.info("Main Program Template running!");
 
-  let dialog: HTMLDialogElement;
   window.addEventListener("load", init);
   document.addEventListener("interactiveViewportStarted", <EventListener>(<unknown>start));
 
@@ -28,16 +27,17 @@ namespace Greed {
   const amounts = [1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5];
 
   function init(_event: Event) {
-    dialog = document.querySelector("dialog");
-    dialog.querySelector("h1").textContent = document.title;
-    dialog.addEventListener("click", function (_event) {
-      // @ts-ignore until HTMLDialog is implemented by all browsers and available in dom.d.ts
-      dialog.close();
-      document.getElementById("outer").style.visibility = "visible";
+    const dialog = document.getElementById("dialog");
+    const start = document.querySelector("div.start");
+
+    start.addEventListener("click", function (_event) {
+      start.children[0].classList.add("load");
       startInteractiveViewport();
+      setTimeout(() => {
+        dialog.style.display = "none";
+        document.getElementById("outer").style.visibility = "visible";
+      }, 1500);
     });
-    //@ts-ignore
-    dialog.showModal();
   }
 
   async function startInteractiveViewport() {
@@ -59,8 +59,6 @@ namespace Greed {
     //canvas.requestPointerLock();
     const viewport: ƒ.Viewport = new ƒ.Viewport();
     viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
-    //TODO
-    // FudgeAid.Viewport.expandCameraToInteractiveOrbit(viewport);
     viewport.draw();
     canvas.dispatchEvent(
       new CustomEvent("interactiveViewportStarted", { bubbles: true, detail: viewport })

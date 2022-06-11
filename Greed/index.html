@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
+  <head>
     <title>Greed</title>
     <meta charset="utf-8" />
+    <link rel="icon" type="image/x-icon" href="Assets/coin.png" />
     <link rel="stylesheet" href="styles.css" />
 
     <!--Editor settings of this project-->
-    <meta type="settings" autoview="Graph|2022-05-24T16:14:09.425Z|32411" project="{'name':'Greed','includeAutoViewScript':false,'graphAutoView':'Graph|2022-05-24T16:14:09.425Z|32411'}" panels="[{'type':'PanelProject','state':{}},{'type':'PanelGraph','state':{'graph':'Graph|2022-05-24T16:14:09.425Z|32411'}}]" />
+    <meta
+      type="settings"
+      autoview="Graph|2022-05-24T16:14:09.425Z|32411"
+      project="{'name':'Greed','includeAutoViewScript':false,'graphAutoView':'Graph|2022-05-24T16:14:09.425Z|32411'}"
+      panels="[{'type':'PanelProject','state':{}},{'type':'PanelGraph','state':{'graph':'Graph|2022-05-24T16:14:09.425Z|32411'}}]"
+    />
 
     <!--Activate the following line to include the FUDGE-version of Oimo-Physics. You may want to download a local copy to work offline and be independent from future changes!-->
     <script type="text/javascript" src="../Fudge/OimoPhysics.js"></script>
@@ -24,18 +30,84 @@
   </head>
   <body>
     <!--Dialog shown at startup only-->
-    <dialog>
-      <h1>Title (will be replaced by autoView)</h1>
-      <p>click to start</p>
-    </dialog>
+
+    <div id="dialog">
+      <div class="title">
+        <h1>Greed (work in progress)</h1>
+
+        <div>Controls:</div>
+        <div class="font">
+          <p>Move: WASD</p>
+          <p>Shoot: Arrow keys</p>
+        </div>
+
+        <div class="start">
+          <div class="progress"></div>
+          <div>Start playing!</div>
+        </div>
+      </div>
+
+      <div class="infos">
+        <div class="description">
+          <div>How to play</div>
+          <div class="font">
+            <p>
+              - This game is a simplified version of the "Greed Mode" from "The Binding Of Isaac"
+            </p>
+            <p>- The goal of this game is to survive until the end</p>
+            <p>- The main room has a button at its center, press the button to start</p>
+            <p>- Once the button is pressed, a countdown starts and random enemies will appear</p>
+            <p>
+              - After either the countdown has completed or all existing enemies have been killed, a
+              new round starts
+            </p>
+            <p>- With the beginning of each round, you gain coins</p>
+            <p>- After the completion of ??? rounds you have completed one stage</p>
+            <p>- The door to the shop will open, where you can buy items to change your stats</p>
+            <p>- Not all items have positive effects, so choose carefully</p>
+            <p>- By pressing the button in the main room again you can start the next stage</p>
+            <p>- Survive until stage ??? to fight against the final boss and win the game!</p>
+          </div>
+        </div>
+        <div class="description">
+          <div>Info</div>
+          <div class="font">
+            <p>- 65 different items</p>
+            <p>- ??? different enemies</p>
+            <p>- ??? different bosses</p>
+            <!-- TODO add link -->
+            <p>
+              - If you want you can look at the item cheat sheet <a href="" target="_blank">here</a>
+            </p>
+          </div>
+          <div>Stats</div>
+          <div class="font">
+            <p>- Speed: Movement speed of avatar</p>
+            <p>- Damage: Damage of your projectiles</p>
+            <p>
+              - Fire rate: How fast you can shoot your next projectile (high fire rate = lower
+              timeout between shots)
+            </p>
+            <p>- Shot speed: How fast your projectiles are moving</p>
+            <p>- Projectile size: How big your projectiles are</p>
+            <p>- Range: How far your projectiles can travel</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="created font">
+        created by Soraya Ferdani using
+        <a href="https://github.com/JirkaDellOro/FUDGE" target="_blank">FUDGE</a>
+      </div>
+    </div>
+
     <!--Canvas for FUDGE to render to-->
     <canvas class="fullscreen"> </canvas>
 
     <div id="outer">
       <div id="vui">
         <div class="grid">
-          <div id="hearts">
-</div>
+          <div id="hearts"></div>
 
           <div id="stats">
             <div class="stat">
@@ -76,15 +148,10 @@
       <div id="item-info">
         <div class="img-grid">
           <img class="bg-img" src="Assets/infotext-bg.png" alt="background" />
-          <div class="name">
-</div>
+          <div class="name"></div>
         </div>
-        <div class="description">
-</div>
+        <div class="description"></div>
       </div>
     </div>
-  
-
-
-</body>
+  </body>
 </html>
