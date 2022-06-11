@@ -3,26 +3,30 @@ namespace Greed {
   import ƒUi = FudgeUserInterface;
 
   export class GameState extends ƒ.Mutable {
-    availableHealth: number = 3;
+    public availableHealth: number = 3;
     //TODO coins amount
-    coins: number = 1000;
+    public coins: number = 1000;
 
-    health: number = 3;
-    speed: number = 1;
-    damage: number = 3.5;
-    fireRate: number = 1900;
-    shotSpeed: number = 2.3;
-    projectileSize: number = 0.3;
-    range: number = 5;
+    public health: number = 3;
+    public speed: number = 1;
+    public damage: number = 3.5;
+    public fireRate: number = 1900;
+    public shotSpeed: number = 2.3;
+    public projectileSize: number = 0.3;
+    public range: number = 5;
 
-    canShoot = true;
-    heartsContainer: HTMLElement;
+    public canShoot = true;
+    public isInvincible = false;
+
+    private heartsContainer: HTMLElement;
+    private audio: ƒ.ComponentAudio;
 
     public constructor() {
       super();
       const domVui: HTMLDivElement = document.querySelector("div#vui");
       console.log("Vui-Controller", new ƒUi.Controller(this, domVui));
       this.heartsContainer = document.getElementById("hearts");
+      this.audio = sounds.find((s) => s.getAudio().name === "Die");
       this.updateHealth();
     }
 
@@ -47,6 +51,10 @@ namespace Greed {
       }
 
       this.heartsContainer.innerHTML = innerHtml;
+
+      if (this.availableHealth <= 0) {
+        this.audio.play(true);
+      }
     }
   }
 }

@@ -15,22 +15,25 @@ namespace Greed {
 
     private direction: string;
     private initialPosition: ƒ.Vector3;
+
     private rigidBody: ƒ.ComponentRigidbody;
+    private audio: ƒ.ComponentAudio;
+
     private stop = false;
 
     constructor(_name: string, _direction: string, _position: ƒ.Vector3) {
       super(_name);
       this.direction = _direction;
       this.initialPosition = _position.clone;
+      this.audio = sounds.find((s) => s.getAudio().name === "Projectile");
       this.createProjectile(_position);
     }
 
     private createProjectile(_position: ƒ.Vector3): void {
       const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
       cmpTransform.mtxLocal.translation = _position;
-      cmpTransform.mtxLocal.scale(
-        new ƒ.Vector3(gameState.projectileSize, gameState.projectileSize, gameState.projectileSize)
-      );
+      const projectileSize = this.name === "ProjectileAvatar" ? gameState.projectileSize : 0.3;
+      cmpTransform.mtxLocal.scale(new ƒ.Vector3(projectileSize, projectileSize, projectileSize));
 
       this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
       this.addComponent(
@@ -57,7 +60,8 @@ namespace Greed {
 
       this.rigidBody.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
         if (
-          _event.cmpRigidbody.node.name === "Enemy" ||
+          (this.name === "ProjectileAvatar" && _event.cmpRigidbody.node.name === "Enemy") ||
+          (this.name === "ProjectileEnemy" && _event.cmpRigidbody.node.name === "Avatar") ||
           _event.cmpRigidbody.node.name === "Wall" ||
           _event.cmpRigidbody.node.name === "Door"
         ) {
@@ -72,18 +76,20 @@ namespace Greed {
           this.rigidBody.applyForce(new ƒ.Vector3(0, 9.8, 0));
 
           let vector = new ƒ.Vector3();
+          const shotSpeed = this.name === "ProjectileAvatar" ? gameState.shotSpeed : 2.3;
+
           switch (this.direction) {
             case "x":
-              vector = ƒ.Vector3.X(gameState.shotSpeed);
+              vector = ƒ.Vector3.X(shotSpeed);
               break;
             case "-x":
-              vector = ƒ.Vector3.X(-gameState.shotSpeed);
+              vector = ƒ.Vector3.X(-shotSpeed);
               break;
             case "y":
-              vector = ƒ.Vector3.Y(gameState.shotSpeed);
+              vector = ƒ.Vector3.Y(shotSpeed);
               break;
             case "-y":
-              vector = ƒ.Vector3.Y(-gameState.shotSpeed);
+              vector = ƒ.Vector3.Y(-shotSpeed);
               break;
 
             default:
@@ -96,7 +102,7 @@ namespace Greed {
             this.initialPosition
           );
 
-          if (distanceTraveled >= gameState.range) {
+          if (distanceTraveled >= ("ProjectileAvatar" ? gameState.range : 5)) {
             this.removeProjectile();
           }
         }
@@ -107,6 +113,7 @@ namespace Greed {
       this.stop = true;
       this.rigidBody.setVelocity(new ƒ.Vector3(0, -1, 0));
       setTimeout(() => {
+        this.audio.play(true);
         graph.removeChild(this);
       }, 100);
     }

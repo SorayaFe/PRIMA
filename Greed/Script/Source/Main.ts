@@ -8,16 +8,24 @@ namespace Greed {
 
   export let gameState: GameState;
   export let graph: ƒ.Node;
+  export let sounds: ƒ.ComponentAudio[];
+  export let enemiesNode: ƒ.Node;
 
   let viewport: ƒ.Viewport;
   let avatar: Avatar;
   let bars: ƒ.Node;
   let button: ƒ.Node;
 
+  let doorAudio: ƒ.ComponentAudio;
+  let coinAudio: ƒ.ComponentAudio;
+  let stageCompleteAudio: ƒ.ComponentAudio;
+
   let isFighting: boolean = false;
-  //let stage: number = 0;
-  let remainingRounds: number = 4;
+  let stage: number = 0;
+  let remainingRounds: number = 5;
   let timer: ƒ.Timer;
+
+  const amounts = [1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5];
 
   function init(_event: Event) {
     dialog = document.querySelector("dialog");
@@ -63,6 +71,10 @@ namespace Greed {
     viewport = _event.detail;
     viewport.camera.mtxPivot.rotateY(180);
     graph = viewport.getBranch();
+    ƒ.AudioManager.default.listenTo(graph);
+    sounds = graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
+    graph.addEventListener("lastEnemyKilled", hndLastEnemyKilled);
+    gameState = new GameState();
 
     // load config
     const items: Response = await fetch("Script/Source/Config/items.json");
@@ -72,15 +84,20 @@ namespace Greed {
     Enemy.enemies = enemiesArray.filter((e) => !e.isBoss);
     Boss.bosses = enemiesArray.filter((e) => e.isBoss);
 
-    gameState = new GameState();
     const room: ƒ.Node = graph.getChildrenByName("Room")[0];
 
-    // assign variables and add nodes
+    // assign sounds
+    doorAudio = sounds.find((s) => s.getAudio().name === "Door");
+    coinAudio = sounds.find((s) => s.getAudio().name === "Money");
+    stageCompleteAudio = sounds.find((s) => s.getAudio().name === "StageComplete");
+
+    // assign nodes and add nodes
     bars = room.getChildrenByName("Door")[0];
     bars.activate(false);
     button = room.getChildrenByName("Button")[0];
     avatar = new Avatar("Avatar", viewport.camera);
     graph.addChild(avatar);
+    enemiesNode = room.getChildrenByName("Enemies")[0];
     room.addChild(new Timer("Timer"));
 
     setItemSlots();
@@ -90,9 +107,7 @@ namespace Greed {
       .getComponent(ƒ.ComponentRigidbody)
       .addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
         if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting) {
-          button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
-          bars.activate(true);
-          setTimer();
+          hndButtonTouched(button);
         }
       });
 
@@ -116,6 +131,24 @@ namespace Greed {
     itemSlots.addChild(new ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
   }
 
+  function hndButtonTouched(_button: ƒ.Node): void {
+    _button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
+    bars.activate(true);
+    doorAudio.play(true);
+    setTimer();
+  }
+
+  function hndLastEnemyKilled(): void {
+    if (remainingRounds === 0) {
+      stage++;
+      stageCompleteAudio.play(true);
+      bars.activate(false);
+      doorAudio.play(true);
+    } else {
+      this.setTimer();
+    }
+  }
+
   function setTimer(): void {
     if (timer) {
       timer.clear();
@@ -124,15 +157,37 @@ namespace Greed {
     isFighting = true;
     startNewRound();
 
-    timer = new ƒ.Timer(ƒ.Time.game, 11000, remainingRounds, () => {
-      startNewRound();
-    });
+    if (remainingRounds !== 0) {
+      timer = new ƒ.Timer(ƒ.Time.game, stage < 4 ? 11000 : 31000, remainingRounds, () => {
+        startNewRound();
+      });
+    }
   }
 
   function startNewRound(): void {
-    console.log("new round started");
+    gameState.coins += 5;
+    coinAudio.play(true);
     remainingRounds--;
-    Timer.showFrame(20);
+
+    if (remainingRounds === 0) {
+      Timer.showFrame(30, true);
+    } else {
+      Timer.showFrame(stage < 4 ? 20 : 0);
+    }
+    createEnemies();
+  }
+
+  function createEnemies(): void {
+    const enemy: EnemyInterface = ƒ.Random.default.getElement(Enemy.enemies);
+    gameState.isInvincible = true;
+
+    for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
+      enemiesNode.addChild(new Enemy("Enemy", enemy));
+    }
+
+    setTimeout(() => {
+      gameState.isInvincible = false;
+    }, 1000);
   }
 
   function update(_event: Event): void {

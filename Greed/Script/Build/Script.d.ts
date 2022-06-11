@@ -3,6 +3,7 @@ declare namespace Greed {
     class Avatar extends ƒ.Node {
         private sprite;
         private camera;
+        private audio;
         private walkX;
         private walkY;
         private isInShop;
@@ -27,7 +28,9 @@ declare namespace Greed {
         projectileSize: number;
         range: number;
         canShoot: boolean;
-        heartsContainer: HTMLElement;
+        isInvincible: boolean;
+        private heartsContainer;
+        private audio;
         constructor();
         protected reduceMutator(_mutator: ƒ.Mutator): void;
         setShotTimeout(): void;
@@ -38,6 +41,8 @@ declare namespace Greed {
     import ƒ = FudgeCore;
     let gameState: GameState;
     let graph: ƒ.Node;
+    let sounds: ƒ.ComponentAudio[];
+    let enemiesNode: ƒ.Node;
 }
 declare namespace Greed {
     import ƒ = FudgeCore;
@@ -47,6 +52,7 @@ declare namespace Greed {
         private direction;
         private initialPosition;
         private rigidBody;
+        private audio;
         private stop;
         constructor(_name: string, _direction: string, _position: ƒ.Vector3);
         private createProjectile;
@@ -64,25 +70,29 @@ declare namespace Greed {
         private static sprite;
         constructor(_name: string);
         private createTimer;
-        static showFrame(frame: number): void;
-    }
-}
-declare namespace Greed {
-    import ƒ = FudgeCore;
-    class Boss extends ƒ.Node {
-        static bosses: EnemyInterface[];
+        static showFrame(frame: number, stop?: boolean): void;
     }
 }
 declare namespace Greed {
     import ƒ = FudgeCore;
     class Enemy extends ƒ.Node {
         static enemies: EnemyInterface[];
-        enemy: EnemyInterface;
+        private enemy;
+        private health;
+        private audio;
+        private script;
         constructor(_name: string, _enemy: EnemyInterface);
         private createEnemy;
-        private addScripts;
+        protected addScripts(): void;
         private hndHit;
         private die;
+    }
+}
+declare namespace Greed {
+    class Boss extends Enemy {
+        static bosses: EnemyInterface[];
+        constructor(_name: string, _enemy: EnemyInterface);
+        protected addScripts(): void;
     }
 }
 declare namespace Greed {
@@ -141,6 +151,7 @@ declare namespace Greed {
         static overlay: HTMLElement;
         protected activeItem: Item;
         private priceTag;
+        private audio;
         constructor(_name: string, _position: ƒ.Vector3, _priceTag: PriceTag);
         private createItemSlot;
         protected getItem(): void;
@@ -167,10 +178,27 @@ declare namespace Greed {
 }
 declare namespace Greed {
     import ƒ = FudgeCore;
-    class CustomComponentScript extends ƒ.ComponentScript {
+    abstract class BasicScript extends ƒ.ComponentScript {
         static readonly iSubclass: number;
-        message: string;
+        protected rigidBody: ƒ.ComponentRigidbody;
         constructor();
-        hndEvent: (_event: Event) => void;
+        private hndEvent;
+        private update;
+        protected abstract addInitialBehavior(): void;
+        protected abstract addBehavior(): void;
+        protected abstract clearTimers(): void;
+    }
+}
+declare namespace Greed {
+    class Shoot2Script extends BasicScript {
+        private shotTimer;
+        private movementTimer;
+        private vector;
+        constructor();
+        protected addInitialBehavior(): void;
+        protected addBehavior(): void;
+        protected clearTimers(): void;
+        private setupTimers;
+        private addProjectile;
     }
 }

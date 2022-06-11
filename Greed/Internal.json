@@ -117,6 +117,78 @@
       }
     }
   },
+  "Audio|2022-06-11T12:29:27.607Z|55125": {
+    "ƒ.Audio": {
+      "url": "Sounds\\die.mp3",
+      "idResource": "Audio|2022-06-11T12:29:27.607Z|55125",
+      "name": "Die",
+      "type": "Audio"
+    }
+  },
+  "Audio|2022-06-11T12:29:32.151Z|62659": {
+    "ƒ.Audio": {
+      "url": "Sounds\\door.mp3",
+      "idResource": "Audio|2022-06-11T12:29:32.151Z|62659",
+      "name": "Door",
+      "type": "Audio"
+    }
+  },
+  "Audio|2022-06-11T12:29:35.109Z|94409": {
+    "ƒ.Audio": {
+      "url": "Sounds\\enemy-die.mp3",
+      "idResource": "Audio|2022-06-11T12:29:35.109Z|94409",
+      "name": "EnemyDie",
+      "type": "Audio"
+    }
+  },
+  "Audio|2022-06-11T12:29:38.113Z|26514": {
+    "ƒ.Audio": {
+      "url": "Sounds\\hurt.mp3",
+      "idResource": "Audio|2022-06-11T12:29:38.113Z|26514",
+      "name": "Hurt",
+      "type": "Audio"
+    }
+  },
+  "Audio|2022-06-11T12:29:41.792Z|12626": {
+    "ƒ.Audio": {
+      "url": "Sounds\\item.mp3",
+      "idResource": "Audio|2022-06-11T12:29:41.792Z|12626",
+      "name": "Item",
+      "type": "Audio"
+    }
+  },
+  "Audio|2022-06-11T12:29:44.762Z|73560": {
+    "ƒ.Audio": {
+      "url": "Sounds\\money.mp3",
+      "idResource": "Audio|2022-06-11T12:29:44.762Z|73560",
+      "name": "Money",
+      "type": "Audio"
+    }
+  },
+  "Audio|2022-06-11T12:29:47.834Z|39036": {
+    "ƒ.Audio": {
+      "url": "Sounds\\projectile.mp3",
+      "idResource": "Audio|2022-06-11T12:29:47.834Z|39036",
+      "name": "Projectile",
+      "type": "Audio"
+    }
+  },
+  "Audio|2022-06-11T12:29:51.389Z|62106": {
+    "ƒ.Audio": {
+      "url": "Sounds\\restock.mp3",
+      "idResource": "Audio|2022-06-11T12:29:51.389Z|62106",
+      "name": "Restock",
+      "type": "Audio"
+    }
+  },
+  "Audio|2022-06-11T12:29:55.078Z|06669": {
+    "ƒ.Audio": {
+      "url": "Sounds\\stage-complete.mp3",
+      "idResource": "Audio|2022-06-11T12:29:55.078Z|06669",
+      "name": "StageComplete",
+      "type": "Audio"
+    }
+  },
   "Graph|2022-05-24T16:14:09.425Z|32411": {
     "ƒ.Graph": {
       "name": "Game",
@@ -1181,6 +1253,105 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "ƒ.Node": {
+            "name": "Sound",
+            "active": true,
+            "components": {
+              "ComponentAudioListener": [
+                {
+                  "ƒ.ComponentAudioListener": {
+                    "active": true
+                  }
+                }
+              ],
+              "ComponentAudio": [
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-06-11T12:29:27.607Z|55125",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.5
+                  }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-06-11T12:29:32.151Z|62659",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.5
+                  }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-06-11T12:29:35.109Z|94409",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.5
+                  }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-06-11T12:29:38.113Z|26514",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.5
+                  }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-06-11T12:29:41.792Z|12626",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.20000001788139343
+                  }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-06-11T12:29:44.762Z|73560",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.5
+                  }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-06-11T12:29:47.834Z|39036",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.20000001788139343
+                  }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-06-11T12:29:51.389Z|62106",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.5
+                  }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-06-11T12:29:55.078Z|06669",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.5
+                  }
+                }
+              ]
+            },
+            "children": []
           }
         }
       ],

@@ -1,7 +1,15 @@
-namespace Greed {
-  import ƒ = FudgeCore;
+/// <reference path="./Enemy.ts" />
 
-  export class Boss extends ƒ.Node {
+namespace Greed {
+  export class Boss extends Enemy {
     public static bosses: EnemyInterface[] = [];
+
+    constructor(_name: string, _enemy: EnemyInterface) {
+      super(_name, _enemy);
+    }
+
+    protected addScripts(): void {
+      // add state machine
+    }
   }
 }

@@ -5,12 +5,14 @@ var Greed;
     class Avatar extends ƒ.Node {
         sprite;
         camera;
+        audio;
         walkX = new ƒ.Control("walkX", 2, 0 /* PROPORTIONAL */, 150);
         walkY = new ƒ.Control("walkY", 2, 0 /* PROPORTIONAL */, 150);
         isInShop = false;
         constructor(_name, _camera) {
             super(_name);
             this.camera = _camera;
+            this.audio = Greed.sounds.find((s) => s.getAudio().name === "Hurt");
             this.createAvatar();
         }
         async createAvatar() {
@@ -39,7 +41,7 @@ var Greed;
             rigidBody.mtxPivot.translateY(-0.2);
             this.addComponent(rigidBody);
             rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
-                if (_event.cmpRigidbody.node.name === "Enemy") {
+                if (_event.cmpRigidbody.node.name === "Enemy" && !Greed.gameState.isInvincible) {
                     this.hndHit();
                 }
             });
@@ -100,8 +102,8 @@ var Greed;
             }
         }
         hndHit() {
-            // TODO handle projectile hit
             Greed.gameState.availableHealth -= 1;
+            this.audio.play(true);
             Greed.gameState.updateHealth();
         }
     }
@@ -123,12 +125,15 @@ var Greed;
         projectileSize = 0.3;
         range = 5;
         canShoot = true;
+        isInvincible = false;
         heartsContainer;
+        audio;
         constructor() {
             super();
             const domVui = document.querySelector("div#vui");
             console.log("Vui-Controller", new ƒUi.Controller(this, domVui));
             this.heartsContainer = document.getElementById("hearts");
+            this.audio = Greed.sounds.find((s) => s.getAudio().name === "Die");
             this.updateHealth();
         }
         reduceMutator(_mutator) { }
@@ -148,6 +153,9 @@ var Greed;
                 innerHtml += '<div class="heart empty"></div>';
             }
             this.heartsContainer.innerHTML = innerHtml;
+            if (this.availableHealth <= 0) {
+                this.audio.play(true);
+            }
         }
     }
     Greed.GameState = GameState;
@@ -163,10 +171,14 @@ var Greed;
     let avatar;
     let bars;
     let button;
+    let doorAudio;
+    let coinAudio;
+    let stageCompleteAudio;
     let isFighting = false;
-    //let stage: number = 0;
-    let remainingRounds = 4;
+    let stage = 0;
+    let remainingRounds = 5;
     let timer;
+    const amounts = [1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5];
     function init(_event) {
         dialog = document.querySelector("dialog");
         dialog.querySelector("h1").textContent = document.title;
@@ -202,6 +214,10 @@ var Greed;
         viewport = _event.detail;
         viewport.camera.mtxPivot.rotateY(180);
         Greed.graph = viewport.getBranch();
+        ƒ.AudioManager.default.listenTo(Greed.graph);
+        Greed.sounds = Greed.graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
+        Greed.graph.addEventListener("lastEnemyKilled", hndLastEnemyKilled);
+        Greed.gameState = new Greed.GameState();
         // load config
         const items = await fetch("Script/Source/Config/items.json");
         const enemies = await fetch("Script/Source/Config/enemies.json");
@@ -209,14 +225,18 @@ var Greed;
         Greed.ItemSlot.items = (await items.json()).items;
         Greed.Enemy.enemies = enemiesArray.filter((e) => !e.isBoss);
         Greed.Boss.bosses = enemiesArray.filter((e) => e.isBoss);
-        Greed.gameState = new Greed.GameState();
         const room = Greed.graph.getChildrenByName("Room")[0];
-        // assign variables and add nodes
+        // assign sounds
+        doorAudio = Greed.sounds.find((s) => s.getAudio().name === "Door");
+        coinAudio = Greed.sounds.find((s) => s.getAudio().name === "Money");
+        stageCompleteAudio = Greed.sounds.find((s) => s.getAudio().name === "StageComplete");
+        // assign nodes and add nodes
         bars = room.getChildrenByName("Door")[0];
         bars.activate(false);
         button = room.getChildrenByName("Button")[0];
         avatar = new Greed.Avatar("Avatar", viewport.camera);
         Greed.graph.addChild(avatar);
+        Greed.enemiesNode = room.getChildrenByName("Enemies")[0];
         room.addChild(new Greed.Timer("Timer"));
         setItemSlots();
         // button trigger listener
@@ -224,9 +244,7 @@ var Greed;
             .getComponent(ƒ.ComponentRigidbody)
             .addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
             if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting) {
-                button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
-                bars.activate(true);
-                setTimer();
+                hndButtonTouched(button);
             }
         });
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
@@ -247,20 +265,56 @@ var Greed;
         itemSlots.addChild(new Greed.HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
         itemSlots.addChild(new Greed.ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
     }
+    function hndButtonTouched(_button) {
+        _button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
+        bars.activate(true);
+        doorAudio.play(true);
+        setTimer();
+    }
+    function hndLastEnemyKilled() {
+        if (remainingRounds === 0) {
+            stage++;
+            stageCompleteAudio.play(true);
+            bars.activate(false);
+            doorAudio.play(true);
+        }
+        else {
+            this.setTimer();
+        }
+    }
     function setTimer() {
         if (timer) {
             timer.clear();
         }
         isFighting = true;
         startNewRound();
-        timer = new ƒ.Timer(ƒ.Time.game, 11000, remainingRounds, () => {
-            startNewRound();
-        });
+        if (remainingRounds !== 0) {
+            timer = new ƒ.Timer(ƒ.Time.game, stage < 4 ? 11000 : 31000, remainingRounds, () => {
+                startNewRound();
+            });
+        }
     }
     function startNewRound() {
-        console.log("new round started");
+        Greed.gameState.coins += 5;
+        coinAudio.play(true);
         remainingRounds--;
-        Greed.Timer.showFrame(20);
+        if (remainingRounds === 0) {
+            Greed.Timer.showFrame(30, true);
+        }
+        else {
+            Greed.Timer.showFrame(stage < 4 ? 20 : 0);
+        }
+        createEnemies();
+    }
+    function createEnemies() {
+        const enemy = ƒ.Random.default.getElement(Greed.Enemy.enemies);
+        Greed.gameState.isInvincible = true;
+        for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
+            Greed.enemiesNode.addChild(new Greed.Enemy("Enemy", enemy));
+        }
+        setTimeout(() => {
+            Greed.gameState.isInvincible = false;
+        }, 1000);
     }
     function update(_event) {
         ƒ.Physics.simulate();
@@ -278,17 +332,20 @@ var Greed;
         direction;
         initialPosition;
         rigidBody;
+        audio;
         stop = false;
         constructor(_name, _direction, _position) {
             super(_name);
             this.direction = _direction;
             this.initialPosition = _position.clone;
+            this.audio = Greed.sounds.find((s) => s.getAudio().name === "Projectile");
             this.createProjectile(_position);
         }
         createProjectile(_position) {
             const cmpTransform = new ƒ.ComponentTransform();
             cmpTransform.mtxLocal.translation = _position;
-            cmpTransform.mtxLocal.scale(new ƒ.Vector3(Greed.gameState.projectileSize, Greed.gameState.projectileSize, Greed.gameState.projectileSize));
+            const projectileSize = this.name === "ProjectileAvatar" ? Greed.gameState.projectileSize : 0.3;
+            cmpTransform.mtxLocal.scale(new ƒ.Vector3(projectileSize, projectileSize, projectileSize));
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
             this.addComponent(new ƒ.ComponentMaterial(this.name === "ProjectileAvatar"
                 ? Projectile.mtrProjectileAvatar
@@ -300,7 +357,8 @@ var Greed;
             this.rigidBody.isTrigger = true;
             this.addComponent(this.rigidBody);
             this.rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
-                if (_event.cmpRigidbody.node.name === "Enemy" ||
+                if ((this.name === "ProjectileAvatar" && _event.cmpRigidbody.node.name === "Enemy") ||
+                    (this.name === "ProjectileEnemy" && _event.cmpRigidbody.node.name === "Avatar") ||
                     _event.cmpRigidbody.node.name === "Wall" ||
                     _event.cmpRigidbody.node.name === "Door") {
                     this.removeProjectile();
@@ -312,25 +370,26 @@ var Greed;
                 if (this.rigidBody && !this.stop) {
                     this.rigidBody.applyForce(new ƒ.Vector3(0, 9.8, 0));
                     let vector = new ƒ.Vector3();
+                    const shotSpeed = this.name === "ProjectileAvatar" ? Greed.gameState.shotSpeed : 2.3;
                     switch (this.direction) {
                         case "x":
-                            vector = ƒ.Vector3.X(Greed.gameState.shotSpeed);
+                            vector = ƒ.Vector3.X(shotSpeed);
                             break;
                         case "-x":
-                            vector = ƒ.Vector3.X(-Greed.gameState.shotSpeed);
+                            vector = ƒ.Vector3.X(-shotSpeed);
                             break;
                         case "y":
-                            vector = ƒ.Vector3.Y(Greed.gameState.shotSpeed);
+                            vector = ƒ.Vector3.Y(shotSpeed);
                             break;
                         case "-y":
-                            vector = ƒ.Vector3.Y(-Greed.gameState.shotSpeed);
+                            vector = ƒ.Vector3.Y(-shotSpeed);
                             break;
                         default:
                             break;
                     }
                     this.rigidBody.setVelocity(vector);
                     const distanceTraveled = this.mtxLocal.translation.getDistance(this.initialPosition);
-                    if (distanceTraveled >= Greed.gameState.range) {
+                    if (distanceTraveled >= ("ProjectileAvatar" ? Greed.gameState.range : 5)) {
                         this.removeProjectile();
                     }
                 }
@@ -340,6 +399,7 @@ var Greed;
             this.stop = true;
             this.rigidBody.setVelocity(new ƒ.Vector3(0, -1, 0));
             setTimeout(() => {
+                this.audio.play(true);
                 Greed.graph.removeChild(this);
             }, 100);
         }
@@ -400,12 +460,11 @@ var Greed;
             Greed.setSprite(this, spriteInfo.name);
             Timer.sprite = this.getChildrenByName("Sprite")[0];
             Timer.sprite.framerate = 1;
-            Timer.sprite.setFrameDirection(0);
-            Timer.sprite.showFrame(30);
+            Timer.showFrame(30, true);
         }
-        static showFrame(frame) {
+        static showFrame(frame, stop = false) {
             Timer.sprite.showFrame(frame);
-            Timer.sprite.setFrameDirection(1);
+            Timer.sprite.setFrameDirection(stop ? 0 : 1);
         }
     }
     Greed.Timer = Timer;
@@ -413,43 +472,83 @@ var Greed;
 var Greed;
 (function (Greed) {
     var ƒ = FudgeCore;
-    class Boss extends ƒ.Node {
-        static bosses = [];
-    }
-    Greed.Boss = Boss;
-})(Greed || (Greed = {}));
-var Greed;
-(function (Greed) {
-    var ƒ = FudgeCore;
     class Enemy extends ƒ.Node {
         static enemies = [];
         enemy;
+        health;
+        audio;
+        script;
         constructor(_name, _enemy) {
             super(_name);
             this.enemy = _enemy;
+            this.health = this.enemy.health;
+            this.audio = Greed.sounds.find((s) => s.getAudio().name === "EnemyDie");
             this.createEnemy();
         }
-        createEnemy() {
-            // create enemy
-            // rigid body listender
-            this.hndHit();
+        async createEnemy() {
+            const cmpTransform = new ƒ.ComponentTransform();
+            cmpTransform.mtxLocal.translation = ƒ.Random.default.getVector3(new ƒ.Vector3(0, 0, 0.1), new ƒ.Vector3(15, 20, 0.1));
+            this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshCube()));
+            this.addComponent(cmpTransform);
+            // create sprite
+            await Greed.loadSprites(this.enemy.sprite);
+            Greed.setSprite(this, this.enemy.sprite.name);
+            // add rigid body
+            const rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.CUBE, undefined, this.mtxLocal);
+            rigidBody.mtxPivot.translateY(-0.2);
+            rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
+            rigidBody.effectGravity = 0;
+            this.addComponent(rigidBody);
+            rigidBody.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
+                if (_event.cmpRigidbody.node.name === "ProjectileAvatar") {
+                    this.hndHit();
+                }
+            });
             this.addScripts();
         }
         addScripts() {
-            // add enemy script based on type
+            switch (this.enemy.type) {
+                case Greed.EnemyType.SHOOT_2:
+                    this.script = new Greed.Shoot2Script();
+                    this.addComponent(this.script);
+                    break;
+                default:
+                    break;
+            }
         }
         hndHit() {
-            // handle projectile hit
-            if (this.enemy.health <= 0) {
-                this.die();
+            this.health -= Greed.gameState.damage;
+            if (this.health <= 0) {
+                setTimeout(() => {
+                    this.die();
+                }, 105);
             }
         }
         die() {
-            // remove enemy and check if it was the last remaining enemy
-            // event if it was last enemy
+            this.audio.play(true);
+            this.removeComponent(this.script);
+            Greed.enemiesNode.removeChild(this);
+            if (Greed.enemiesNode.getChildren().length === 0) {
+                this.dispatchEvent(new Event("lastEnemyKilled", { bubbles: true }));
+            }
         }
     }
     Greed.Enemy = Enemy;
+})(Greed || (Greed = {}));
+/// <reference path="./Enemy.ts" />
+var Greed;
+/// <reference path="./Enemy.ts" />
+(function (Greed) {
+    class Boss extends Greed.Enemy {
+        static bosses = [];
+        constructor(_name, _enemy) {
+            super(_name, _enemy);
+        }
+        addScripts() {
+            // add state machine
+        }
+    }
+    Greed.Boss = Boss;
 })(Greed || (Greed = {}));
 var Greed;
 (function (Greed) {
@@ -483,12 +582,14 @@ var Greed;
         static overlay;
         activeItem;
         priceTag;
+        audio;
         constructor(_name, _position, _priceTag) {
             super(_name);
             if (!ItemSlot.overlay) {
                 ItemSlot.overlay = document.getElementById("item-info");
             }
             this.priceTag = _priceTag;
+            this.audio = Greed.sounds.find((s) => s.getAudio().name === "Item");
             this.createItemSlot(_position);
         }
         async createItemSlot(_position) {
@@ -541,6 +642,7 @@ var Greed;
         }
         applyNewItem() {
             Greed.gameState.coins -= this.activeItem.price;
+            this.audio.play(true);
             this.applyItemEffects();
             // remove item from display
             this.removeChild(this.getChildrenByName("Sprite")[0]);
@@ -659,38 +761,74 @@ var Greed;
 var Greed;
 (function (Greed) {
     var ƒ = FudgeCore;
-    ƒ.Project.registerScriptNamespace(Greed); // Register the namespace to FUDGE for serialization
-    class CustomComponentScript extends ƒ.ComponentScript {
-        // Register the script as component for use in the editor via drag&drop
-        static iSubclass = ƒ.Component.registerSubclass(CustomComponentScript);
-        // Properties may be mutated by users in the editor via the automatically created user interface
-        message = "CustomComponentScript added to ";
+    ƒ.Project.registerScriptNamespace(Greed);
+    class BasicScript extends ƒ.ComponentScript {
+        static iSubclass = ƒ.Component.registerSubclass(BasicScript);
+        rigidBody;
         constructor() {
             super();
-            // Don't start when running in editor
             if (ƒ.Project.mode == ƒ.MODE.EDITOR)
                 return;
-            // Listen to this component being added to or removed from a node
             this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
             this.addEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
-            this.addEventListener("nodeDeserialized" /* NODE_DESERIALIZED */, this.hndEvent);
         }
-        // Activate the functions of this component as response to events
         hndEvent = (_event) => {
-            switch (_event.type) {
-                case "componentAdd" /* COMPONENT_ADD */:
-                    ƒ.Debug.log(this.message, this.node);
-                    break;
-                case "componentRemove" /* COMPONENT_REMOVE */:
-                    this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
-                    this.removeEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
-                    break;
-                case "nodeDeserialized" /* NODE_DESERIALIZED */:
-                    // if deserialized the node is now fully reconstructed and access to all its components and children is possible
-                    break;
+            if (_event.type === "componentAdd" /* COMPONENT_ADD */) {
+                this.rigidBody = this.node.getComponent(ƒ.ComponentRigidbody);
+                this.addInitialBehavior();
+                ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
+            }
+            else if (_event.type === "componentRemove" /* COMPONENT_REMOVE */) {
+                this.clearTimers();
+                ƒ.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, this.update);
             }
         };
+        update = () => {
+            this.addBehavior();
+        };
     }
-    Greed.CustomComponentScript = CustomComponentScript;
+    Greed.BasicScript = BasicScript;
+})(Greed || (Greed = {}));
+/// <reference path="./BasicScript.ts" />
+var Greed;
+/// <reference path="./BasicScript.ts" />
+(function (Greed) {
+    var ƒ = FudgeCore;
+    ƒ.Project.registerScriptNamespace(Greed);
+    class Shoot2Script extends Greed.BasicScript {
+        shotTimer;
+        movementTimer;
+        vector = ƒ.Random.default.getVector3(new ƒ.Vector3(0.5, 0.5, 0.1), new ƒ.Vector3(-0.5, -0.5, 0.1));
+        constructor() {
+            super();
+        }
+        addInitialBehavior() {
+            this.addProjectile("x");
+            this.addProjectile("-x");
+            this.setupTimers();
+        }
+        addBehavior() {
+            this.rigidBody.setVelocity(this.vector);
+        }
+        clearTimers() {
+            this.shotTimer.clear();
+            this.movementTimer.clear();
+        }
+        setupTimers() {
+            this.shotTimer = new ƒ.Timer(ƒ.Time.game, 2000, 0, () => {
+                this.addProjectile("x");
+                this.addProjectile("-x");
+            });
+            this.movementTimer = new ƒ.Timer(ƒ.Time.game, 4100, 0, () => {
+                this.vector = ƒ.Random.default.getVector3(new ƒ.Vector3(0.5, 0.5, 0), new ƒ.Vector3(-0.5, -0.5, 0));
+            });
+        }
+        addProjectile(_direction) {
+            const projectile = new Greed.Projectile("ProjectileEnemy", _direction, this.node.mtxLocal.translation);
+            Greed.graph.addChild(projectile);
+            projectile.moveProjectile();
+        }
+    }
+    Greed.Shoot2Script = Shoot2Script;
 })(Greed || (Greed = {}));
 //# sourceMappingURL=Script.js.map

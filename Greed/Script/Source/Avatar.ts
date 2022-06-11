@@ -4,6 +4,7 @@ namespace Greed {
   export class Avatar extends ƒ.Node {
     private sprite: ƒAid.NodeSprite;
     private camera: ƒ.ComponentCamera;
+    private audio: ƒ.ComponentAudio;
 
     private walkX: ƒ.Control = new ƒ.Control("walkX", 2, ƒ.CONTROL_TYPE.PROPORTIONAL, 150);
     private walkY: ƒ.Control = new ƒ.Control("walkY", 2, ƒ.CONTROL_TYPE.PROPORTIONAL, 150);
@@ -13,6 +14,7 @@ namespace Greed {
     constructor(_name: string, _camera: ƒ.ComponentCamera) {
       super(_name);
       this.camera = _camera;
+      this.audio = sounds.find((s) => s.getAudio().name === "Hurt");
       this.createAvatar();
     }
 
@@ -54,7 +56,7 @@ namespace Greed {
       this.addComponent(rigidBody);
 
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name === "Enemy") {
+        if (_event.cmpRigidbody.node.name === "Enemy" && !gameState.isInvincible) {
           this.hndHit();
         }
       });
@@ -138,8 +140,8 @@ namespace Greed {
     }
 
     private hndHit(): void {
-      // TODO handle projectile hit
       gameState.availableHealth -= 1;
+      this.audio.play(true);
       gameState.updateHealth();
     }
   }

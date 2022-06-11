@@ -8,12 +8,15 @@ namespace Greed {
     protected activeItem: Item;
     private priceTag: PriceTag;
 
+    private audio: ƒ.ComponentAudio;
+
     constructor(_name: string, _position: ƒ.Vector3, _priceTag: PriceTag) {
       super(_name);
       if (!ItemSlot.overlay) {
         ItemSlot.overlay = document.getElementById("item-info");
       }
       this.priceTag = _priceTag;
+      this.audio = sounds.find((s) => s.getAudio().name === "Item");
       this.createItemSlot(_position);
     }
 
@@ -86,6 +89,7 @@ namespace Greed {
 
     private applyNewItem(): void {
       gameState.coins -= this.activeItem.price;
+      this.audio.play(true);
       this.applyItemEffects();
 
       // remove item from display

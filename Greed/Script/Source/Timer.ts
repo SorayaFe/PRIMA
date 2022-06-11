@@ -34,13 +34,12 @@ namespace Greed {
       Timer.sprite = this.getChildrenByName("Sprite")[0] as ƒAid.NodeSprite;
       Timer.sprite.framerate = 1;
 
-      Timer.sprite.setFrameDirection(0);
-      Timer.sprite.showFrame(30);
+      Timer.showFrame(30, true);
     }
 
-    public static showFrame(frame: number): void {
+    public static showFrame(frame: number, stop = false): void {
       Timer.sprite.showFrame(frame);
-      Timer.sprite.setFrameDirection(1);
+      Timer.sprite.setFrameDirection(stop ? 0 : 1);
     }
   }
 }
