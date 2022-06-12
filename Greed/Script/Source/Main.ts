@@ -109,7 +109,7 @@ namespace Greed {
       .getComponent(ƒ.ComponentRigidbody)
       .addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
         if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting) {
-          hndButtonTouched(button);
+          hndButtonTouched();
         }
       });
 
@@ -133,8 +133,8 @@ namespace Greed {
     itemSlots.addChild(new HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
   }
 
-  function hndButtonTouched(_button: ƒ.Node): void {
-    _button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
+  function hndButtonTouched(): void {
+    button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
     bars.activate(true);
     doorAudio.play(true);
     setTimer();
@@ -145,8 +145,11 @@ namespace Greed {
       stage++;
       bars.activate(false);
       doorAudio.play(true);
+      Timer.showFrame(30, true);
+      button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(0.085);
+      this.isFighting = false;
     } else {
-      this.setTimer();
+      setTimer();
     }
   }
 

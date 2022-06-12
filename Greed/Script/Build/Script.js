@@ -245,7 +245,7 @@ var Greed;
             .getComponent(ƒ.ComponentRigidbody)
             .addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
             if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting) {
-                hndButtonTouched(button);
+                hndButtonTouched();
             }
         });
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
@@ -266,8 +266,8 @@ var Greed;
         itemSlots.addChild(new Greed.ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
         itemSlots.addChild(new Greed.HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
     }
-    function hndButtonTouched(_button) {
-        _button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
+    function hndButtonTouched() {
+        button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
         bars.activate(true);
         doorAudio.play(true);
         setTimer();
@@ -277,9 +277,12 @@ var Greed;
             stage++;
             bars.activate(false);
             doorAudio.play(true);
+            Greed.Timer.showFrame(30, true);
+            button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(0.085);
+            this.isFighting = false;
         }
         else {
-            this.setTimer();
+            setTimer();
         }
     }
     function setTimer() {
