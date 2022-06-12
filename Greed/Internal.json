@@ -181,14 +181,6 @@
       "type": "Audio"
     }
   },
-  "Audio|2022-06-11T12:29:55.078Z|06669": {
-    "ƒ.Audio": {
-      "url": "Sounds\\stage-complete.mp3",
-      "idResource": "Audio|2022-06-11T12:29:55.078Z|06669",
-      "name": "StageComplete",
-      "type": "Audio"
-    }
-  },
   "Graph|2022-05-24T16:14:09.425Z|32411": {
     "ƒ.Graph": {
       "name": "Game",
@@ -1343,10 +1335,19 @@
                 {
                   "ƒ.ComponentAudio": {
                     "active": true,
-                    "idResource": "Audio|2022-06-11T12:29:55.078Z|06669",
+                    "idResource": "Audio|2022-06-12T11:50:09.154Z|90096",
                     "playing": false,
                     "loop": false,
-                    "volume": 0.5
+                    "volume": 1
+                  }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-06-12T12:41:20.111Z|07090",
+                    "playing": true,
+                    "loop": true,
+                    "volume": 0.009999999776482582
                   }
                 }
               ]
@@ -1357,6 +1358,22 @@
       ],
       "idResource": "Graph|2022-05-24T16:14:09.425Z|32411",
       "type": "Graph"
+    }
+  },
+  "Audio|2022-06-12T11:50:09.154Z|90096": {
+    "ƒ.Audio": {
+      "url": "Sounds\\enemy-add.mp3",
+      "idResource": "Audio|2022-06-12T11:50:09.154Z|90096",
+      "name": "EnemyAdd",
+      "type": "Audio"
+    }
+  },
+  "Audio|2022-06-12T12:41:20.111Z|07090": {
+    "ƒ.Audio": {
+      "url": "Sounds\\music.mp3",
+      "idResource": "Audio|2022-06-12T12:41:20.111Z|07090",
+      "name": "Music",
+      "type": "Audio"
     }
   }
 }

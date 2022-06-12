@@ -119,7 +119,8 @@ namespace Greed {
           const projectile: Projectile = new Projectile(
             "ProjectileAvatar",
             direction,
-            this.mtxLocal.translation
+            this.mtxLocal.translation,
+            false
           );
           graph.addChild(projectile);
           projectile.moveProjectile();

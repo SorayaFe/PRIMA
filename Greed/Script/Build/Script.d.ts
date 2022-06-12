@@ -54,7 +54,8 @@ declare namespace Greed {
         private rigidBody;
         private audio;
         private stop;
-        constructor(_name: string, _direction: string, _position: ƒ.Vector3);
+        private isEnemy;
+        constructor(_name: string, _direction: string, _position: ƒ.Vector3, _isEnemy?: boolean);
         private createProjectile;
         moveProjectile(): void;
         private removeProjectile;
@@ -101,6 +102,7 @@ declare namespace Greed {
         FOLLOW_SHOOT = "follow_shoot",
         SHOOT_4 = "shoot_4",
         SHOOT_2 = "shoot_2",
+        SHOOT_2_ROTATE = "shoot_2_rotate",
         AIM = "aim"
     }
     interface EnemyInterface {
@@ -193,8 +195,11 @@ declare namespace Greed {
     class Shoot2Script extends BasicScript {
         private shotTimer;
         private movementTimer;
+        private sprite;
         private vector;
-        constructor();
+        private rotate;
+        private rotation;
+        constructor(_rotate: boolean);
         protected addInitialBehavior(): void;
         protected addBehavior(): void;
         protected clearTimers(): void;

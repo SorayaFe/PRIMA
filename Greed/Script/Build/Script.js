@@ -82,7 +82,7 @@ var Greed;
                     else if (input2) {
                         direction = input2 > 0 ? "x" : "-x";
                     }
-                    const projectile = new Greed.Projectile("ProjectileAvatar", direction, this.mtxLocal.translation);
+                    const projectile = new Greed.Projectile("ProjectileAvatar", direction, this.mtxLocal.translation, false);
                     Greed.graph.addChild(projectile);
                     projectile.moveProjectile();
                 }
@@ -172,7 +172,7 @@ var Greed;
     let button;
     let doorAudio;
     let coinAudio;
-    let stageCompleteAudio;
+    let addEnemiesAudio;
     let isFighting = false;
     let stage = 0;
     let remainingRounds = 5;
@@ -190,7 +190,7 @@ var Greed;
                 setTimeout(() => {
                     dialog.style.display = "none";
                     document.getElementById("outer").style.visibility = "visible";
-                }, 1500);
+                }, 3000);
             }
         });
     }
@@ -230,7 +230,7 @@ var Greed;
         // assign sounds
         doorAudio = Greed.sounds.find((s) => s.getAudio().name === "Door");
         coinAudio = Greed.sounds.find((s) => s.getAudio().name === "Money");
-        stageCompleteAudio = Greed.sounds.find((s) => s.getAudio().name === "StageComplete");
+        addEnemiesAudio = Greed.sounds.find((s) => s.getAudio().name === "EnemyAdd");
         // assign nodes and add nodes
         bars = room.getChildrenByName("Door")[0];
         bars.activate(false);
@@ -263,8 +263,8 @@ var Greed;
         itemSlots.addChild(priceTag4);
         itemSlots.addChild(new Greed.ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1), priceTag1));
         itemSlots.addChild(new Greed.ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1), priceTag2));
-        itemSlots.addChild(new Greed.HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
         itemSlots.addChild(new Greed.ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
+        itemSlots.addChild(new Greed.HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
     }
     function hndButtonTouched(_button) {
         _button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
@@ -275,7 +275,6 @@ var Greed;
     function hndLastEnemyKilled() {
         if (remainingRounds === 0) {
             stage++;
-            stageCompleteAudio.play(true);
             bars.activate(false);
             doorAudio.play(true);
         }
@@ -310,12 +309,13 @@ var Greed;
     function createEnemies() {
         const enemy = ƒ.Random.default.getElement(Greed.Enemy.enemies);
         Greed.gameState.isInvincible = true;
+        addEnemiesAudio.play(true);
         for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
             Greed.enemiesNode.addChild(new Greed.Enemy("Enemy", enemy));
         }
         setTimeout(() => {
             Greed.gameState.isInvincible = false;
-        }, 1000);
+        }, 2000);
     }
     function update(_event) {
         ƒ.Physics.simulate();
@@ -335,8 +335,10 @@ var Greed;
         rigidBody;
         audio;
         stop = false;
-        constructor(_name, _direction, _position) {
+        isEnemy = true;
+        constructor(_name, _direction, _position, _isEnemy = true) {
             super(_name);
+            this.isEnemy = _isEnemy;
             this.direction = _direction;
             this.initialPosition = _position.clone;
             this.audio = Greed.sounds.find((s) => s.getAudio().name === "Projectile");
@@ -345,12 +347,10 @@ var Greed;
         createProjectile(_position) {
             const cmpTransform = new ƒ.ComponentTransform();
             cmpTransform.mtxLocal.translation = _position;
-            const projectileSize = this.name === "ProjectileAvatar" ? Greed.gameState.projectileSize : 0.3;
+            const projectileSize = this.isEnemy ? 0.3 : Greed.gameState.projectileSize;
             cmpTransform.mtxLocal.scale(new ƒ.Vector3(projectileSize, projectileSize, projectileSize));
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
-            this.addComponent(new ƒ.ComponentMaterial(this.name === "ProjectileAvatar"
-                ? Projectile.mtrProjectileAvatar
-                : Projectile.mtrProjectileEnemy));
+            this.addComponent(new ƒ.ComponentMaterial(this.isEnemy ? Projectile.mtrProjectileEnemy : Projectile.mtrProjectileAvatar));
             this.addComponent(cmpTransform);
             // add rigid body
             this.rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.SPHERE, undefined, this.mtxLocal);
@@ -358,8 +358,8 @@ var Greed;
             this.rigidBody.isTrigger = true;
             this.addComponent(this.rigidBody);
             this.rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
-                if ((this.name === "ProjectileAvatar" && _event.cmpRigidbody.node.name === "Enemy") ||
-                    (this.name === "ProjectileEnemy" && _event.cmpRigidbody.node.name === "Avatar") ||
+                if ((!this.isEnemy && _event.cmpRigidbody.node.name === "Enemy") ||
+                    (this.isEnemy && _event.cmpRigidbody.node.name === "Avatar") ||
                     _event.cmpRigidbody.node.name === "Wall" ||
                     _event.cmpRigidbody.node.name === "Door") {
                     this.removeProjectile();
@@ -371,7 +371,7 @@ var Greed;
                 if (this.rigidBody && !this.stop) {
                     this.rigidBody.applyForce(new ƒ.Vector3(0, 9.8, 0));
                     let vector = new ƒ.Vector3();
-                    const shotSpeed = this.name === "ProjectileAvatar" ? Greed.gameState.shotSpeed : 2.3;
+                    const shotSpeed = this.isEnemy ? 2.3 : Greed.gameState.shotSpeed;
                     switch (this.direction) {
                         case "x":
                             vector = ƒ.Vector3.X(shotSpeed);
@@ -390,7 +390,7 @@ var Greed;
                     }
                     this.rigidBody.setVelocity(vector);
                     const distanceTraveled = this.mtxLocal.translation.getDistance(this.initialPosition);
-                    if (distanceTraveled >= ("ProjectileAvatar" ? Greed.gameState.range : 5)) {
+                    if (distanceTraveled >= (this.isEnemy ? 5 : Greed.gameState.range)) {
                         this.removeProjectile();
                     }
                 }
@@ -489,6 +489,8 @@ var Greed;
         async createEnemy() {
             const cmpTransform = new ƒ.ComponentTransform();
             cmpTransform.mtxLocal.translation = ƒ.Random.default.getVector3(new ƒ.Vector3(0, 0, 0.1), new ƒ.Vector3(15, 20, 0.1));
+            cmpTransform.mtxLocal.scaleX(this.enemy.sizeX);
+            cmpTransform.mtxLocal.scaleY(this.enemy.sizeY);
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshCube()));
             this.addComponent(cmpTransform);
             // create sprite
@@ -496,7 +498,6 @@ var Greed;
             Greed.setSprite(this, this.enemy.sprite.name);
             // add rigid body
             const rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.CUBE, undefined, this.mtxLocal);
-            rigidBody.mtxPivot.translateY(-0.2);
             rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
             rigidBody.effectGravity = 0;
             this.addComponent(rigidBody);
@@ -509,8 +510,12 @@ var Greed;
         }
         addScripts() {
             switch (this.enemy.type) {
+                case Greed.EnemyType.SHOOT_2_ROTATE:
+                    this.script = new Greed.Shoot2Script(true);
+                    this.addComponent(this.script);
+                    break;
                 case Greed.EnemyType.SHOOT_2:
-                    this.script = new Greed.Shoot2Script();
+                    this.script = new Greed.Shoot2Script(false);
                     this.addComponent(this.script);
                     break;
                 default:
@@ -527,11 +532,11 @@ var Greed;
         }
         die() {
             this.audio.play(true);
-            this.removeComponent(this.script);
-            Greed.enemiesNode.removeChild(this);
-            if (Greed.enemiesNode.getChildren().length === 0) {
+            if (Greed.enemiesNode.getChildren().length === 1) {
                 this.dispatchEvent(new Event("lastEnemyKilled", { bubbles: true }));
             }
+            this.removeComponent(this.script);
+            Greed.enemiesNode.removeChild(this);
         }
     }
     Greed.Enemy = Enemy;
@@ -559,6 +564,7 @@ var Greed;
         EnemyType["FOLLOW_SHOOT"] = "follow_shoot";
         EnemyType["SHOOT_4"] = "shoot_4";
         EnemyType["SHOOT_2"] = "shoot_2";
+        EnemyType["SHOOT_2_ROTATE"] = "shoot_2_rotate";
         EnemyType["AIM"] = "aim";
     })(EnemyType = Greed.EnemyType || (Greed.EnemyType = {}));
 })(Greed || (Greed = {}));
@@ -795,15 +801,19 @@ var Greed;
 /// <reference path="./BasicScript.ts" />
 (function (Greed) {
     var ƒ = FudgeCore;
-    ƒ.Project.registerScriptNamespace(Greed);
     class Shoot2Script extends Greed.BasicScript {
         shotTimer;
         movementTimer;
+        sprite;
         vector = ƒ.Random.default.getVector3(new ƒ.Vector3(0.5, 0.5, 0.1), new ƒ.Vector3(-0.5, -0.5, 0.1));
-        constructor() {
+        rotate = false;
+        rotation = 90;
+        constructor(_rotate) {
             super();
+            this.rotate = _rotate;
         }
         addInitialBehavior() {
+            this.sprite = this.node.getChildrenByName("Sprite")[0];
             this.addProjectile("x");
             this.addProjectile("-x");
             this.setupTimers();
@@ -816,11 +826,17 @@ var Greed;
             this.movementTimer.clear();
         }
         setupTimers() {
-            this.shotTimer = new ƒ.Timer(ƒ.Time.game, 2000, 0, () => {
-                this.addProjectile("x");
-                this.addProjectile("-x");
+            this.shotTimer = new ƒ.Timer(ƒ.Time.game, 2500, 0, () => {
+                this.addProjectile(this.rotation > 0 ? "x" : "y");
+                this.addProjectile(this.rotation > 0 ? "-x" : "-y");
             });
             this.movementTimer = new ƒ.Timer(ƒ.Time.game, 4100, 0, () => {
+                if (this.rotate) {
+                    if (ƒ.Random.default.getBoolean()) {
+                        this.sprite.mtxLocal.rotateZ(this.rotation);
+                        this.rotation = this.rotation > 0 ? -90 : 90;
+                    }
+                }
                 this.vector = ƒ.Random.default.getVector3(new ƒ.Vector3(0.5, 0.5, 0), new ƒ.Vector3(-0.5, -0.5, 0));
             });
         }

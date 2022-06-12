@@ -4,18 +4,36 @@
       "health": "10",
       "sizeX": "1",
       "sizeY": "1",
+      "type": "shoot_2_rotate",
+      "isBoss": false,
+      "sprite": {
+        "path": "Assets/Enemies/fish.png",
+        "name": "Fish",
+        "x": 0,
+        "y": 0,
+        "width": 16,
+        "height": 16,
+        "frames": 4,
+        "resolutionQuad": 16,
+        "offsetNext": 16
+      }
+    },
+    {
+      "health": "10",
+      "sizeX": "1",
+      "sizeY": "1",
       "type": "shoot_2",
       "isBoss": false,
       "sprite": {
-        "path": "Assets/items.png",
-        "name": "Enemy1",
+        "path": "Assets/Enemies/blob.png",
+        "name": "Blob",
         "x": 0,
         "y": 0,
-        "width": 32,
-        "height": 32,
-        "frames": 1,
-        "resolutionQuad": 32,
-        "offsetNext": 32
+        "width": 16,
+        "height": 16,
+        "frames": 2,
+        "resolutionQuad": 16,
+        "offsetNext": 16
       }
     }
   ]

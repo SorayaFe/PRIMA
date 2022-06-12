@@ -4,6 +4,7 @@ namespace Greed {
     FOLLOW_SHOOT = "follow_shoot",
     SHOOT_4 = "shoot_4",
     SHOOT_2 = "shoot_2",
+    SHOOT_2_ROTATE = "shoot_2_rotate",
     AIM = "aim",
   }
 

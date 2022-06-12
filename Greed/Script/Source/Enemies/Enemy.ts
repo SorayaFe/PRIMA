@@ -24,6 +24,8 @@ namespace Greed {
         new ƒ.Vector3(0, 0, 0.1),
         new ƒ.Vector3(15, 20, 0.1)
       );
+      cmpTransform.mtxLocal.scaleX(this.enemy.sizeX);
+      cmpTransform.mtxLocal.scaleY(this.enemy.sizeY);
 
       this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshCube()));
       this.addComponent(cmpTransform);
@@ -40,7 +42,6 @@ namespace Greed {
         undefined,
         this.mtxLocal
       );
-      rigidBody.mtxPivot.translateY(-0.2);
       rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
       rigidBody.effectGravity = 0;
 
@@ -57,8 +58,12 @@ namespace Greed {
 
     protected addScripts(): void {
       switch (this.enemy.type) {
+        case EnemyType.SHOOT_2_ROTATE:
+          this.script = new Shoot2Script(true);
+          this.addComponent(this.script);
+          break;
         case EnemyType.SHOOT_2:
-          this.script = new Shoot2Script();
+          this.script = new Shoot2Script(false);
           this.addComponent(this.script);
           break;
         default:
@@ -78,12 +83,12 @@ namespace Greed {
     private die(): void {
       this.audio.play(true);
 
-      this.removeComponent(this.script);
-      enemiesNode.removeChild(this);
-
-      if (enemiesNode.getChildren().length === 0) {
+      if (enemiesNode.getChildren().length === 1) {
         this.dispatchEvent(new Event("lastEnemyKilled", { bubbles: true }));
       }
+
+      this.removeComponent(this.script);
+      enemiesNode.removeChild(this);
     }
   }
 }

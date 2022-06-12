@@ -17,7 +17,7 @@ namespace Greed {
 
   let doorAudio: ƒ.ComponentAudio;
   let coinAudio: ƒ.ComponentAudio;
-  let stageCompleteAudio: ƒ.ComponentAudio;
+  let addEnemiesAudio: ƒ.ComponentAudio;
 
   let isFighting: boolean = false;
   let stage: number = 0;
@@ -39,7 +39,7 @@ namespace Greed {
         setTimeout(() => {
           dialog.style.display = "none";
           document.getElementById("outer").style.visibility = "visible";
-        }, 1500);
+        }, 3000);
       }
     });
   }
@@ -91,7 +91,7 @@ namespace Greed {
     // assign sounds
     doorAudio = sounds.find((s) => s.getAudio().name === "Door");
     coinAudio = sounds.find((s) => s.getAudio().name === "Money");
-    stageCompleteAudio = sounds.find((s) => s.getAudio().name === "StageComplete");
+    addEnemiesAudio = sounds.find((s) => s.getAudio().name === "EnemyAdd");
 
     // assign nodes and add nodes
     bars = room.getChildrenByName("Door")[0];
@@ -129,8 +129,8 @@ namespace Greed {
     itemSlots.addChild(priceTag4);
     itemSlots.addChild(new ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1), priceTag1));
     itemSlots.addChild(new ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1), priceTag2));
-    itemSlots.addChild(new HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
     itemSlots.addChild(new ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
+    itemSlots.addChild(new HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
   }
 
   function hndButtonTouched(_button: ƒ.Node): void {
@@ -143,7 +143,6 @@ namespace Greed {
   function hndLastEnemyKilled(): void {
     if (remainingRounds === 0) {
       stage++;
-      stageCompleteAudio.play(true);
       bars.activate(false);
       doorAudio.play(true);
     } else {
@@ -182,6 +181,7 @@ namespace Greed {
   function createEnemies(): void {
     const enemy: EnemyInterface = ƒ.Random.default.getElement(Enemy.enemies);
     gameState.isInvincible = true;
+    addEnemiesAudio.play(true);
 
     for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
       enemiesNode.addChild(new Enemy("Enemy", enemy));
@@ -189,7 +189,7 @@ namespace Greed {
 
     setTimeout(() => {
       gameState.isInvincible = false;
-    }, 1000);
+    }, 2000);
   }
 
   function update(_event: Event): void {
