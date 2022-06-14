@@ -71,7 +71,7 @@ namespace Greed {
       this.restock();
     }
 
-    public async restock(): Promise<void> {
+    protected async restock(): Promise<void> {
       if (ItemSlot.items.length) {
         // remove item from array
         const index = ItemSlot.items.findIndex((i) => i === this.activeItem);
@@ -85,6 +85,17 @@ namespace Greed {
         this.priceTag.setPrice(this.activeItem.price);
         this.priceTag.activate(true);
       }
+    }
+
+    public manualRestock(): void {
+      // remove item from display and return to item pool
+      this.removeChild(this.getChildrenByName("Sprite")[0]);
+      this.priceTag.activate(false);
+      ItemSlot.items.push(this.activeItem);
+      this.activeItem = null;
+
+      // get new item
+      this.getItem();
     }
 
     private applyNewItem(): void {

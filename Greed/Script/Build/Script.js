@@ -55,6 +55,8 @@ var Greed;
             const rigidBody = this.getComponent(ƒ.ComponentRigidbody);
             if (rigidBody) {
                 rigidBody.applyForce(new ƒ.Vector3(0, 9.8, 0));
+                const position = rigidBody.getPosition();
+                rigidBody.setPosition(new ƒ.Vector3(position.x, position.y, 0.5));
                 const input = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.S]);
                 this.walkY.setInput(input);
                 this.walkY.setFactor(2.1 * Greed.gameState.speed);
@@ -173,6 +175,8 @@ var Greed;
     let doorAudio;
     let coinAudio;
     let addEnemiesAudio;
+    let restockAudio;
+    let coinSlotAudio;
     let isFighting = false;
     let stage = 0;
     let remainingRounds = 5;
@@ -231,6 +235,8 @@ var Greed;
         doorAudio = Greed.sounds.find((s) => s.getAudio().name === "Door");
         coinAudio = Greed.sounds.find((s) => s.getAudio().name === "Money");
         addEnemiesAudio = Greed.sounds.find((s) => s.getAudio().name === "EnemyAdd");
+        restockAudio = Greed.sounds.find((s) => s.getAudio().name === "Restock");
+        coinSlotAudio = Greed.sounds.find((s) => s.getAudio().name === "CoinSlot");
         // assign nodes and add nodes
         bars = room.getChildrenByName("Door")[0];
         bars.activate(false);
@@ -248,23 +254,43 @@ var Greed;
                 hndButtonTouched();
             }
         });
+        // restock  listener
+        Greed.graph
+            .getChildrenByName("Shop")[0]
+            .getChildrenByName("Restock")[0]
+            .getComponent(ƒ.ComponentRigidbody)
+            .addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
+            if (_event.cmpRigidbody.node.name === "Avatar") {
+                hndRestock();
+            }
+        });
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start();
     }
     function setItemSlots() {
         const itemSlots = Greed.graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
-        const priceTag1 = new Greed.PriceTag("PriceTag1", new ƒ.Vector3(3, 24.3, 0.1));
+        const priceTag1 = new Greed.PriceTag("PriceTag", new ƒ.Vector3(3, 24.3, 0.1));
         itemSlots.addChild(priceTag1);
-        const priceTag2 = new Greed.PriceTag("PriceTag2", new ƒ.Vector3(6, 24.3, 0.1));
+        const priceTag2 = new Greed.PriceTag("PriceTag", new ƒ.Vector3(6, 24.3, 0.1));
         itemSlots.addChild(priceTag2);
-        const priceTag3 = new Greed.PriceTag("PriceTag3", new ƒ.Vector3(9, 24.3, 0.1));
+        const priceTag3 = new Greed.PriceTag("PriceTag", new ƒ.Vector3(9, 24.3, 0.1));
         itemSlots.addChild(priceTag3);
-        const priceTag4 = new Greed.PriceTag("PriceTag4", new ƒ.Vector3(12, 24.3, 0.1));
+        const priceTag4 = new Greed.PriceTag("PriceTag", new ƒ.Vector3(12, 24.3, 0.1));
         itemSlots.addChild(priceTag4);
-        itemSlots.addChild(new Greed.ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1), priceTag1));
-        itemSlots.addChild(new Greed.ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1), priceTag2));
-        itemSlots.addChild(new Greed.ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
+        itemSlots.addChild(new Greed.ItemSlot("Slot", new ƒ.Vector3(3, 25, 0.1), priceTag1));
+        itemSlots.addChild(new Greed.ItemSlot("Slot", new ƒ.Vector3(6, 25, 0.1), priceTag2));
+        itemSlots.addChild(new Greed.ItemSlot("Slot", new ƒ.Vector3(9, 25, 0.1), priceTag3));
         itemSlots.addChild(new Greed.HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
+    }
+    function hndRestock() {
+        const itemSlots = Greed.graph
+            .getChildrenByName("Shop")[0]
+            .getChildrenByName("ItemSlots")[0]
+            .getChildrenByName("Slot");
+        Greed.gameState.coins -= 1;
+        coinSlotAudio.play(true);
+        restockAudio.play(true);
+        itemSlots.map((s) => s.manualRestock());
     }
     function hndButtonTouched() {
         button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
@@ -649,6 +675,15 @@ var Greed;
                 this.priceTag.setPrice(this.activeItem.price);
                 this.priceTag.activate(true);
             }
+        }
+        manualRestock() {
+            // remove item from display and return to item pool
+            this.removeChild(this.getChildrenByName("Sprite")[0]);
+            this.priceTag.activate(false);
+            ItemSlot.items.push(this.activeItem);
+            this.activeItem = null;
+            // get new item
+            this.getItem();
         }
         applyNewItem() {
             Greed.gameState.coins -= this.activeItem.price;

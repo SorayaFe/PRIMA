@@ -72,6 +72,8 @@ namespace Greed {
 
       if (rigidBody) {
         rigidBody.applyForce(new ƒ.Vector3(0, 9.8, 0));
+        const position = rigidBody.getPosition();
+        rigidBody.setPosition(new ƒ.Vector3(position.x, position.y, 0.5));
 
         const input: number = ƒ.Keyboard.mapToTrit([ƒ.KEYBOARD_CODE.W], [ƒ.KEYBOARD_CODE.S]);
         this.walkY.setInput(input);

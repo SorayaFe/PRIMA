@@ -15,7 +15,7 @@
         "ƒ.CoatRemissiveTextured": {
           "color": "[1, 1, 1, 1]",
           "idTexture": "TextureImage|2022-05-24T16:52:13.450Z|78437",
-          "diffuse": 1,
+          "diffuse": 1.0000000000000009,
           "specular": 0
         }
       }
@@ -178,6 +178,56 @@
       "url": "Sounds\\restock.mp3",
       "idResource": "Audio|2022-06-11T12:29:51.389Z|62106",
       "name": "Restock",
+      "type": "Audio"
+    }
+  },
+  "Audio|2022-06-12T11:50:09.154Z|90096": {
+    "ƒ.Audio": {
+      "url": "Sounds\\enemy-add.mp3",
+      "idResource": "Audio|2022-06-12T11:50:09.154Z|90096",
+      "name": "EnemyAdd",
+      "type": "Audio"
+    }
+  },
+  "Audio|2022-06-12T12:41:20.111Z|07090": {
+    "ƒ.Audio": {
+      "url": "Sounds\\music.mp3",
+      "idResource": "Audio|2022-06-12T12:41:20.111Z|07090",
+      "name": "Music",
+      "type": "Audio"
+    }
+  },
+  "Material|2022-06-14T09:17:15.759Z|94366": {
+    "ƒ.Material": {
+      "name": "Restock",
+      "idResource": "Material|2022-06-14T09:17:15.759Z|94366",
+      "shader": "ShaderFlatTextured",
+      "coat": {
+        "ƒ.CoatRemissiveTextured": {
+          "color": "[1, 1, 1, 1]",
+          "idTexture": "TextureImage|2022-06-14T09:16:56.833Z|58939",
+          "diffuse": 1,
+          "specular": 0
+        }
+      }
+    }
+  },
+  "TextureImage|2022-06-14T09:16:56.833Z|58939": {
+    "ƒ.TextureImage": {
+      "url": "Assets\\restock.png",
+      "type": "TextureImage",
+      "Texture": {
+        "idResource": "TextureImage|2022-06-14T09:16:56.833Z|58939",
+        "name": "Restock",
+        "mipmap": "CRISP"
+      }
+    }
+  },
+  "Audio|2022-06-14T09:32:41.044Z|02650": {
+    "ƒ.Audio": {
+      "url": "Sounds\\coin-slot.mp3",
+      "idResource": "Audio|2022-06-14T09:32:41.044Z|02650",
+      "name": "CoinSlot",
       "type": "Audio"
     }
   },
@@ -800,7 +850,8 @@
                           }
                         }
                       }
-                    ]
+                    ],
+                    "ComponentLight": []
                   },
                   "children": []
                 }
@@ -1243,6 +1294,87 @@
                   },
                   "children": []
                 }
+              },
+              {
+                "ƒ.Node": {
+                  "name": "Restock",
+                  "active": true,
+                  "components": {
+                    "ComponentMesh": [
+                      {
+                        "ƒ.ComponentMesh": {
+                          "idMesh": "MeshSprite|2022-05-31T14:48:04.642Z|40350",
+                          "pivot": {
+                            "translation": "[7.499999523162842, 27.30000114440918, 0.10000000149011612]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1.5000001192092896, 1.5000001192092896, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentMaterial": [
+                      {
+                        "ƒ.ComponentMaterial": {
+                          "sortForAlpha": false,
+                          "clrPrimary": "[1, 1, 1, 1]",
+                          "clrSecondary": "[1, 1, 1, 1]",
+                          "pivot": {
+                            "translation": "[0, 0]",
+                            "rotation": 0,
+                            "scaling": "[1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          },
+                          "idMaterial": "Material|2022-06-14T09:17:15.759Z|94366"
+                        }
+                      }
+                    ],
+                    "ComponentTransform": [
+                      {
+                        "ƒ.ComponentTransform": {
+                          "local": {
+                            "translation": "[0, 0, 0]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1, 1, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ],
+                    "ComponentRigidbody": [
+                      {
+                        "ƒ.ComponentRigidbody": {
+                          "initialization": "TO_MESH",
+                          "friction": 0.2,
+                          "restitution": 0.2,
+                          "mass": 1,
+                          "dampTranslation": 0.1,
+                          "dampRotation": 0.1,
+                          "effectGravity": 1,
+                          "typeBody": "STATIC",
+                          "typeCollider": "CONE",
+                          "isTrigger": false,
+                          "id": 2,
+                          "pivot": {
+                            "translation": "[7.499999523162842, 27.30000114440918, 0.10000000149011612]",
+                            "rotation": "[0, 0, 0]",
+                            "scaling": "[1.5000001192092896, 1.5000001192092896, 1]"
+                          },
+                          "Component": {
+                            "active": true
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "children": []
+                }
               }
             ]
           }
@@ -1349,6 +1481,15 @@
                     "loop": true,
                     "volume": 0.009999999776482582
                   }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-06-14T09:32:41.044Z|02650",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.10000000149011612
+                  }
                 }
               ]
             },
@@ -1358,22 +1499,6 @@
       ],
       "idResource": "Graph|2022-05-24T16:14:09.425Z|32411",
       "type": "Graph"
-    }
-  },
-  "Audio|2022-06-12T11:50:09.154Z|90096": {
-    "ƒ.Audio": {
-      "url": "Sounds\\enemy-add.mp3",
-      "idResource": "Audio|2022-06-12T11:50:09.154Z|90096",
-      "name": "EnemyAdd",
-      "type": "Audio"
-    }
-  },
-  "Audio|2022-06-12T12:41:20.111Z|07090": {
-    "ƒ.Audio": {
-      "url": "Sounds\\music.mp3",
-      "idResource": "Audio|2022-06-12T12:41:20.111Z|07090",
-      "name": "Music",
-      "type": "Audio"
     }
   }
 }

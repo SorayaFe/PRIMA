@@ -157,7 +157,8 @@ declare namespace Greed {
         constructor(_name: string, _position: ƒ.Vector3, _priceTag: PriceTag);
         private createItemSlot;
         protected getItem(): void;
-        restock(): Promise<void>;
+        protected restock(): Promise<void>;
+        manualRestock(): void;
         private applyNewItem;
         protected applyItemEffects(): void;
     }

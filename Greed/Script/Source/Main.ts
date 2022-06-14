@@ -18,6 +18,8 @@ namespace Greed {
   let doorAudio: ƒ.ComponentAudio;
   let coinAudio: ƒ.ComponentAudio;
   let addEnemiesAudio: ƒ.ComponentAudio;
+  let restockAudio: ƒ.ComponentAudio;
+  let coinSlotAudio: ƒ.ComponentAudio;
 
   let isFighting: boolean = false;
   let stage: number = 0;
@@ -92,6 +94,8 @@ namespace Greed {
     doorAudio = sounds.find((s) => s.getAudio().name === "Door");
     coinAudio = sounds.find((s) => s.getAudio().name === "Money");
     addEnemiesAudio = sounds.find((s) => s.getAudio().name === "EnemyAdd");
+    restockAudio = sounds.find((s) => s.getAudio().name === "Restock");
+    coinSlotAudio = sounds.find((s) => s.getAudio().name === "CoinSlot");
 
     // assign nodes and add nodes
     bars = room.getChildrenByName("Door")[0];
@@ -113,24 +117,48 @@ namespace Greed {
         }
       });
 
+    // restock  listener
+    graph
+      .getChildrenByName("Shop")[0]
+      .getChildrenByName("Restock")[0]
+      .getComponent(ƒ.ComponentRigidbody)
+      .addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
+        if (_event.cmpRigidbody.node.name === "Avatar") {
+          hndRestock();
+        }
+      });
+
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start();
   }
 
   function setItemSlots(): void {
     const itemSlots = graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
-    const priceTag1 = new PriceTag("PriceTag1", new ƒ.Vector3(3, 24.3, 0.1));
+    const priceTag1 = new PriceTag("PriceTag", new ƒ.Vector3(3, 24.3, 0.1));
     itemSlots.addChild(priceTag1);
-    const priceTag2 = new PriceTag("PriceTag2", new ƒ.Vector3(6, 24.3, 0.1));
+    const priceTag2 = new PriceTag("PriceTag", new ƒ.Vector3(6, 24.3, 0.1));
     itemSlots.addChild(priceTag2);
-    const priceTag3 = new PriceTag("PriceTag3", new ƒ.Vector3(9, 24.3, 0.1));
+    const priceTag3 = new PriceTag("PriceTag", new ƒ.Vector3(9, 24.3, 0.1));
     itemSlots.addChild(priceTag3);
-    const priceTag4 = new PriceTag("PriceTag4", new ƒ.Vector3(12, 24.3, 0.1));
+    const priceTag4 = new PriceTag("PriceTag", new ƒ.Vector3(12, 24.3, 0.1));
     itemSlots.addChild(priceTag4);
-    itemSlots.addChild(new ItemSlot("Slot1", new ƒ.Vector3(3, 25, 0.1), priceTag1));
-    itemSlots.addChild(new ItemSlot("Slot2", new ƒ.Vector3(6, 25, 0.1), priceTag2));
-    itemSlots.addChild(new ItemSlot("Slot3", new ƒ.Vector3(9, 25, 0.1), priceTag3));
+    itemSlots.addChild(new ItemSlot("Slot", new ƒ.Vector3(3, 25, 0.1), priceTag1));
+    itemSlots.addChild(new ItemSlot("Slot", new ƒ.Vector3(6, 25, 0.1), priceTag2));
+    itemSlots.addChild(new ItemSlot("Slot", new ƒ.Vector3(9, 25, 0.1), priceTag3));
     itemSlots.addChild(new HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
+  }
+
+  function hndRestock(): void {
+    const itemSlots = graph
+      .getChildrenByName("Shop")[0]
+      .getChildrenByName("ItemSlots")[0]
+      .getChildrenByName("Slot") as ItemSlot[];
+
+    gameState.coins -= 1;
+    coinSlotAudio.play(true);
+    restockAudio.play(true);
+
+    itemSlots.map((s) => s.manualRestock());
   }
 
   function hndButtonTouched(): void {
