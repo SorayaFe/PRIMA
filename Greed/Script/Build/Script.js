@@ -38,13 +38,7 @@ var Greed;
             // add rigid body
             const rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.SPHERE, undefined, this.mtxLocal);
             rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
-            rigidBody.mtxPivot.translateY(-0.2);
             this.addComponent(rigidBody);
-            rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
-                if (_event.cmpRigidbody.node.name === "Enemy" && !Greed.gameState.isInvincible) {
-                    this.hndHit();
-                }
-            });
             rigidBody.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
                 if (_event.cmpRigidbody.node.name === "ProjectileEnemy") {
                     this.hndHit();
@@ -157,6 +151,7 @@ var Greed;
             this.heartsContainer.innerHTML = innerHtml;
             if (this.availableHealth <= 0) {
                 this.audio.play(true);
+                // TODO die
             }
         }
     }
@@ -181,7 +176,7 @@ var Greed;
     let stage = 0;
     let remainingRounds = 5;
     let timer;
-    const amounts = [1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5];
+    const amounts = [1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5];
     function init(_event) {
         const dialog = document.getElementById("dialog");
         const start = document.querySelector("div.start");
@@ -222,6 +217,7 @@ var Greed;
         ƒ.AudioManager.default.listenTo(Greed.graph);
         Greed.sounds = Greed.graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
         Greed.graph.addEventListener("lastEnemyKilled", hndLastEnemyKilled);
+        Greed.graph.addEventListener("touchedAvatar", hndAvatarTouched);
         Greed.gameState = new Greed.GameState();
         // load config
         const items = await fetch("Script/Source/Config/items.json");
@@ -345,6 +341,11 @@ var Greed;
         setTimeout(() => {
             Greed.gameState.isInvincible = false;
         }, 2000);
+    }
+    function hndAvatarTouched() {
+        if (!Greed.gameState.isInvincible) {
+            avatar.hndHit();
+        }
     }
     function update(_event) {
         ƒ.Physics.simulate();
@@ -517,9 +518,10 @@ var Greed;
         }
         async createEnemy() {
             const cmpTransform = new ƒ.ComponentTransform();
-            cmpTransform.mtxLocal.translation = ƒ.Random.default.getVector3(new ƒ.Vector3(0, 0, 0.1), new ƒ.Vector3(15, 20, 0.1));
+            cmpTransform.mtxLocal.translation = ƒ.Random.default.getVector3(new ƒ.Vector3(1, 1, 0), new ƒ.Vector3(14, 19, 0));
             cmpTransform.mtxLocal.scaleX(this.enemy.sizeX);
             cmpTransform.mtxLocal.scaleY(this.enemy.sizeY);
+            cmpTransform.mtxLocal.translateZ(0.1);
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshCube()));
             this.addComponent(cmpTransform);
             // create sprite
@@ -533,6 +535,11 @@ var Greed;
             rigidBody.addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
                 if (_event.cmpRigidbody.node.name === "ProjectileAvatar") {
                     this.hndHit();
+                }
+            });
+            rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
+                if (_event.cmpRigidbody.node.name === "Avatar") {
+                    this.dispatchEvent(new Event("touchedAvatar", { bubbles: true }));
                 }
             });
             this.addScripts();

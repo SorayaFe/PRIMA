@@ -21,11 +21,12 @@ namespace Greed {
     private async createEnemy(): Promise<void> {
       const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
       cmpTransform.mtxLocal.translation = ƒ.Random.default.getVector3(
-        new ƒ.Vector3(0, 0, 0.1),
-        new ƒ.Vector3(15, 20, 0.1)
+        new ƒ.Vector3(1, 1, 0),
+        new ƒ.Vector3(14, 19, 0)
       );
       cmpTransform.mtxLocal.scaleX(this.enemy.sizeX);
       cmpTransform.mtxLocal.scaleY(this.enemy.sizeY);
+      cmpTransform.mtxLocal.translateZ(0.1);
 
       this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshCube()));
       this.addComponent(cmpTransform);
@@ -50,6 +51,12 @@ namespace Greed {
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
         if (_event.cmpRigidbody.node.name === "ProjectileAvatar") {
           this.hndHit();
+        }
+      });
+
+      rigidBody.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
+        if (_event.cmpRigidbody.node.name === "Avatar") {
+          this.dispatchEvent(new Event("touchedAvatar", { bubbles: true }));
         }
       });
 

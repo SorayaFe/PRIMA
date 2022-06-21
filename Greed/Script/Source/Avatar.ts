@@ -51,15 +51,9 @@ namespace Greed {
         this.mtxLocal
       );
       rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
-      rigidBody.mtxPivot.translateY(-0.2);
 
       this.addComponent(rigidBody);
 
-      rigidBody.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name === "Enemy" && !gameState.isInvincible) {
-          this.hndHit();
-        }
-      });
       rigidBody.addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
         if (_event.cmpRigidbody.node.name === "ProjectileEnemy") {
           this.hndHit();
@@ -142,7 +136,7 @@ namespace Greed {
       }
     }
 
-    private hndHit(): void {
+    public hndHit(): void {
       gameState.availableHealth -= 1;
       this.audio.play(true);
       gameState.updateHealth();

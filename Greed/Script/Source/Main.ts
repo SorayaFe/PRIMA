@@ -26,7 +26,7 @@ namespace Greed {
   let remainingRounds: number = 5;
   let timer: ƒ.Timer;
 
-  const amounts = [1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5];
+  const amounts = [1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5];
 
   function init(_event: Event) {
     const dialog = document.getElementById("dialog");
@@ -78,6 +78,7 @@ namespace Greed {
     ƒ.AudioManager.default.listenTo(graph);
     sounds = graph.getChildrenByName("Sound")[0].getComponents(ƒ.ComponentAudio);
     graph.addEventListener("lastEnemyKilled", hndLastEnemyKilled);
+    graph.addEventListener("touchedAvatar", hndAvatarTouched);
     gameState = new GameState();
 
     // load config
@@ -221,6 +222,12 @@ namespace Greed {
     setTimeout(() => {
       gameState.isInvincible = false;
     }, 2000);
+  }
+
+  function hndAvatarTouched(): void {
+    if (!gameState.isInvincible) {
+      avatar.hndHit();
+    }
   }
 
   function update(_event: Event): void {

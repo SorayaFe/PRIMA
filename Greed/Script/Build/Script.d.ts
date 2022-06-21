@@ -12,7 +12,7 @@ declare namespace Greed {
         controlWalk(): void;
         controlShoot(): void;
         private moveCamera;
-        private hndHit;
+        hndHit(): void;
     }
 }
 declare namespace Greed {

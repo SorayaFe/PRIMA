@@ -54,6 +54,7 @@ namespace Greed {
 
       if (this.availableHealth <= 0) {
         this.audio.play(true);
+        // TODO die
       }
     }
   }

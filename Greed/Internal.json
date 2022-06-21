@@ -292,7 +292,7 @@
                           "pivot": {
                             "translation": "[0, 0]",
                             "rotation": 0,
-                            "scaling": "[5, 5]"
+                            "scaling": "[4, 4]"
                           },
                           "Component": {
                             "active": true
@@ -850,8 +850,7 @@
                           }
                         }
                       }
-                    ],
-                    "ComponentLight": []
+                    ]
                   },
                   "children": []
                 }
