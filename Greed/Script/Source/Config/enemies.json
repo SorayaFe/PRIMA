@@ -1,7 +1,7 @@
 {
   "enemies": [
     {
-      "health": "10",
+      "health": "8",
       "sizeX": "1",
       "sizeY": "1",
       "type": "shoot_2_rotate",
@@ -19,7 +19,7 @@
       }
     },
     {
-      "health": "10",
+      "health": "12",
       "sizeX": "1",
       "sizeY": "1",
       "type": "shoot_2",
@@ -32,6 +32,114 @@
         "width": 16,
         "height": 16,
         "frames": 2,
+        "resolutionQuad": 16,
+        "offsetNext": 16
+      }
+    },
+    {
+      "health": "10",
+      "sizeX": "1",
+      "sizeY": "1",
+      "type": "shoot_4",
+      "isBoss": false,
+      "sprite": {
+        "path": "Assets/Enemies/pea.png",
+        "name": "Pea",
+        "x": 0,
+        "y": 0,
+        "width": 16,
+        "height": 16,
+        "frames": 6,
+        "resolutionQuad": 16,
+        "offsetNext": 16
+      }
+    },
+    {
+      "health": "15",
+      "sizeX": "1",
+      "sizeY": "1",
+      "type": "follow",
+      "isBoss": false,
+      "sprite": {
+        "path": "Assets/Enemies/robot.png",
+        "name": "Robot",
+        "x": 0,
+        "y": 0,
+        "width": 16,
+        "height": 16,
+        "frames": 6,
+        "resolutionQuad": 16,
+        "offsetNext": 16
+      }
+    },
+    {
+      "health": "10",
+      "sizeX": "0.6",
+      "sizeY": "0.6",
+      "type": "follow",
+      "isBoss": false,
+      "sprite": {
+        "path": "Assets/Enemies/bird.png",
+        "name": "Bird",
+        "x": 0,
+        "y": 0,
+        "width": 16,
+        "height": 16,
+        "frames": 3,
+        "resolutionQuad": 16,
+        "offsetNext": 16
+      }
+    },
+    {
+      "health": "10",
+      "sizeX": "1",
+      "sizeY": "1",
+      "type": "follow_shoot",
+      "isBoss": false,
+      "sprite": {
+        "path": "Assets/Enemies/devil.png",
+        "name": "Devil",
+        "x": 0,
+        "y": 0,
+        "width": 16,
+        "height": 16,
+        "frames": 4,
+        "resolutionQuad": 16,
+        "offsetNext": 16
+      }
+    },
+    {
+      "health": "7",
+      "sizeX": "0.7",
+      "sizeY": "0.7",
+      "type": "charge",
+      "isBoss": false,
+      "sprite": {
+        "path": "Assets/Enemies/orange.png",
+        "name": "Devil",
+        "x": 0,
+        "y": 0,
+        "width": 16,
+        "height": 16,
+        "frames": 6,
+        "resolutionQuad": 16,
+        "offsetNext": 16
+      }
+    },
+    {
+      "health": "7",
+      "sizeX": "0.7",
+      "sizeY": "0.7",
+      "type": "charge",
+      "isBoss": false,
+      "sprite": {
+        "path": "Assets/Enemies/orange.png",
+        "name": "Devil",
+        "x": 0,
+        "y": 0,
+        "width": 16,
+        "height": 16,
+        "frames": 6,
         "resolutionQuad": 16,
         "offsetNext": 16
       }

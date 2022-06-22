@@ -7,11 +7,11 @@ namespace Greed {
 
   export let gameState: GameState;
   export let graph: ƒ.Node;
+  export let avatar: Avatar;
   export let sounds: ƒ.ComponentAudio[];
   export let enemiesNode: ƒ.Node;
 
   let viewport: ƒ.Viewport;
-  let avatar: Avatar;
   let bars: ƒ.Node;
   let button: ƒ.Node;
 
@@ -26,7 +26,7 @@ namespace Greed {
   let remainingRounds: number = 5;
   let timer: ƒ.Timer;
 
-  const amounts = [1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5];
+  const amounts = [1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5];
 
   function init(_event: Event) {
     const dialog = document.getElementById("dialog");
@@ -176,7 +176,7 @@ namespace Greed {
       doorAudio.play(true);
       Timer.showFrame(30, true);
       button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(0.085);
-      this.isFighting = false;
+      isFighting = false;
     } else {
       setTimer();
     }
@@ -207,16 +207,23 @@ namespace Greed {
     } else {
       Timer.showFrame(stage < 4 ? 20 : 0);
     }
-    createEnemies();
+
+    createEnemies(stage === 4);
   }
 
-  function createEnemies(): void {
-    const enemy: EnemyInterface = ƒ.Random.default.getElement(Enemy.enemies);
+  function createEnemies(_isBoss: boolean): void {
+    const enemy: EnemyInterface = ƒ.Random.default.getElement(
+      _isBoss ? Boss.bosses : Enemy.enemies
+    );
     gameState.isInvincible = true;
     addEnemiesAudio.play(true);
 
-    for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
-      enemiesNode.addChild(new Enemy("Enemy", enemy));
+    if (_isBoss) {
+      enemiesNode.addChild(new Boss("Boss", enemy));
+    } else {
+      for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
+        enemiesNode.addChild(new Enemy("Enemy", enemy));
+      }
     }
 
     setTimeout(() => {

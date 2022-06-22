@@ -5,7 +5,7 @@ namespace Greed {
     SHOOT_4 = "shoot_4",
     SHOOT_2 = "shoot_2",
     SHOOT_2_ROTATE = "shoot_2_rotate",
-    AIM = "aim",
+    CHARGE = "charge",
   }
 
   export interface EnemyInterface {

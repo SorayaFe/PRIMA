@@ -8,10 +8,10 @@ namespace Greed {
     public coins: number = 1000;
 
     public health: number = 3;
-    public speed: number = 1;
+    public speed: number = 1.1;
     public damage: number = 3.5;
     public fireRate: number = 1900;
-    public shotSpeed: number = 2.3;
+    public shotSpeed: number = 2.4;
     public projectileSize: number = 0.3;
     public range: number = 5;
 
@@ -24,7 +24,7 @@ namespace Greed {
     public constructor() {
       super();
       const domVui: HTMLDivElement = document.querySelector("div#vui");
-      console.log("Vui-Controller", new ƒUi.Controller(this, domVui));
+      new ƒUi.Controller(this, domVui);
       this.heartsContainer = document.getElementById("hearts");
       this.audio = sounds.find((s) => s.getAudio().name === "Die");
       this.updateHealth();

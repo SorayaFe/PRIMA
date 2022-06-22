@@ -63,21 +63,6 @@ namespace Greed {
       this.addScripts();
     }
 
-    protected addScripts(): void {
-      switch (this.enemy.type) {
-        case EnemyType.SHOOT_2_ROTATE:
-          this.script = new Shoot2Script(true);
-          this.addComponent(this.script);
-          break;
-        case EnemyType.SHOOT_2:
-          this.script = new Shoot2Script(false);
-          this.addComponent(this.script);
-          break;
-        default:
-          break;
-      }
-    }
-
     private hndHit(): void {
       this.health -= gameState.damage;
       if (this.health <= 0) {
@@ -96,6 +81,37 @@ namespace Greed {
 
       this.removeComponent(this.script);
       enemiesNode.removeChild(this);
+    }
+
+    protected addScripts(): void {
+      switch (this.enemy.type) {
+        case EnemyType.SHOOT_2:
+          this.script = new ShootScript(false);
+          this.addComponent(this.script);
+          break;
+        case EnemyType.SHOOT_2_ROTATE:
+          this.script = new ShootScript(true);
+          this.addComponent(this.script);
+          break;
+        case EnemyType.SHOOT_4:
+          this.script = new ShootScript(false, true);
+          this.addComponent(this.script);
+          break;
+        case EnemyType.FOLLOW:
+          this.script = new FollowScript(false);
+          this.addComponent(this.script);
+          break;
+        case EnemyType.FOLLOW_SHOOT:
+          this.script = new FollowScript(true);
+          this.addComponent(this.script);
+          break;
+        case EnemyType.CHARGE:
+          this.script = new ChargeScript();
+          this.addComponent(this.script);
+          break;
+        default:
+          break;
+      }
     }
   }
 }

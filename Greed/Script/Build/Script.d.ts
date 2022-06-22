@@ -41,6 +41,7 @@ declare namespace Greed {
     import ƒ = FudgeCore;
     let gameState: GameState;
     let graph: ƒ.Node;
+    let avatar: Avatar;
     let sounds: ƒ.ComponentAudio[];
     let enemiesNode: ƒ.Node;
 }
@@ -84,9 +85,9 @@ declare namespace Greed {
         private script;
         constructor(_name: string, _enemy: EnemyInterface);
         private createEnemy;
-        protected addScripts(): void;
         private hndHit;
         private die;
+        protected addScripts(): void;
     }
 }
 declare namespace Greed {
@@ -103,7 +104,7 @@ declare namespace Greed {
         SHOOT_4 = "shoot_4",
         SHOOT_2 = "shoot_2",
         SHOOT_2_ROTATE = "shoot_2_rotate",
-        AIM = "aim"
+        CHARGE = "charge"
     }
     interface EnemyInterface {
         health: number;
@@ -193,14 +194,47 @@ declare namespace Greed {
     }
 }
 declare namespace Greed {
-    class Shoot2Script extends BasicScript {
+    /**
+     * Script for Enemies with type CHARGE
+     */
+    class ChargeScript extends BasicScript {
+        private chargeTimer;
+        constructor();
+        protected addInitialBehavior(): void;
+        protected addBehavior(): void;
+        protected clearTimers(): void;
+        private setupTimers;
+        private charge;
+    }
+}
+declare namespace Greed {
+    /**
+     * Script for Enemies with type FOLLOW and FOLLOW_SHOOT
+     */
+    class FollowScript extends BasicScript {
+        private shotTimer;
+        private shoot;
+        constructor(_shoot: boolean);
+        protected addInitialBehavior(): void;
+        protected addBehavior(): void;
+        protected clearTimers(): void;
+        private setupTimers;
+        private addProjectile;
+    }
+}
+declare namespace Greed {
+    /**
+     * Script for Enemies with type SHOOT2, SHOOT_2_ROTATE and SHOOT_4
+     */
+    class ShootScript extends BasicScript {
         private shotTimer;
         private movementTimer;
         private sprite;
         private vector;
         private rotate;
         private rotation;
-        constructor(_rotate: boolean);
+        private shoot4;
+        constructor(_rotate: boolean, _shoot4?: boolean);
         protected addInitialBehavior(): void;
         protected addBehavior(): void;
         protected clearTimers(): void;

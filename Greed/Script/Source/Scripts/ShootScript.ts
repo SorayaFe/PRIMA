@@ -3,7 +3,10 @@
 namespace Greed {
   import ƒ = FudgeCore;
 
-  export class Shoot2Script extends BasicScript {
+  /**
+   * Script for Enemies with type SHOOT2, SHOOT_2_ROTATE and SHOOT_4
+   */
+  export class ShootScript extends BasicScript {
     private shotTimer: ƒ.Timer;
     private movementTimer: ƒ.Timer;
 
@@ -17,9 +20,12 @@ namespace Greed {
     private rotate: boolean = false;
     private rotation: number = 90;
 
-    constructor(_rotate: boolean) {
+    private shoot4 = false;
+
+    constructor(_rotate: boolean, _shoot4 = false) {
       super();
       this.rotate = _rotate;
+      this.shoot4 = _shoot4;
     }
 
     protected addInitialBehavior(): void {
@@ -40,8 +46,15 @@ namespace Greed {
 
     private setupTimers(): void {
       this.shotTimer = new ƒ.Timer(ƒ.Time.game, 2500, 0, () => {
-        this.addProjectile(this.rotation > 0 ? "x" : "y");
-        this.addProjectile(this.rotation > 0 ? "-x" : "-y");
+        if (!this.shoot4) {
+          this.addProjectile(this.rotation > 0 ? "x" : "y");
+          this.addProjectile(this.rotation > 0 ? "-x" : "-y");
+        } else {
+          this.addProjectile("x");
+          this.addProjectile("-x");
+          this.addProjectile("y");
+          this.addProjectile("-y");
+        }
       });
 
       this.movementTimer = new ƒ.Timer(ƒ.Time.game, 4100, 0, () => {

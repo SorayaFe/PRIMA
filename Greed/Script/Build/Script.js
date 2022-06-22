@@ -114,10 +114,10 @@ var Greed;
         //TODO coins amount
         coins = 1000;
         health = 3;
-        speed = 1;
+        speed = 1.1;
         damage = 3.5;
         fireRate = 1900;
-        shotSpeed = 2.3;
+        shotSpeed = 2.4;
         projectileSize = 0.3;
         range = 5;
         canShoot = true;
@@ -127,7 +127,7 @@ var Greed;
         constructor() {
             super();
             const domVui = document.querySelector("div#vui");
-            console.log("Vui-Controller", new ƒUi.Controller(this, domVui));
+            new ƒUi.Controller(this, domVui);
             this.heartsContainer = document.getElementById("hearts");
             this.audio = Greed.sounds.find((s) => s.getAudio().name === "Die");
             this.updateHealth();
@@ -164,7 +164,6 @@ var Greed;
     window.addEventListener("load", init);
     document.addEventListener("interactiveViewportStarted", start);
     let viewport;
-    let avatar;
     let bars;
     let button;
     let doorAudio;
@@ -176,7 +175,7 @@ var Greed;
     let stage = 0;
     let remainingRounds = 5;
     let timer;
-    const amounts = [1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5];
+    const amounts = [1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5];
     function init(_event) {
         const dialog = document.getElementById("dialog");
         const start = document.querySelector("div.start");
@@ -237,8 +236,8 @@ var Greed;
         bars = room.getChildrenByName("Door")[0];
         bars.activate(false);
         button = room.getChildrenByName("Button")[0];
-        avatar = new Greed.Avatar("Avatar", viewport.camera);
-        Greed.graph.addChild(avatar);
+        Greed.avatar = new Greed.Avatar("Avatar", viewport.camera);
+        Greed.graph.addChild(Greed.avatar);
         Greed.enemiesNode = room.getChildrenByName("Enemies")[0];
         room.addChild(new Greed.Timer("Timer"));
         setItemSlots();
@@ -301,7 +300,7 @@ var Greed;
             doorAudio.play(true);
             Greed.Timer.showFrame(30, true);
             button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(0.085);
-            this.isFighting = false;
+            isFighting = false;
         }
         else {
             setTimer();
@@ -329,14 +328,19 @@ var Greed;
         else {
             Greed.Timer.showFrame(stage < 4 ? 20 : 0);
         }
-        createEnemies();
+        createEnemies(stage === 4);
     }
-    function createEnemies() {
-        const enemy = ƒ.Random.default.getElement(Greed.Enemy.enemies);
+    function createEnemies(_isBoss) {
+        const enemy = ƒ.Random.default.getElement(_isBoss ? Greed.Boss.bosses : Greed.Enemy.enemies);
         Greed.gameState.isInvincible = true;
         addEnemiesAudio.play(true);
-        for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
-            Greed.enemiesNode.addChild(new Greed.Enemy("Enemy", enemy));
+        if (_isBoss) {
+            Greed.enemiesNode.addChild(new Greed.Boss("Boss", enemy));
+        }
+        else {
+            for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
+                Greed.enemiesNode.addChild(new Greed.Enemy("Enemy", enemy));
+            }
         }
         setTimeout(() => {
             Greed.gameState.isInvincible = false;
@@ -344,13 +348,13 @@ var Greed;
     }
     function hndAvatarTouched() {
         if (!Greed.gameState.isInvincible) {
-            avatar.hndHit();
+            Greed.avatar.hndHit();
         }
     }
     function update(_event) {
         ƒ.Physics.simulate();
-        avatar.controlWalk();
-        avatar.controlShoot();
+        Greed.avatar.controlWalk();
+        Greed.avatar.controlShoot();
         viewport.draw();
     }
 })(Greed || (Greed = {}));
@@ -544,20 +548,6 @@ var Greed;
             });
             this.addScripts();
         }
-        addScripts() {
-            switch (this.enemy.type) {
-                case Greed.EnemyType.SHOOT_2_ROTATE:
-                    this.script = new Greed.Shoot2Script(true);
-                    this.addComponent(this.script);
-                    break;
-                case Greed.EnemyType.SHOOT_2:
-                    this.script = new Greed.Shoot2Script(false);
-                    this.addComponent(this.script);
-                    break;
-                default:
-                    break;
-            }
-        }
         hndHit() {
             this.health -= Greed.gameState.damage;
             if (this.health <= 0) {
@@ -573,6 +563,36 @@ var Greed;
             }
             this.removeComponent(this.script);
             Greed.enemiesNode.removeChild(this);
+        }
+        addScripts() {
+            switch (this.enemy.type) {
+                case Greed.EnemyType.SHOOT_2:
+                    this.script = new Greed.ShootScript(false);
+                    this.addComponent(this.script);
+                    break;
+                case Greed.EnemyType.SHOOT_2_ROTATE:
+                    this.script = new Greed.ShootScript(true);
+                    this.addComponent(this.script);
+                    break;
+                case Greed.EnemyType.SHOOT_4:
+                    this.script = new Greed.ShootScript(false, true);
+                    this.addComponent(this.script);
+                    break;
+                case Greed.EnemyType.FOLLOW:
+                    this.script = new Greed.FollowScript(false);
+                    this.addComponent(this.script);
+                    break;
+                case Greed.EnemyType.FOLLOW_SHOOT:
+                    this.script = new Greed.FollowScript(true);
+                    this.addComponent(this.script);
+                    break;
+                case Greed.EnemyType.CHARGE:
+                    this.script = new Greed.ChargeScript();
+                    this.addComponent(this.script);
+                    break;
+                default:
+                    break;
+            }
         }
     }
     Greed.Enemy = Enemy;
@@ -601,7 +621,7 @@ var Greed;
         EnemyType["SHOOT_4"] = "shoot_4";
         EnemyType["SHOOT_2"] = "shoot_2";
         EnemyType["SHOOT_2_ROTATE"] = "shoot_2_rotate";
-        EnemyType["AIM"] = "aim";
+        EnemyType["CHARGE"] = "charge";
     })(EnemyType = Greed.EnemyType || (Greed.EnemyType = {}));
 })(Greed || (Greed = {}));
 var Greed;
@@ -846,16 +866,102 @@ var Greed;
 /// <reference path="./BasicScript.ts" />
 (function (Greed) {
     var ƒ = FudgeCore;
-    class Shoot2Script extends Greed.BasicScript {
+    /**
+     * Script for Enemies with type CHARGE
+     */
+    class ChargeScript extends Greed.BasicScript {
+        chargeTimer;
+        constructor() {
+            super();
+        }
+        addInitialBehavior() {
+            this.charge();
+            this.setupTimers();
+        }
+        addBehavior() { }
+        clearTimers() {
+            this.chargeTimer.clear();
+        }
+        setupTimers() {
+            this.chargeTimer = new ƒ.Timer(ƒ.Time.game, 8000, 0, () => {
+                this.charge();
+            });
+        }
+        charge() {
+            const vector = Greed.avatar.mtxLocal.translation.clone;
+            vector.subtract(this.node.mtxLocal.translation);
+            this.rigidBody.setVelocity(vector);
+        }
+    }
+    Greed.ChargeScript = ChargeScript;
+})(Greed || (Greed = {}));
+/// <reference path="./BasicScript.ts" />
+var Greed;
+/// <reference path="./BasicScript.ts" />
+(function (Greed) {
+    var ƒ = FudgeCore;
+    /**
+     * Script for Enemies with type FOLLOW and FOLLOW_SHOOT
+     */
+    class FollowScript extends Greed.BasicScript {
+        shotTimer;
+        shoot = false;
+        constructor(_shoot) {
+            super();
+            this.shoot = _shoot;
+        }
+        addInitialBehavior() {
+            if (this.shoot) {
+                this.setupTimers();
+            }
+        }
+        addBehavior() {
+            const vector = Greed.avatar.mtxLocal.translation.clone;
+            vector.subtract(this.node.mtxLocal.translation);
+            vector.normalize(0.9);
+            this.rigidBody.setVelocity(vector);
+        }
+        clearTimers() {
+            if (this.shotTimer) {
+                this.shotTimer.clear();
+            }
+        }
+        setupTimers() {
+            this.shotTimer = new ƒ.Timer(ƒ.Time.game, 5000, 0, () => {
+                this.addProjectile("x");
+                this.addProjectile("-x");
+                this.addProjectile("y");
+                this.addProjectile("-y");
+            });
+        }
+        addProjectile(_direction) {
+            const projectile = new Greed.Projectile("ProjectileEnemy", _direction, this.node.mtxLocal.translation);
+            Greed.graph.addChild(projectile);
+            projectile.moveProjectile();
+        }
+    }
+    Greed.FollowScript = FollowScript;
+})(Greed || (Greed = {}));
+/// <reference path="./BasicScript.ts" />
+var Greed;
+/// <reference path="./BasicScript.ts" />
+(function (Greed) {
+    var ƒ = FudgeCore;
+    /**
+     * Script for Enemies with type SHOOT2, SHOOT_2_ROTATE and SHOOT_4
+     */
+    class ShootScript extends Greed.BasicScript {
         shotTimer;
         movementTimer;
         sprite;
         vector = ƒ.Random.default.getVector3(new ƒ.Vector3(0.5, 0.5, 0.1), new ƒ.Vector3(-0.5, -0.5, 0.1));
         rotate = false;
         rotation = 90;
-        constructor(_rotate) {
+        shoot4 = false;
+        constructor(_rotate, _shoot4 = false) {
             super();
             this.rotate = _rotate;
+            this.shoot4 = _shoot4;
         }
         addInitialBehavior() {
             this.sprite = this.node.getChildrenByName("Sprite")[0];
@@ -872,8 +978,16 @@ var Greed;
         }
         setupTimers() {
             this.shotTimer = new ƒ.Timer(ƒ.Time.game, 2500, 0, () => {
-                this.addProjectile(this.rotation > 0 ? "x" : "y");
-                this.addProjectile(this.rotation > 0 ? "-x" : "-y");
+                if (!this.shoot4) {
+                    this.addProjectile(this.rotation > 0 ? "x" : "y");
+                    this.addProjectile(this.rotation > 0 ? "-x" : "-y");
+                }
+                else {
+                    this.addProjectile("x");
+                    this.addProjectile("-x");
+                    this.addProjectile("y");
+                    this.addProjectile("-y");
+                }
             });
             this.movementTimer = new ƒ.Timer(ƒ.Time.game, 4100, 0, () => {
                 if (this.rotate) {
@@ -891,6 +1005,6 @@ var Greed;
             projectile.moveProjectile();
         }
     }
-    Greed.Shoot2Script = Shoot2Script;
+    Greed.ShootScript = ShootScript;
 })(Greed || (Greed = {}));
 //# sourceMappingURL=Script.js.map
