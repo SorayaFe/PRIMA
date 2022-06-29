@@ -223,8 +223,8 @@ var Greed;
         const enemies = await fetch("Script/Source/Config/enemies.json");
         const enemiesArray = (await enemies.json()).enemies;
         Greed.ItemSlot.items = (await items.json()).items;
-        Greed.Enemy.enemies = enemiesArray.filter((e) => !e.isBoss);
-        Greed.Boss.bosses = enemiesArray.filter((e) => e.isBoss);
+        Greed.Enemy.enemies = enemiesArray.filter((e) => e.type !== Greed.EnemyType.BOSS);
+        Greed.Boss.bosses = enemiesArray.filter((e) => e.type === Greed.EnemyType.BOSS);
         const room = Greed.graph.getChildrenByName("Room")[0];
         // assign sounds
         doorAudio = Greed.sounds.find((s) => s.getAudio().name === "Door");
@@ -245,7 +245,7 @@ var Greed;
         button
             .getComponent(ƒ.ComponentRigidbody)
             .addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
-            if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting) {
+            if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting && stage < 6) {
                 hndButtonTouched();
             }
         });
@@ -288,6 +288,7 @@ var Greed;
         itemSlots.map((s) => s.manualRestock());
     }
     function hndButtonTouched() {
+        remainingRounds = stage <= 4 ? 5 : 1;
         button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
         bars.activate(true);
         doorAudio.play(true);
@@ -313,7 +314,7 @@ var Greed;
         isFighting = true;
         startNewRound();
         if (remainingRounds !== 0) {
-            timer = new ƒ.Timer(ƒ.Time.game, stage < 4 ? 11000 : 31000, remainingRounds, () => {
+            timer = new ƒ.Timer(ƒ.Time.game, stage < 5 ? 11000 : 31000, remainingRounds, () => {
                 startNewRound();
             });
         }
@@ -326,16 +327,18 @@ var Greed;
             Greed.Timer.showFrame(30, true);
         }
         else {
-            Greed.Timer.showFrame(stage < 4 ? 20 : 0);
+            Greed.Timer.showFrame(stage < 5 ? 20 : 1);
         }
-        createEnemies(stage === 4);
+        createEnemies(stage >= 5);
     }
     function createEnemies(_isBoss) {
-        const enemy = ƒ.Random.default.getElement(_isBoss ? Greed.Boss.bosses : Greed.Enemy.enemies);
+        const enemy = _isBoss
+            ? Greed.Boss.bosses[0]
+            : ƒ.Random.default.getElement(Greed.Enemy.enemies);
         Greed.gameState.isInvincible = true;
         addEnemiesAudio.play(true);
         if (_isBoss) {
-            Greed.enemiesNode.addChild(new Greed.Boss("Boss", enemy));
+            Greed.enemiesNode.addChild(new Greed.Boss("Boss", enemy, stage));
         }
         else {
             for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
@@ -522,7 +525,10 @@ var Greed;
         }
         async createEnemy() {
             const cmpTransform = new ƒ.ComponentTransform();
-            cmpTransform.mtxLocal.translation = ƒ.Random.default.getVector3(new ƒ.Vector3(1, 1, 0), new ƒ.Vector3(14, 19, 0));
+            const vector = this.enemy.type === Greed.EnemyType.BOSS
+                ? new ƒ.Vector3(10, 12, 0)
+                : ƒ.Random.default.getVector3(new ƒ.Vector3(1, 1, 0), new ƒ.Vector3(14, 19, 0));
+            cmpTransform.mtxLocal.translation = vector;
             cmpTransform.mtxLocal.scaleX(this.enemy.sizeX);
             cmpTransform.mtxLocal.scaleY(this.enemy.sizeY);
             cmpTransform.mtxLocal.translateZ(0.1);
@@ -532,7 +538,7 @@ var Greed;
             await Greed.loadSprites(this.enemy.sprite);
             Greed.setSprite(this, this.enemy.sprite.name);
             // add rigid body
-            const rigidBody = new ƒ.ComponentRigidbody(1, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.CUBE, undefined, this.mtxLocal);
+            const rigidBody = new ƒ.ComponentRigidbody(5, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.SPHERE, undefined, this.mtxLocal);
             rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
             rigidBody.effectGravity = 0;
             this.addComponent(rigidBody);
@@ -603,11 +609,19 @@ var Greed;
 (function (Greed) {
     class Boss extends Greed.Enemy {
         static bosses = [];
-        constructor(_name, _enemy) {
+        stage;
+        constructor(_name, _enemy, _stage) {
             super(_name, _enemy);
+            this.stage = _stage;
         }
+        // add state machine
         addScripts() {
-            // add state machine
+            if (this.stage === 5) {
+                this.script = new Greed.SkeletonStateMachine();
+                this.addComponent(this.script);
+            }
+            else {
+            }
         }
     }
     Greed.Boss = Boss;
@@ -622,6 +636,7 @@ var Greed;
         EnemyType["SHOOT_2"] = "shoot_2";
         EnemyType["SHOOT_2_ROTATE"] = "shoot_2_rotate";
         EnemyType["CHARGE"] = "charge";
+        EnemyType["BOSS"] = "boss";
     })(EnemyType = Greed.EnemyType || (Greed.EnemyType = {}));
 })(Greed || (Greed = {}));
 var Greed;
@@ -1006,5 +1021,131 @@ var Greed;
         }
     }
     Greed.ShootScript = ShootScript;
+})(Greed || (Greed = {}));
+var Greed;
+(function (Greed) {
+    var ƒ = FudgeCore;
+    var ƒAid = FudgeAid;
+    ƒ.Project.registerScriptNamespace(Greed); // Register the namespace to FUDGE for serialization
+    let JOB;
+    (function (JOB) {
+        JOB[JOB["FOLLOW"] = 0] = "FOLLOW";
+        JOB[JOB["TELEPORT"] = 1] = "TELEPORT";
+        JOB[JOB["SHOOT"] = 2] = "SHOOT";
+    })(JOB || (JOB = {}));
+    class SkeletonStateMachine extends ƒAid.ComponentStateMachine {
+        static iSubclass = ƒ.Component.registerSubclass(SkeletonStateMachine);
+        static instructions = SkeletonStateMachine.get();
+        rigidBody;
+        cmpTransform;
+        timer;
+        isWorking = false;
+        constructor() {
+            super();
+            this.instructions = SkeletonStateMachine.instructions;
+            // Don't start when running in editor
+            if (ƒ.Project.mode == ƒ.MODE.EDITOR)
+                return;
+            this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
+            this.addEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+        }
+        static get() {
+            let setup = new ƒAid.StateMachineInstructions();
+            setup.transitDefault = SkeletonStateMachine.transitDefault;
+            setup.setAction(JOB.FOLLOW, this.actFollow);
+            setup.setAction(JOB.TELEPORT, this.actTeleport);
+            setup.setAction(JOB.SHOOT, this.actShoot);
+            return setup;
+        }
+        static transitDefault(_machine) {
+            console.log("Transit to", _machine.stateNext);
+        }
+        static async actFollow(_machine) {
+            _machine.isWorking = false;
+            const vector = Greed.avatar.mtxLocal.translation.clone;
+            vector.subtract(_machine.node.mtxLocal.translation);
+            vector.normalize(0.85);
+            _machine.rigidBody.setVelocity(vector);
+        }
+        static async actTeleport(_machine) {
+            _machine.isWorking = true;
+            _machine.node.activate(false);
+            _machine.rigidBody.setVelocity(ƒ.Vector3.Z(5));
+            const vector = Greed.avatar.mtxLocal.translation.clone;
+            setTimeout(() => {
+                _machine.rigidBody.setVelocity(ƒ.Vector3.Z(0.1));
+                _machine.node.activate(true);
+                _machine.cmpTransform.mtxLocal.translation = vector;
+                _machine.isWorking = false;
+                _machine.transit(JOB.SHOOT);
+            }, 1500);
+        }
+        static async actShoot(_machine) {
+            _machine.isWorking = true;
+            _machine.rigidBody.setVelocity(new ƒ.Vector3());
+            _machine.addProjectile("x");
+            _machine.addProjectile("-x");
+            _machine.addProjectile("y");
+            _machine.addProjectile("-y");
+            _machine.isWorking = false;
+            _machine.transit(JOB.FOLLOW);
+        }
+        hndEvent = (_event) => {
+            switch (_event.type) {
+                case "componentAdd" /* COMPONENT_ADD */:
+                    ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
+                    this.rigidBody = this.node.getComponent(ƒ.ComponentRigidbody);
+                    this.cmpTransform = this.node.getComponent(ƒ.ComponentTransform);
+                    this.timer = new ƒ.Timer(ƒ.Time.game, 10000, 0, () => {
+                        this.transit(JOB.TELEPORT);
+                    });
+                    this.setSprite();
+                    break;
+                case "componentRemove" /* COMPONENT_REMOVE */:
+                    if (this.timer) {
+                        this.timer.clear();
+                    }
+                    this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
+                    this.removeEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+                    ƒ.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, this.update);
+                    break;
+            }
+        };
+        update = (_event) => {
+            if (!this.isWorking) {
+                this.act();
+            }
+        };
+        addProjectile(_direction) {
+            const projectile = new Greed.Projectile("ProjectileEnemy", _direction, this.node.mtxLocal.translation);
+            Greed.graph.addChild(projectile);
+            projectile.moveProjectile();
+        }
+        async setSprite() {
+            const sprite = this.node.getChildrenByName("Sprite")[0];
+            sprite.activate(false);
+            const spriteInfo = {
+                path: "Assets/Enemies/skeleton-crumble.png",
+                name: "SkeletonCrumble",
+                x: 0,
+                y: 0,
+                width: 32,
+                height: 32,
+                frames: 6,
+                resolutionQuad: 32,
+                offsetNext: 32,
+            };
+            await Greed.loadSprites(spriteInfo);
+            Greed.setSprite(this.node, "SkeletonCrumble");
+            const sprites = this.node.getChildrenByName("Sprite");
+            sprites[1].framerate = 8;
+            setTimeout(() => {
+                sprites[1].activate(false);
+                sprites[0].activate(true);
+                this.transit(JOB.FOLLOW);
+            }, 500);
+        }
+    }
+    Greed.SkeletonStateMachine = SkeletonStateMachine;
 })(Greed || (Greed = {}));
 //# sourceMappingURL=Script.js.map

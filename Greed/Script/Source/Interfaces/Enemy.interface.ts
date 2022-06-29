@@ -6,6 +6,7 @@ namespace Greed {
     SHOOT_2 = "shoot_2",
     SHOOT_2_ROTATE = "shoot_2_rotate",
     CHARGE = "charge",
+    BOSS = "boss",
   }
 
   export interface EnemyInterface {
@@ -13,7 +14,6 @@ namespace Greed {
     sizeX: number;
     sizeY: number;
     type: EnemyType;
-    isBoss: boolean;
     sprite: SpriteInfo;
   }
 }

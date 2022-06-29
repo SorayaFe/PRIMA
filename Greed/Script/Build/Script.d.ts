@@ -82,7 +82,7 @@ declare namespace Greed {
         private enemy;
         private health;
         private audio;
-        private script;
+        protected script: ƒ.ComponentScript;
         constructor(_name: string, _enemy: EnemyInterface);
         private createEnemy;
         private hndHit;
@@ -93,7 +93,8 @@ declare namespace Greed {
 declare namespace Greed {
     class Boss extends Enemy {
         static bosses: EnemyInterface[];
-        constructor(_name: string, _enemy: EnemyInterface);
+        private stage;
+        constructor(_name: string, _enemy: EnemyInterface, _stage: number);
         protected addScripts(): void;
     }
 }
@@ -104,14 +105,14 @@ declare namespace Greed {
         SHOOT_4 = "shoot_4",
         SHOOT_2 = "shoot_2",
         SHOOT_2_ROTATE = "shoot_2_rotate",
-        CHARGE = "charge"
+        CHARGE = "charge",
+        BOSS = "boss"
     }
     interface EnemyInterface {
         health: number;
         sizeX: number;
         sizeY: number;
         type: EnemyType;
-        isBoss: boolean;
         sprite: SpriteInfo;
     }
 }
@@ -241,4 +242,31 @@ declare namespace Greed {
         private setupTimers;
         private addProjectile;
     }
+}
+declare namespace Greed {
+    import ƒAid = FudgeAid;
+    enum JOB {
+        FOLLOW = 0,
+        TELEPORT = 1,
+        SHOOT = 2
+    }
+    export class SkeletonStateMachine extends ƒAid.ComponentStateMachine<JOB> {
+        static readonly iSubclass: number;
+        private static instructions;
+        private rigidBody;
+        private cmpTransform;
+        private timer;
+        private isWorking;
+        constructor();
+        static get(): ƒAid.StateMachineInstructions<JOB>;
+        private static transitDefault;
+        private static actFollow;
+        private static actTeleport;
+        private static actShoot;
+        private hndEvent;
+        private update;
+        private addProjectile;
+        private setSprite;
+    }
+    export {};
 }

@@ -8,7 +8,7 @@ namespace Greed {
     private health: number;
 
     private audio: ƒ.ComponentAudio;
-    private script: ƒ.ComponentScript;
+    protected script: ƒ.ComponentScript;
 
     constructor(_name: string, _enemy: EnemyInterface) {
       super(_name);
@@ -20,10 +20,11 @@ namespace Greed {
 
     private async createEnemy(): Promise<void> {
       const cmpTransform: ƒ.ComponentTransform = new ƒ.ComponentTransform();
-      cmpTransform.mtxLocal.translation = ƒ.Random.default.getVector3(
-        new ƒ.Vector3(1, 1, 0),
-        new ƒ.Vector3(14, 19, 0)
-      );
+      const vector =
+        this.enemy.type === EnemyType.BOSS
+          ? new ƒ.Vector3(10, 12, 0)
+          : ƒ.Random.default.getVector3(new ƒ.Vector3(1, 1, 0), new ƒ.Vector3(14, 19, 0));
+      cmpTransform.mtxLocal.translation = vector;
       cmpTransform.mtxLocal.scaleX(this.enemy.sizeX);
       cmpTransform.mtxLocal.scaleY(this.enemy.sizeY);
       cmpTransform.mtxLocal.translateZ(0.1);
@@ -37,9 +38,9 @@ namespace Greed {
 
       // add rigid body
       const rigidBody: ƒ.ComponentRigidbody = new ƒ.ComponentRigidbody(
-        1,
+        5,
         ƒ.BODY_TYPE.DYNAMIC,
-        ƒ.COLLIDER_TYPE.CUBE,
+        ƒ.COLLIDER_TYPE.SPHERE,
         undefined,
         this.mtxLocal
       );

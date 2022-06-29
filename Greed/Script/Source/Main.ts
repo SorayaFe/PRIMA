@@ -86,8 +86,8 @@ namespace Greed {
     const enemies: Response = await fetch("Script/Source/Config/enemies.json");
     const enemiesArray: EnemyInterface[] = (await enemies.json()).enemies;
     ItemSlot.items = (await items.json()).items;
-    Enemy.enemies = enemiesArray.filter((e) => !e.isBoss);
-    Boss.bosses = enemiesArray.filter((e) => e.isBoss);
+    Enemy.enemies = enemiesArray.filter((e) => e.type !== EnemyType.BOSS);
+    Boss.bosses = enemiesArray.filter((e) => e.type === EnemyType.BOSS);
 
     const room: ƒ.Node = graph.getChildrenByName("Room")[0];
 
@@ -113,7 +113,7 @@ namespace Greed {
     button
       .getComponent(ƒ.ComponentRigidbody)
       .addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting) {
+        if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting && stage < 6) {
           hndButtonTouched();
         }
       });
@@ -163,6 +163,7 @@ namespace Greed {
   }
 
   function hndButtonTouched(): void {
+    remainingRounds = stage <= 4 ? 5 : 1;
     button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
     bars.activate(true);
     doorAudio.play(true);
@@ -191,7 +192,7 @@ namespace Greed {
     startNewRound();
 
     if (remainingRounds !== 0) {
-      timer = new ƒ.Timer(ƒ.Time.game, stage < 4 ? 11000 : 31000, remainingRounds, () => {
+      timer = new ƒ.Timer(ƒ.Time.game, stage < 5 ? 11000 : 31000, remainingRounds, () => {
         startNewRound();
       });
     }
@@ -205,21 +206,21 @@ namespace Greed {
     if (remainingRounds === 0) {
       Timer.showFrame(30, true);
     } else {
-      Timer.showFrame(stage < 4 ? 20 : 0);
+      Timer.showFrame(stage < 5 ? 20 : 1);
     }
 
-    createEnemies(stage === 4);
+    createEnemies(stage >= 5);
   }
 
   function createEnemies(_isBoss: boolean): void {
-    const enemy: EnemyInterface = ƒ.Random.default.getElement(
-      _isBoss ? Boss.bosses : Enemy.enemies
-    );
+    const enemy: EnemyInterface = _isBoss
+      ? Boss.bosses[0]
+      : ƒ.Random.default.getElement(Enemy.enemies);
     gameState.isInvincible = true;
     addEnemiesAudio.play(true);
 
     if (_isBoss) {
-      enemiesNode.addChild(new Boss("Boss", enemy));
+      enemiesNode.addChild(new Boss("Boss", enemy, stage));
     } else {
       for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
         enemiesNode.addChild(new Enemy("Enemy", enemy));
