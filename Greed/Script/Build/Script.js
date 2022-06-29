@@ -323,11 +323,11 @@ var Greed;
         Greed.gameState.coins += 5;
         coinAudio.play(true);
         remainingRounds--;
-        if (remainingRounds === 0) {
+        if (remainingRounds === 0 && stage !== 5) {
             Greed.Timer.showFrame(30, true);
         }
         else {
-            Greed.Timer.showFrame(stage < 5 ? 20 : 1);
+            Greed.Timer.showFrame(stage < 5 ? 20 : 0);
         }
         createEnemies(stage >= 5);
     }

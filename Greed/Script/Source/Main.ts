@@ -203,10 +203,10 @@ namespace Greed {
     coinAudio.play(true);
     remainingRounds--;
 
-    if (remainingRounds === 0) {
+    if (remainingRounds === 0 && stage !== 5) {
       Timer.showFrame(30, true);
     } else {
-      Timer.showFrame(stage < 5 ? 20 : 1);
+      Timer.showFrame(stage < 5 ? 20 : 0);
     }
 
     createEnemies(stage >= 5);
