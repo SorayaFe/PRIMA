@@ -36,7 +36,7 @@ namespace Greed {
       cmpTransform.mtxLocal.translation = _position;
       const projectileSize = this.isEnemy ? 0.3 : gameState.projectileSize;
       cmpTransform.mtxLocal.scale(new ƒ.Vector3(projectileSize, projectileSize, projectileSize));
-      cmpTransform.mtxLocal.translateZ(-0.2);
+      cmpTransform.mtxLocal.translateZ(projectileSize / 2 - 0.2);
 
       this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
       this.addComponent(
@@ -61,9 +61,7 @@ namespace Greed {
 
       this.rigidBody.addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
         if (
-          (!this.isEnemy &&
-            (_event.cmpRigidbody.node.name === "Enemy" ||
-              _event.cmpRigidbody.node.name === "Boss")) ||
+          (!this.isEnemy && _event.cmpRigidbody.node.name === "Enemy") ||
           (this.isEnemy && _event.cmpRigidbody.node.name === "Avatar") ||
           _event.cmpRigidbody.node.name === "Wall" ||
           _event.cmpRigidbody.node.name === "Door"

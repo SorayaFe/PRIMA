@@ -21,6 +21,7 @@ namespace Greed {
   let addEnemiesAudio: ƒ.ComponentAudio;
   let restockAudio: ƒ.ComponentAudio;
   let coinSlotAudio: ƒ.ComponentAudio;
+  let victoryAudio: ƒ.ComponentAudio;
 
   let isFighting: boolean = false;
   let stage: number = 0;
@@ -96,6 +97,7 @@ namespace Greed {
     addEnemiesAudio = sounds.find((s) => s.getAudio().name === "EnemyAdd");
     restockAudio = sounds.find((s) => s.getAudio().name === "Restock");
     coinSlotAudio = sounds.find((s) => s.getAudio().name === "CoinSlot");
+    victoryAudio = sounds.find((s) => s.getAudio().name === "Victory");
 
     // assign nodes and add nodes
     bars = room.getChildrenByName("Door")[0];
@@ -112,7 +114,7 @@ namespace Greed {
     button
       .getComponent(ƒ.ComponentRigidbody)
       .addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting && stage < 7) {
+        if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting && stage < 6) {
           hndButtonTouched();
         }
       });
@@ -128,6 +130,13 @@ namespace Greed {
         }
       });
 
+    // hardcore mode
+    if (sessionStorage.getItem("hardcore") === "true") {
+      gameState.availableHealth = 1;
+      gameState.health = 1;
+      gameState.updateHealth();
+    }
+
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start();
   }
@@ -135,21 +144,21 @@ namespace Greed {
   async function setItemSlots(): Promise<void> {
     const itemSlots = graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
     const priceTag1 = new PriceTag("PriceTag");
-    await priceTag1.createPriceTag(new ƒ.Vector3(3, 24.3, 0.1));
+    await priceTag1.createPriceTag(new ƒ.Vector3(3, 23.3, 0.1));
     itemSlots.addChild(priceTag1);
     const priceTag2 = new PriceTag("PriceTag");
-    await priceTag2.createPriceTag(new ƒ.Vector3(6, 24.3, 0.1));
+    await priceTag2.createPriceTag(new ƒ.Vector3(6, 23.3, 0.1));
     itemSlots.addChild(priceTag2);
     const priceTag3 = new PriceTag("PriceTag");
-    await priceTag3.createPriceTag(new ƒ.Vector3(9, 24.3, 0.1));
+    await priceTag3.createPriceTag(new ƒ.Vector3(9, 23.3, 0.1));
     itemSlots.addChild(priceTag3);
     const priceTag4 = new PriceTag("PriceTag");
-    await priceTag4.createPriceTag(new ƒ.Vector3(12, 24.3, 0.1));
+    await priceTag4.createPriceTag(new ƒ.Vector3(12, 23.3, 0.1));
     itemSlots.addChild(priceTag4);
-    itemSlots.addChild(new ItemSlot("Slot", new ƒ.Vector3(3, 25, 0.1), priceTag1));
-    itemSlots.addChild(new ItemSlot("Slot", new ƒ.Vector3(6, 25, 0.1), priceTag2));
-    itemSlots.addChild(new ItemSlot("Slot", new ƒ.Vector3(9, 25, 0.1), priceTag3));
-    itemSlots.addChild(new HeartSlot("SlotHeart", new ƒ.Vector3(12, 25, 0.1), priceTag4));
+    itemSlots.addChild(new ItemSlot("Slot", new ƒ.Vector3(3, 24, 0.1), priceTag1));
+    itemSlots.addChild(new ItemSlot("Slot", new ƒ.Vector3(6, 24, 0.1), priceTag2));
+    itemSlots.addChild(new ItemSlot("Slot", new ƒ.Vector3(9, 24, 0.1), priceTag3));
+    itemSlots.addChild(new HeartSlot("SlotHeart", new ƒ.Vector3(12, 24, 0.1), priceTag4));
   }
 
   function hndRestock(): void {
@@ -166,7 +175,7 @@ namespace Greed {
   }
 
   function hndButtonTouched(): void {
-    remainingRounds = stage <= 4 ? 5 : 1;
+    remainingRounds = stage <= 4 ? 5 : 2;
     button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
     bars.activate(true);
     doorAudio.play(true);
@@ -174,7 +183,7 @@ namespace Greed {
   }
 
   function hndLastEnemyKilled(): void {
-    if (stage === 6) {
+    if (stage === 5 && remainingRounds === 0) {
       showOverlay(true);
     }
     if (remainingRounds === 0) {
@@ -205,11 +214,11 @@ namespace Greed {
   }
 
   function startNewRound(): void {
-    gameState.coins += 5;
+    gameState.coins += 4;
     coinAudio.play(true);
     remainingRounds--;
 
-    if (remainingRounds === 0 && stage !== 5) {
+    if (remainingRounds === 0) {
       Timer.showFrame(30, true);
     } else {
       Timer.showFrame(stage < 5 ? 20 : 0);
@@ -220,13 +229,13 @@ namespace Greed {
 
   function createEnemies(_isBoss: boolean): void {
     const enemy: EnemyInterface = _isBoss
-      ? Boss.bosses[stage === 5 ? 0 : 1]
+      ? Boss.bosses[remainingRounds === 1 ? 0 : 1]
       : ƒ.Random.default.getElement(Enemy.enemies);
     gameState.isInvincible = true;
     addEnemiesAudio.play(true);
 
     if (_isBoss) {
-      enemiesNode.addChild(new Boss("Boss", enemy, stage));
+      enemiesNode.addChild(new Boss("Enemy", enemy, remainingRounds));
     } else {
       for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
         enemiesNode.addChild(new Enemy("Enemy", enemy));
@@ -256,6 +265,10 @@ namespace Greed {
         confetti.setAttribute("src", "Assets/confetti.gif");
         confetti.setAttribute("id", "confetti");
         overlay.appendChild(confetti);
+
+        setTimeout(() => {
+          victoryAudio.play(true);
+        }, 1000);
       }
     }
   }

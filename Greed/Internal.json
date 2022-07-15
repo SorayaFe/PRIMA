@@ -1473,6 +1473,15 @@
                     "loop": false,
                     "volume": 0.10000000149011612
                   }
+                },
+                {
+                  "ƒ.ComponentAudio": {
+                    "active": true,
+                    "idResource": "Audio|2022-07-15T15:09:52.098Z|58072",
+                    "playing": false,
+                    "loop": false,
+                    "volume": 0.10000000149011612
+                  }
                 }
               ]
             },
@@ -1482,6 +1491,14 @@
       ],
       "idResource": "Graph|2022-05-24T16:14:09.425Z|32411",
       "type": "Graph"
+    }
+  },
+  "Audio|2022-07-15T15:09:52.098Z|58072": {
+    "ƒ.Audio": {
+      "url": "Sounds\\victory.mp3",
+      "idResource": "Audio|2022-07-15T15:09:52.098Z|58072",
+      "name": "Victory",
+      "type": "Audio"
     }
   }
 }

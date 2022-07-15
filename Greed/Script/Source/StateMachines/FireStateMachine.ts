@@ -44,7 +44,7 @@ namespace Greed {
     private static async actFollow(_machine: FireStateMachine): Promise<void> {
       const vector = avatar.mtxLocal.translation.clone;
       vector.subtract(_machine.node.mtxLocal.translation);
-      vector.normalize(_machine.stateCurrent === JOB.FOLLOW ? 0.8 : 4);
+      vector.normalize(_machine.stateCurrent === JOB.FOLLOW ? 0.8 : 4.5);
       _machine.rigidBody.setVelocity(vector);
 
       if (_machine.stateCurrent === JOB.CHARGE) {
@@ -65,12 +65,12 @@ namespace Greed {
     private static async actStand(_machine: FireStateMachine): Promise<void> {
       setTimeout(() => {
         _machine.rigidBody.setVelocity(new ƒ.Vector3(0, 0, 0));
-      }, 2000);
+      }, 1500);
 
       setTimeout(() => {
         _machine.transit(JOB.SPAWN);
         _machine.act();
-      }, 5000);
+      }, 3500);
     }
 
     private hndEvent = (_event: Event): void => {
@@ -79,7 +79,7 @@ namespace Greed {
           ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, this.update);
           this.rigidBody = this.node.getComponent(ƒ.ComponentRigidbody);
 
-          this.timer = new ƒ.Timer(ƒ.Time.game, 5000, 0, () => {
+          this.timer = new ƒ.Timer(ƒ.Time.game, 8000, 0, () => {
             this.transit(JOB.CHARGE);
             this.act();
           });

@@ -94,8 +94,8 @@ declare namespace Greed {
 declare namespace Greed {
     class Boss extends Enemy {
         static bosses: EnemyInterface[];
-        private stage;
-        constructor(_name: string, _enemy: EnemyInterface, _stage: number);
+        private remainingRounds;
+        constructor(_name: string, _enemy: EnemyInterface, _remainingRounds: number);
         protected addScripts(): void;
     }
 }

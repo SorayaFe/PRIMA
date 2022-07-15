@@ -80,7 +80,7 @@ namespace Greed {
           this.rigidBody = this.node.getComponent(ƒ.ComponentRigidbody);
           this.cmpTransform = this.node.getComponent(ƒ.ComponentTransform);
 
-          this.timer = new ƒ.Timer(ƒ.Time.game, 10000, 0, () => {
+          this.timer = new ƒ.Timer(ƒ.Time.game, 8000, 0, () => {
             this.transit(JOB.TELEPORT);
             this.act();
           });
