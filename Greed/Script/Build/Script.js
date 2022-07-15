@@ -111,7 +111,7 @@ var Greed;
     var ƒUi = FudgeUserInterface;
     class GameState extends ƒ.Mutable {
         availableHealth = 4;
-        coins = 1000;
+        coins = 10;
         health = 4;
         speed = 1.1;
         damage = 3.5;
