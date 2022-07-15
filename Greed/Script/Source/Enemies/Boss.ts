@@ -15,9 +15,10 @@ namespace Greed {
     protected addScripts(): void {
       if (this.stage === 5) {
         this.script = new SkeletonStateMachine();
-        this.addComponent(this.script);
       } else {
+        this.script = new FireStateMachine();
       }
+      this.addComponent(this.script);
     }
   }
 }

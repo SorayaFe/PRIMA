@@ -38,9 +38,9 @@ namespace Greed {
 
       // add rigid body
       const rigidBody: ƒ.ComponentRigidbody = new ƒ.ComponentRigidbody(
-        5,
+        10,
         ƒ.BODY_TYPE.DYNAMIC,
-        ƒ.COLLIDER_TYPE.SPHERE,
+        this.enemy.type === EnemyType.BOSS ? ƒ.COLLIDER_TYPE.CONE : ƒ.COLLIDER_TYPE.SPHERE,
         undefined,
         this.mtxLocal
       );

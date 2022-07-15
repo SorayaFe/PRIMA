@@ -33,6 +33,7 @@ namespace Greed {
     private charge(): void {
       const vector = avatar.mtxLocal.translation.clone;
       vector.subtract(this.node.mtxLocal.translation);
+
       this.rigidBody.setVelocity(vector);
     }
   }

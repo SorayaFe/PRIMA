@@ -1,5 +1,6 @@
 namespace Greed {
   import ƒ = FudgeCore;
+
   ƒ.Debug.info("Main Program Template running!");
 
   window.addEventListener("load", init);
@@ -61,8 +62,6 @@ namespace Greed {
 
     const cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     const canvas: HTMLCanvasElement = document.querySelector("canvas");
-    //TODO
-    //canvas.requestPointerLock();
     const viewport: ƒ.Viewport = new ƒ.Viewport();
     viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
     viewport.draw();
@@ -113,7 +112,7 @@ namespace Greed {
     button
       .getComponent(ƒ.ComponentRigidbody)
       .addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting && stage < 6) {
+        if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting && stage < 7) {
           hndButtonTouched();
         }
       });
@@ -133,15 +132,19 @@ namespace Greed {
     ƒ.Loop.start();
   }
 
-  function setItemSlots(): void {
+  async function setItemSlots(): Promise<void> {
     const itemSlots = graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
-    const priceTag1 = new PriceTag("PriceTag", new ƒ.Vector3(3, 24.3, 0.1));
+    const priceTag1 = new PriceTag("PriceTag");
+    await priceTag1.createPriceTag(new ƒ.Vector3(3, 24.3, 0.1));
     itemSlots.addChild(priceTag1);
-    const priceTag2 = new PriceTag("PriceTag", new ƒ.Vector3(6, 24.3, 0.1));
+    const priceTag2 = new PriceTag("PriceTag");
+    await priceTag2.createPriceTag(new ƒ.Vector3(6, 24.3, 0.1));
     itemSlots.addChild(priceTag2);
-    const priceTag3 = new PriceTag("PriceTag", new ƒ.Vector3(9, 24.3, 0.1));
+    const priceTag3 = new PriceTag("PriceTag");
+    await priceTag3.createPriceTag(new ƒ.Vector3(9, 24.3, 0.1));
     itemSlots.addChild(priceTag3);
-    const priceTag4 = new PriceTag("PriceTag", new ƒ.Vector3(12, 24.3, 0.1));
+    const priceTag4 = new PriceTag("PriceTag");
+    await priceTag4.createPriceTag(new ƒ.Vector3(12, 24.3, 0.1));
     itemSlots.addChild(priceTag4);
     itemSlots.addChild(new ItemSlot("Slot", new ƒ.Vector3(3, 25, 0.1), priceTag1));
     itemSlots.addChild(new ItemSlot("Slot", new ƒ.Vector3(6, 25, 0.1), priceTag2));
@@ -171,6 +174,9 @@ namespace Greed {
   }
 
   function hndLastEnemyKilled(): void {
+    if (stage === 6) {
+      showOverlay(true);
+    }
     if (remainingRounds === 0) {
       stage++;
       bars.activate(false);
@@ -214,7 +220,7 @@ namespace Greed {
 
   function createEnemies(_isBoss: boolean): void {
     const enemy: EnemyInterface = _isBoss
-      ? Boss.bosses[0]
+      ? Boss.bosses[stage === 5 ? 0 : 1]
       : ƒ.Random.default.getElement(Enemy.enemies);
     gameState.isInvincible = true;
     addEnemiesAudio.play(true);
@@ -235,6 +241,22 @@ namespace Greed {
   function hndAvatarTouched(): void {
     if (!gameState.isInvincible) {
       avatar.hndHit();
+    }
+  }
+
+  export function showOverlay(won: boolean): void {
+    const overlay = document.querySelector(".overlay");
+    if (overlay) {
+      ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, update);
+      overlay.children[0].children[0].innerHTML = won ? "VICTORY!" : "GAME OVER!";
+      (overlay as any).style.width = "100%";
+      (overlay as any).style.height = "100%";
+      if (won) {
+        const confetti = document.createElement("img");
+        confetti.setAttribute("src", "Assets/confetti.gif");
+        confetti.setAttribute("id", "confetti");
+        overlay.appendChild(confetti);
+      }
     }
   }
 

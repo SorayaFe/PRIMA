@@ -5,9 +5,8 @@ namespace Greed {
   export class PriceTag extends ƒ.Node {
     private sprite: ƒAid.NodeSprite;
 
-    constructor(_name: string, _position: ƒ.Vector3) {
+    constructor(_name: string) {
       super(_name);
-      this.createPriceTag(_position);
     }
 
     public async createPriceTag(_position: ƒ.Vector3): Promise<void> {

@@ -110,14 +110,13 @@ var Greed;
     var ƒ = FudgeCore;
     var ƒUi = FudgeUserInterface;
     class GameState extends ƒ.Mutable {
-        availableHealth = 3;
-        //TODO coins amount
-        coins = 1000;
-        health = 3;
+        availableHealth = 4;
+        coins = 10;
+        health = 4;
         speed = 1.1;
-        damage = 3.5;
+        damage = 4;
         fireRate = 1900;
-        shotSpeed = 2.4;
+        shotSpeed = 2.5;
         projectileSize = 0.3;
         range = 5;
         canShoot = true;
@@ -151,7 +150,7 @@ var Greed;
             this.heartsContainer.innerHTML = innerHtml;
             if (this.availableHealth <= 0) {
                 this.audio.play(true);
-                // TODO die
+                Greed.showOverlay(false);
             }
         }
     }
@@ -202,8 +201,6 @@ var Greed;
         }
         const cmpCamera = new ƒ.ComponentCamera();
         const canvas = document.querySelector("canvas");
-        //TODO
-        //canvas.requestPointerLock();
         const viewport = new ƒ.Viewport();
         viewport.initialize("InteractiveViewport", graph, cmpCamera, canvas);
         viewport.draw();
@@ -245,7 +242,7 @@ var Greed;
         button
             .getComponent(ƒ.ComponentRigidbody)
             .addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
-            if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting && stage < 6) {
+            if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting && stage < 7) {
                 hndButtonTouched();
             }
         });
@@ -262,15 +259,19 @@ var Greed;
         ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, update);
         ƒ.Loop.start();
     }
-    function setItemSlots() {
+    async function setItemSlots() {
         const itemSlots = Greed.graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
-        const priceTag1 = new Greed.PriceTag("PriceTag", new ƒ.Vector3(3, 24.3, 0.1));
+        const priceTag1 = new Greed.PriceTag("PriceTag");
+        await priceTag1.createPriceTag(new ƒ.Vector3(3, 24.3, 0.1));
         itemSlots.addChild(priceTag1);
-        const priceTag2 = new Greed.PriceTag("PriceTag", new ƒ.Vector3(6, 24.3, 0.1));
+        const priceTag2 = new Greed.PriceTag("PriceTag");
+        await priceTag2.createPriceTag(new ƒ.Vector3(6, 24.3, 0.1));
         itemSlots.addChild(priceTag2);
-        const priceTag3 = new Greed.PriceTag("PriceTag", new ƒ.Vector3(9, 24.3, 0.1));
+        const priceTag3 = new Greed.PriceTag("PriceTag");
+        await priceTag3.createPriceTag(new ƒ.Vector3(9, 24.3, 0.1));
         itemSlots.addChild(priceTag3);
-        const priceTag4 = new Greed.PriceTag("PriceTag", new ƒ.Vector3(12, 24.3, 0.1));
+        const priceTag4 = new Greed.PriceTag("PriceTag");
+        await priceTag4.createPriceTag(new ƒ.Vector3(12, 24.3, 0.1));
         itemSlots.addChild(priceTag4);
         itemSlots.addChild(new Greed.ItemSlot("Slot", new ƒ.Vector3(3, 25, 0.1), priceTag1));
         itemSlots.addChild(new Greed.ItemSlot("Slot", new ƒ.Vector3(6, 25, 0.1), priceTag2));
@@ -295,6 +296,9 @@ var Greed;
         setTimer();
     }
     function hndLastEnemyKilled() {
+        if (stage === 6) {
+            showOverlay(true);
+        }
         if (remainingRounds === 0) {
             stage++;
             bars.activate(false);
@@ -333,7 +337,7 @@ var Greed;
     }
     function createEnemies(_isBoss) {
         const enemy = _isBoss
-            ? Greed.Boss.bosses[0]
+            ? Greed.Boss.bosses[stage === 5 ? 0 : 1]
             : ƒ.Random.default.getElement(Greed.Enemy.enemies);
         Greed.gameState.isInvincible = true;
         addEnemiesAudio.play(true);
@@ -354,6 +358,22 @@ var Greed;
             Greed.avatar.hndHit();
         }
     }
+    function showOverlay(won) {
+        const overlay = document.querySelector(".overlay");
+        if (overlay) {
+            ƒ.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, update);
+            overlay.children[0].children[0].innerHTML = won ? "VICTORY!" : "GAME OVER!";
+            overlay.style.width = "100%";
+            overlay.style.height = "100%";
+            if (won) {
+                const confetti = document.createElement("img");
+                confetti.setAttribute("src", "Assets/confetti.gif");
+                confetti.setAttribute("id", "confetti");
+                overlay.appendChild(confetti);
+            }
+        }
+    }
+    Greed.showOverlay = showOverlay;
     function update(_event) {
         ƒ.Physics.simulate();
         Greed.avatar.controlWalk();
@@ -386,6 +406,7 @@ var Greed;
             cmpTransform.mtxLocal.translation = _position;
             const projectileSize = this.isEnemy ? 0.3 : Greed.gameState.projectileSize;
             cmpTransform.mtxLocal.scale(new ƒ.Vector3(projectileSize, projectileSize, projectileSize));
+            cmpTransform.mtxLocal.translateZ(-0.2);
             this.addComponent(new ƒ.ComponentMesh(new ƒ.MeshSphere()));
             this.addComponent(new ƒ.ComponentMaterial(this.isEnemy ? Projectile.mtrProjectileEnemy : Projectile.mtrProjectileAvatar));
             this.addComponent(cmpTransform);
@@ -395,7 +416,9 @@ var Greed;
             this.rigidBody.isTrigger = true;
             this.addComponent(this.rigidBody);
             this.rigidBody.addEventListener("ColliderEnteredCollision" /* COLLISION_ENTER */, (_event) => {
-                if ((!this.isEnemy && _event.cmpRigidbody.node.name === "Enemy") ||
+                if ((!this.isEnemy &&
+                    (_event.cmpRigidbody.node.name === "Enemy" ||
+                        _event.cmpRigidbody.node.name === "Boss")) ||
                     (this.isEnemy && _event.cmpRigidbody.node.name === "Avatar") ||
                     _event.cmpRigidbody.node.name === "Wall" ||
                     _event.cmpRigidbody.node.name === "Door") {
@@ -538,7 +561,7 @@ var Greed;
             await Greed.loadSprites(this.enemy.sprite);
             Greed.setSprite(this, this.enemy.sprite.name);
             // add rigid body
-            const rigidBody = new ƒ.ComponentRigidbody(5, ƒ.BODY_TYPE.DYNAMIC, ƒ.COLLIDER_TYPE.SPHERE, undefined, this.mtxLocal);
+            const rigidBody = new ƒ.ComponentRigidbody(10, ƒ.BODY_TYPE.DYNAMIC, this.enemy.type === Greed.EnemyType.BOSS ? ƒ.COLLIDER_TYPE.CONE : ƒ.COLLIDER_TYPE.SPHERE, undefined, this.mtxLocal);
             rigidBody.effectRotation = new ƒ.Vector3(0, 0, 0);
             rigidBody.effectGravity = 0;
             this.addComponent(rigidBody);
@@ -618,10 +641,11 @@ var Greed;
         addScripts() {
             if (this.stage === 5) {
                 this.script = new Greed.SkeletonStateMachine();
-                this.addComponent(this.script);
             }
             else {
+                this.script = new Greed.FireStateMachine();
             }
+            this.addComponent(this.script);
         }
     }
     Greed.Boss = Boss;
@@ -802,9 +826,8 @@ var Greed;
     var ƒ = FudgeCore;
     class PriceTag extends ƒ.Node {
         sprite;
-        constructor(_name, _position) {
+        constructor(_name) {
             super(_name);
-            this.createPriceTag(_position);
         }
         async createPriceTag(_position) {
             const cmpTransform = new ƒ.ComponentTransform();
@@ -871,6 +894,8 @@ var Greed;
             }
         };
         update = () => {
+            const pos = this.rigidBody.getPosition();
+            this.rigidBody.setPosition(new ƒ.Vector3(pos.x, pos.y, 0.1));
             this.addBehavior();
         };
     }
@@ -1030,6 +1055,99 @@ var Greed;
     let JOB;
     (function (JOB) {
         JOB[JOB["FOLLOW"] = 0] = "FOLLOW";
+        JOB[JOB["CHARGE"] = 1] = "CHARGE";
+        JOB[JOB["SPAWN"] = 2] = "SPAWN";
+        JOB[JOB["STAND"] = 3] = "STAND";
+    })(JOB || (JOB = {}));
+    class FireStateMachine extends ƒAid.ComponentStateMachine {
+        static iSubclass = ƒ.Component.registerSubclass(FireStateMachine);
+        static instructions = FireStateMachine.get();
+        rigidBody;
+        timer;
+        constructor() {
+            super();
+            this.instructions = FireStateMachine.instructions;
+            // Don't start when running in editor
+            if (ƒ.Project.mode == ƒ.MODE.EDITOR)
+                return;
+            this.addEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
+            this.addEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+        }
+        static get() {
+            let setup = new ƒAid.StateMachineInstructions();
+            setup.transitDefault = FireStateMachine.transitDefault;
+            setup.setAction(JOB.FOLLOW, this.actFollow);
+            setup.setAction(JOB.CHARGE, this.actFollow);
+            setup.setAction(JOB.SPAWN, this.actSpawn);
+            setup.setAction(JOB.STAND, this.actStand);
+            return setup;
+        }
+        static transitDefault(_machine) { }
+        static async actFollow(_machine) {
+            const vector = Greed.avatar.mtxLocal.translation.clone;
+            vector.subtract(_machine.node.mtxLocal.translation);
+            vector.normalize(_machine.stateCurrent === JOB.FOLLOW ? 0.8 : 4);
+            _machine.rigidBody.setVelocity(vector);
+            if (_machine.stateCurrent === JOB.CHARGE) {
+                _machine.transit(JOB.STAND);
+                _machine.act();
+            }
+        }
+        static async actSpawn(_machine) {
+            const enemy = ƒ.Random.default.getElement(Greed.Enemy.enemies);
+            Greed.enemiesNode.addChild(new Greed.Enemy("Enemy", enemy));
+            setTimeout(() => {
+                _machine.transit(JOB.FOLLOW);
+            }, 1500);
+        }
+        static async actStand(_machine) {
+            setTimeout(() => {
+                _machine.rigidBody.setVelocity(new ƒ.Vector3(0, 0, 0));
+            }, 2000);
+            setTimeout(() => {
+                _machine.transit(JOB.SPAWN);
+                _machine.act();
+            }, 5000);
+        }
+        hndEvent = (_event) => {
+            switch (_event.type) {
+                case "componentAdd" /* COMPONENT_ADD */:
+                    ƒ.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, this.update);
+                    this.rigidBody = this.node.getComponent(ƒ.ComponentRigidbody);
+                    this.timer = new ƒ.Timer(ƒ.Time.game, 5000, 0, () => {
+                        this.transit(JOB.CHARGE);
+                        this.act();
+                    });
+                    this.transit(JOB.FOLLOW);
+                    break;
+                case "componentRemove" /* COMPONENT_REMOVE */:
+                    if (this.timer) {
+                        this.timer.clear();
+                    }
+                    this.removeEventListener("componentAdd" /* COMPONENT_ADD */, this.hndEvent);
+                    this.removeEventListener("componentRemove" /* COMPONENT_REMOVE */, this.hndEvent);
+                    ƒ.Loop.removeEventListener("loopFrame" /* LOOP_FRAME */, this.update);
+                    break;
+            }
+        };
+        update = (_event) => {
+            const pos = this.rigidBody.getPosition();
+            this.rigidBody.setPosition(new ƒ.Vector3(pos.x, pos.y, 0.1));
+            if (this.stateCurrent === JOB.FOLLOW) {
+                this.act();
+            }
+        };
+    }
+    Greed.FireStateMachine = FireStateMachine;
+})(Greed || (Greed = {}));
+var Greed;
+(function (Greed) {
+    var ƒ = FudgeCore;
+    var ƒAid = FudgeAid;
+    ƒ.Project.registerScriptNamespace(Greed); // Register the namespace to FUDGE for serialization
+    let JOB;
+    (function (JOB) {
+        JOB[JOB["FOLLOW"] = 0] = "FOLLOW";
         JOB[JOB["TELEPORT"] = 1] = "TELEPORT";
         JOB[JOB["SHOOT"] = 2] = "SHOOT";
     })(JOB || (JOB = {}));
@@ -1039,7 +1157,6 @@ var Greed;
         rigidBody;
         cmpTransform;
         timer;
-        isWorking = false;
         constructor() {
             super();
             this.instructions = SkeletonStateMachine.instructions;
@@ -1057,18 +1174,14 @@ var Greed;
             setup.setAction(JOB.SHOOT, this.actShoot);
             return setup;
         }
-        static transitDefault(_machine) {
-            console.log("Transit to", _machine.stateNext);
-        }
+        static transitDefault(_machine) { }
         static async actFollow(_machine) {
-            _machine.isWorking = false;
             const vector = Greed.avatar.mtxLocal.translation.clone;
             vector.subtract(_machine.node.mtxLocal.translation);
             vector.normalize(0.85);
             _machine.rigidBody.setVelocity(vector);
         }
         static async actTeleport(_machine) {
-            _machine.isWorking = true;
             _machine.node.activate(false);
             _machine.rigidBody.setVelocity(ƒ.Vector3.Z(5));
             const vector = Greed.avatar.mtxLocal.translation.clone;
@@ -1076,18 +1189,16 @@ var Greed;
                 _machine.rigidBody.setVelocity(ƒ.Vector3.Z(0.1));
                 _machine.node.activate(true);
                 _machine.cmpTransform.mtxLocal.translation = vector;
-                _machine.isWorking = false;
                 _machine.transit(JOB.SHOOT);
+                _machine.act();
             }, 1500);
         }
         static async actShoot(_machine) {
-            _machine.isWorking = true;
             _machine.rigidBody.setVelocity(new ƒ.Vector3());
             _machine.addProjectile("x");
             _machine.addProjectile("-x");
             _machine.addProjectile("y");
             _machine.addProjectile("-y");
-            _machine.isWorking = false;
             _machine.transit(JOB.FOLLOW);
         }
         hndEvent = (_event) => {
@@ -1098,6 +1209,7 @@ var Greed;
                     this.cmpTransform = this.node.getComponent(ƒ.ComponentTransform);
                     this.timer = new ƒ.Timer(ƒ.Time.game, 10000, 0, () => {
                         this.transit(JOB.TELEPORT);
+                        this.act();
                     });
                     this.setSprite();
                     break;
@@ -1112,7 +1224,9 @@ var Greed;
             }
         };
         update = (_event) => {
-            if (!this.isWorking) {
+            const pos = this.rigidBody.getPosition();
+            this.rigidBody.setPosition(new ƒ.Vector3(pos.x, pos.y, 0.1));
+            if (this.stateCurrent === JOB.FOLLOW) {
                 this.act();
             }
         };

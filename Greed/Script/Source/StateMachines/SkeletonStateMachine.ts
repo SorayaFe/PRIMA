@@ -17,8 +17,6 @@ namespace Greed {
     private cmpTransform: ƒ.ComponentTransform;
     private timer: ƒ.Timer;
 
-    private isWorking = false;
-
     constructor() {
       super();
       this.instructions = SkeletonStateMachine.instructions;
@@ -40,12 +38,9 @@ namespace Greed {
       return setup;
     }
 
-    private static transitDefault(_machine: SkeletonStateMachine): void {
-      console.log("Transit to", _machine.stateNext);
-    }
+    private static transitDefault(_machine: SkeletonStateMachine): void {}
 
     private static async actFollow(_machine: SkeletonStateMachine): Promise<void> {
-      _machine.isWorking = false;
       const vector = avatar.mtxLocal.translation.clone;
       vector.subtract(_machine.node.mtxLocal.translation);
       vector.normalize(0.85);
@@ -53,7 +48,6 @@ namespace Greed {
     }
 
     private static async actTeleport(_machine: SkeletonStateMachine): Promise<void> {
-      _machine.isWorking = true;
       _machine.node.activate(false);
       _machine.rigidBody.setVelocity(ƒ.Vector3.Z(5));
 
@@ -63,21 +57,17 @@ namespace Greed {
         _machine.node.activate(true);
         _machine.cmpTransform.mtxLocal.translation = vector;
 
-        _machine.isWorking = false;
-
         _machine.transit(JOB.SHOOT);
+        _machine.act();
       }, 1500);
     }
 
     private static async actShoot(_machine: SkeletonStateMachine): Promise<void> {
-      _machine.isWorking = true;
       _machine.rigidBody.setVelocity(new ƒ.Vector3());
       _machine.addProjectile("x");
       _machine.addProjectile("-x");
       _machine.addProjectile("y");
       _machine.addProjectile("-y");
-
-      _machine.isWorking = false;
 
       _machine.transit(JOB.FOLLOW);
     }
@@ -92,6 +82,7 @@ namespace Greed {
 
           this.timer = new ƒ.Timer(ƒ.Time.game, 10000, 0, () => {
             this.transit(JOB.TELEPORT);
+            this.act();
           });
 
           this.setSprite();
@@ -108,7 +99,9 @@ namespace Greed {
     };
 
     private update = (_event: Event): void => {
-      if (!this.isWorking) {
+      const pos = this.rigidBody.getPosition();
+      this.rigidBody.setPosition(new ƒ.Vector3(pos.x, pos.y, 0.1));
+      if (this.stateCurrent === JOB.FOLLOW) {
         this.act();
       }
     };

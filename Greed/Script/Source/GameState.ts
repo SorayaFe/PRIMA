@@ -3,15 +3,14 @@ namespace Greed {
   import ƒUi = FudgeUserInterface;
 
   export class GameState extends ƒ.Mutable {
-    public availableHealth: number = 3;
-    //TODO coins amount
-    public coins: number = 1000;
+    public availableHealth: number = 4;
+    public coins: number = 10;
 
-    public health: number = 3;
+    public health: number = 4;
     public speed: number = 1.1;
-    public damage: number = 3.5;
+    public damage: number = 4;
     public fireRate: number = 1900;
-    public shotSpeed: number = 2.4;
+    public shotSpeed: number = 2.5;
     public projectileSize: number = 0.3;
     public range: number = 5;
 
@@ -54,7 +53,7 @@ namespace Greed {
 
       if (this.availableHealth <= 0) {
         this.audio.play(true);
-        // TODO die
+        showOverlay(false);
       }
     }
   }

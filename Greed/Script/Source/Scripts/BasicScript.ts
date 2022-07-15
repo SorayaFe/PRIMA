@@ -29,6 +29,8 @@ namespace Greed {
     };
 
     private update = () => {
+      const pos = this.rigidBody.getPosition();
+      this.rigidBody.setPosition(new ƒ.Vector3(pos.x, pos.y, 0.1));
       this.addBehavior();
     };
 

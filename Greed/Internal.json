@@ -760,14 +760,6 @@
               },
               {
                 "ƒ.Node": {
-                  "name": "Rocks",
-                  "active": true,
-                  "components": {},
-                  "children": []
-                }
-              },
-              {
-                "ƒ.Node": {
                   "name": "Enemies",
                   "active": true,
                   "components": {},
@@ -1195,14 +1187,6 @@
                       }
                     }
                   ]
-                }
-              },
-              {
-                "ƒ.Node": {
-                  "name": "Rocks",
-                  "active": true,
-                  "components": {},
-                  "children": []
                 }
               },
               {

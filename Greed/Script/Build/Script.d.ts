@@ -44,6 +44,7 @@ declare namespace Greed {
     let avatar: Avatar;
     let sounds: ƒ.ComponentAudio[];
     let enemiesNode: ƒ.Node;
+    function showOverlay(won: boolean): void;
 }
 declare namespace Greed {
     import ƒ = FudgeCore;
@@ -176,7 +177,7 @@ declare namespace Greed {
     import ƒ = FudgeCore;
     class PriceTag extends ƒ.Node {
         private sprite;
-        constructor(_name: string, _position: ƒ.Vector3);
+        constructor(_name: string);
         createPriceTag(_position: ƒ.Vector3): Promise<void>;
         setPrice(_price: number): void;
     }
@@ -247,6 +248,30 @@ declare namespace Greed {
     import ƒAid = FudgeAid;
     enum JOB {
         FOLLOW = 0,
+        CHARGE = 1,
+        SPAWN = 2,
+        STAND = 3
+    }
+    export class FireStateMachine extends ƒAid.ComponentStateMachine<JOB> {
+        static readonly iSubclass: number;
+        private static instructions;
+        private rigidBody;
+        private timer;
+        constructor();
+        static get(): ƒAid.StateMachineInstructions<JOB>;
+        private static transitDefault;
+        private static actFollow;
+        private static actSpawn;
+        private static actStand;
+        private hndEvent;
+        private update;
+    }
+    export {};
+}
+declare namespace Greed {
+    import ƒAid = FudgeAid;
+    enum JOB {
+        FOLLOW = 0,
         TELEPORT = 1,
         SHOOT = 2
     }
@@ -256,7 +281,6 @@ declare namespace Greed {
         private rigidBody;
         private cmpTransform;
         private timer;
-        private isWorking;
         constructor();
         static get(): ƒAid.StateMachineInstructions<JOB>;
         private static transitDefault;

@@ -120,23 +120,6 @@
       }
     },
     {
-      "health": 7,
-      "sizeX": 0.7,
-      "sizeY": 0.7,
-      "type": "charge",
-      "sprite": {
-        "path": "Assets/Enemies/orange.png",
-        "name": "Devil",
-        "x": 0,
-        "y": 0,
-        "width": 16,
-        "height": 16,
-        "frames": 6,
-        "resolutionQuad": 16,
-        "offsetNext": 16
-      }
-    },
-    {
       "health": 40,
       "sizeX": 2.5,
       "sizeY": 2.5,
@@ -149,6 +132,23 @@
         "width": 32,
         "height": 32,
         "frames": 6,
+        "resolutionQuad": 32,
+        "offsetNext": 32
+      }
+    },
+    {
+      "health": 100,
+      "sizeX": 2.5,
+      "sizeY": 2.5,
+      "type": "boss",
+      "sprite": {
+        "path": "Assets/Enemies/fire.png",
+        "name": "Fire",
+        "x": 0,
+        "y": 0,
+        "width": 32,
+        "height": 32,
+        "frames": 21,
         "resolutionQuad": 32,
         "offsetNext": 32
       }
