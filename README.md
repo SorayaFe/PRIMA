@@ -12,7 +12,7 @@ Repository for the module "Prototyping interactive media-applications and games"
 - Docent: Prof. Dipl.-Ing. Jirka R. Dell'Oro-Friedl, HFU
 - Link to the Game: [Greed](https://sorayafe.github.io/PRIMA/Greed/index.html)
 - Link to the source code: [Code](https://github.com/SorayaFe/PRIMA/tree/main/Greed)
-- Link to the design document: [Design](https://github.com/SorayaFe/PRIMA/blob/main/Greed/Assets/Docs/design.pdf), [Items](https://github.com/SorayaFe/PRIMA/blob/main/Greed/Assets/Docs/item-cheat-sheet.pdf), [Beastiary](https://github.com/SorayaFe/PRIMA/blob/main/Greed/Assets/Docs/beastiary.pdf)
+- Link to the design document: [Design](https://sorayafe.github.io/PRIMA/Greed/Assets/Docs/design.pdf), [Items](https://sorayafe.github.io/PRIMA/Greed/Assets/Docs/item-cheat-sheet.pdf), [Enemies](https://sorayafe.github.io/PRIMA/Greed/Assets/Docs/beastiary.pdf)
 - Description for users on how to interact: WASD to move, Arrow-keys to shoot
 
 ### Checklist
