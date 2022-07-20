@@ -120,7 +120,7 @@
       }
     },
     {
-      "health": 150,
+      "health": 120,
       "sizeX": 2.5,
       "sizeY": 2.5,
       "type": "boss",
@@ -137,7 +137,7 @@
       }
     },
     {
-      "health": 300,
+      "health": 200,
       "sizeX": 2.5,
       "sizeY": 2.5,
       "type": "boss",

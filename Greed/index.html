@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
+  <head>
     <title>Greed</title>
     <meta charset="utf-8" />
     <link rel="icon" type="image/x-icon" href="Assets/coin.png" />
     <link rel="stylesheet" href="styles.css" />
 
     <!--Editor settings of this project-->
-    <meta type="settings" autoview="Graph|2022-05-24T16:14:09.425Z|32411" project="{'name':'Greed','includeAutoViewScript':false,'graphAutoView':'Graph|2022-05-24T16:14:09.425Z|32411'}" panels="[{'type':'PanelProject','state':{}},{'type':'PanelGraph','state':{'graph':'Graph|2022-05-24T16:14:09.425Z|32411'}}]" />
+    <meta
+      type="settings"
+      autoview="Graph|2022-05-24T16:14:09.425Z|32411"
+      project="{'name':'Greed','includeAutoViewScript':false,'graphAutoView':'Graph|2022-05-24T16:14:09.425Z|32411'}"
+      panels="[{'type':'PanelProject','state':{}},{'type':'PanelGraph','state':{'graph':'Graph|2022-05-24T16:14:09.425Z|32411'}}]"
+    />
 
     <!--Activate the following line to include the FUDGE-version of Oimo-Physics. You may want to download a local copy to work offline and be independent from future changes!-->
     <script type="text/javascript" src="../Fudge/OimoPhysics.js"></script>
@@ -27,7 +32,7 @@
     <!-- Dialog shown at startup only -->
     <div id="dialog">
       <div class="title">
-        <h1>Greed (work in progress)</h1>
+        <h1>Greed</h1>
 
         <div>Controls:</div>
         <div class="font">
@@ -36,8 +41,7 @@
         </div>
 
         <div class="start">
-          <div class="progress">
-</div>
+          <div class="progress"></div>
           <div>Start playing!</div>
         </div>
       </div>
@@ -76,8 +80,8 @@
               <a href="Assets/Docs/item-cheat-sheet.pdf" target="_blank">here</a>
             </p>
             <p>
-              - You can look at the bestiary
-              <a href="Assets/Docs/beastiary.pdf" target="_blank">here</a>
+              - You can look at all the enemies
+              <a href="Assets/Docs/enemies.pdf" target="_blank">here</a>
             </p>
           </div>
           <div>Stats</div>
@@ -104,11 +108,9 @@
     <!-- win/loose overlay -->
     <div class="overlay">
       <div style="z-index: 2">
-        <h1>
-</h1>
+        <h1></h1>
         <div class="start">
-          <div class="progress">
-</div>
+          <div class="progress"></div>
           <div>
             <a class="link" href=".">Play again!</a>
           </div>
@@ -123,8 +125,7 @@
     <div id="outer">
       <div id="vui">
         <div class="grid">
-          <div id="hearts">
-</div>
+          <div id="hearts"></div>
 
           <div id="stats">
             <div class="stat">
@@ -165,14 +166,10 @@
       <div id="item-info">
         <div class="img-grid">
           <img class="bg-img" src="Assets/infotext-bg.png" alt="background" />
-          <div class="name">
-</div>
+          <div class="name"></div>
         </div>
-        <div class="description">
-</div>
+        <div class="description"></div>
       </div>
     </div>
-  
-
-</body>
+  </body>
 </html>

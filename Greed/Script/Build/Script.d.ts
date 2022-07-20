@@ -45,6 +45,7 @@ declare namespace Greed {
     let sounds: ƒ.ComponentAudio[];
     let enemiesNode: ƒ.Node;
     function showOverlay(won: boolean): void;
+    function setCursedLight(): void;
 }
 declare namespace Greed {
     import ƒ = FudgeCore;

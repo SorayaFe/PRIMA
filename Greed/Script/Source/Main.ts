@@ -16,6 +16,7 @@ namespace Greed {
   let bars: ƒ.Node;
   let button: ƒ.Node;
 
+  // audio
   let doorAudio: ƒ.ComponentAudio;
   let coinAudio: ƒ.ComponentAudio;
   let addEnemiesAudio: ƒ.ComponentAudio;
@@ -23,11 +24,14 @@ namespace Greed {
   let coinSlotAudio: ƒ.ComponentAudio;
   let victoryAudio: ƒ.ComponentAudio;
 
+  // parameters needed for game logic
   let isFighting: boolean = false;
   let stage: number = 0;
   let remainingRounds: number = 5;
   let timer: ƒ.Timer;
+  let hasCursedLight: boolean = false;
 
+  // array to pick random enemy amount from
   const amounts = [1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5];
 
   function init(_event: Event) {
@@ -89,8 +93,6 @@ namespace Greed {
     Enemy.enemies = enemiesArray.filter((e) => e.type !== EnemyType.BOSS);
     Boss.bosses = enemiesArray.filter((e) => e.type === EnemyType.BOSS);
 
-    const room: ƒ.Node = graph.getChildrenByName("Room")[0];
-
     // assign sounds
     doorAudio = sounds.find((s) => s.getAudio().name === "Door");
     coinAudio = sounds.find((s) => s.getAudio().name === "Money");
@@ -98,6 +100,8 @@ namespace Greed {
     restockAudio = sounds.find((s) => s.getAudio().name === "Restock");
     coinSlotAudio = sounds.find((s) => s.getAudio().name === "CoinSlot");
     victoryAudio = sounds.find((s) => s.getAudio().name === "Victory");
+
+    const room: ƒ.Node = graph.getChildrenByName("Room")[0];
 
     // assign nodes and add nodes
     bars = room.getChildrenByName("Door")[0];
@@ -125,7 +129,7 @@ namespace Greed {
       .getChildrenByName("Restock")[0]
       .getComponent(ƒ.ComponentRigidbody)
       .addEventListener(ƒ.EVENT_PHYSICS.COLLISION_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name === "Avatar") {
+        if (_event.cmpRigidbody.node.name === "Avatar" && gameState.coins > 0) {
           hndRestock();
         }
       });
@@ -137,10 +141,16 @@ namespace Greed {
       gameState.updateHealth();
     }
 
+    // cursed light
+    if (sessionStorage.getItem("cursed") === "true") {
+      setCursedLight();
+    }
+
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
     ƒ.Loop.start();
   }
 
+  // add item slots to game
   async function setItemSlots(): Promise<void> {
     const itemSlots = graph.getChildrenByName("Shop")[0].getChildrenByName("ItemSlots")[0];
     const priceTag1 = new PriceTag("PriceTag");
@@ -161,6 +171,7 @@ namespace Greed {
     itemSlots.addChild(new HeartSlot("SlotHeart", new ƒ.Vector3(12, 24, 0.1), priceTag4));
   }
 
+  // restock items when touching restock machine
   function hndRestock(): void {
     const itemSlots = graph
       .getChildrenByName("Shop")[0]
@@ -174,6 +185,7 @@ namespace Greed {
     itemSlots.map((s) => s.manualRestock());
   }
 
+  // set timer, start round, close door when button touched
   function hndButtonTouched(): void {
     remainingRounds = stage <= 4 ? 5 : 2;
     button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
@@ -182,6 +194,7 @@ namespace Greed {
     setTimer();
   }
 
+  // end round or start next round if last enemy was killed
   function hndLastEnemyKilled(): void {
     if (stage === 5 && remainingRounds === 0) {
       showOverlay(true);
@@ -198,6 +211,7 @@ namespace Greed {
     }
   }
 
+  // set new timer for round
   function setTimer(): void {
     if (timer) {
       timer.clear();
@@ -213,8 +227,9 @@ namespace Greed {
     }
   }
 
+  // start a new round
   function startNewRound(): void {
-    gameState.coins += 4;
+    gameState.coins += 5;
     coinAudio.play(true);
     remainingRounds--;
 
@@ -227,6 +242,7 @@ namespace Greed {
     createEnemies(stage >= 5);
   }
 
+  // add enemies to the game
   function createEnemies(_isBoss: boolean): void {
     const enemy: EnemyInterface = _isBoss
       ? Boss.bosses[remainingRounds === 1 ? 0 : 1]
@@ -247,19 +263,26 @@ namespace Greed {
     }, 2000);
   }
 
+  // trigger avatar hit on hndAvatarTouched event
   function hndAvatarTouched(): void {
     if (!gameState.isInvincible) {
       avatar.hndHit();
     }
   }
 
+  // show game over / victory
   export function showOverlay(won: boolean): void {
     const overlay = document.querySelector(".overlay");
     if (overlay) {
       ƒ.Loop.removeEventListener(ƒ.EVENT.LOOP_FRAME, update);
+      if (timer) {
+        timer.clear();
+      }
+
       overlay.children[0].children[0].innerHTML = won ? "VICTORY!" : "GAME OVER!";
       (overlay as any).style.width = "100%";
       (overlay as any).style.height = "100%";
+
       if (won) {
         const confetti = document.createElement("img");
         confetti.setAttribute("src", "Assets/confetti.gif");
@@ -270,6 +293,19 @@ namespace Greed {
           victoryAudio.play(true);
         }, 1000);
       }
+    }
+  }
+
+  // set cursed light if item collected of sessionStorage cursed == true
+  export function setCursedLight(): void {
+    if (!hasCursedLight) {
+      graph.getComponent(ƒ.ComponentLight).light.color = ƒ.Color.CSS("#2e2e2e");
+      const light: ƒ.Light = new ƒ.LightPoint(ƒ.Color.CSS("white"));
+      const componentLight: ƒ.ComponentLight = new ƒ.ComponentLight(light);
+      componentLight.mtxPivot.scale(new ƒ.Vector3(30, 30, 30));
+      avatar.addComponent(componentLight);
+
+      hasCursedLight = true;
     }
   }
 

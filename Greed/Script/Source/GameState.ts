@@ -9,7 +9,7 @@ namespace Greed {
     public health: number = 4;
     public speed: number = 1.1;
     public damage: number = 3.5;
-    public fireRate: number = 1900;
+    public fireRate: number = 2000;
     public shotSpeed: number = 2.5;
     public projectileSize: number = 0.3;
     public range: number = 5;

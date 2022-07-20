@@ -123,11 +123,15 @@ namespace Greed {
     }
 
     protected applyItemEffects(): void {
-      for (let index = 0; index < this.activeItem.effects.length; index++) {
-        gameState[this.activeItem.effects[index]] += this.activeItem.values[index];
-        if (this.activeItem.effects[index] === Effects.HEALTH) {
-          gameState.availableHealth += this.activeItem.values[index];
-          gameState.updateHealth();
+      if (this.activeItem.name === "cursed lightbulb") {
+        setCursedLight();
+      } else {
+        for (let index = 0; index < this.activeItem.effects.length; index++) {
+          gameState[this.activeItem.effects[index]] += this.activeItem.values[index];
+          if (this.activeItem.effects[index] === Effects.HEALTH) {
+            gameState.availableHealth += this.activeItem.values[index];
+            gameState.updateHealth();
+          }
         }
       }
     }

@@ -27,6 +27,7 @@ p {
 h1 {
   border-bottom: 2px solid black;
   padding-bottom: 16px;
+  font-size: 3rem;
 }
 .font {
   font-family: "Roboto Condensed", sans-serif;
