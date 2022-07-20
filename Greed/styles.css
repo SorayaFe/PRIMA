@@ -139,6 +139,9 @@ canvas.fullscreen {
   margin-right: 10px;
   opacity: 0.8;
 }
+.stage {
+  margin-top: 70px;
+}
 input {
   border: none;
   background-color: transparent;

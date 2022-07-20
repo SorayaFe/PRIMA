@@ -14,6 +14,9 @@ namespace Greed {
     public projectileSize: number = 0.3;
     public range: number = 5;
 
+    public stage: number = 1;
+    public remainingRounds: number = 5;
+
     public canShoot = true;
     public isInvincible = false;
 

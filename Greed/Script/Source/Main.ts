@@ -26,8 +26,6 @@ namespace Greed {
 
   // parameters needed for game logic
   let isFighting: boolean = false;
-  let stage: number = 0;
-  let remainingRounds: number = 5;
   let timer: ƒ.Timer;
   let hasCursedLight: boolean = false;
 
@@ -118,7 +116,7 @@ namespace Greed {
     button
       .getComponent(ƒ.ComponentRigidbody)
       .addEventListener(ƒ.EVENT_PHYSICS.TRIGGER_ENTER, (_event: ƒ.EventPhysics) => {
-        if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting && stage < 6) {
+        if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting && gameState.stage < 7) {
           hndButtonTouched();
         }
       });
@@ -187,7 +185,6 @@ namespace Greed {
 
   // set timer, start round, close door when button touched
   function hndButtonTouched(): void {
-    remainingRounds = stage <= 4 ? 5 : 2;
     button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
     bars.activate(true);
     doorAudio.play(true);
@@ -196,16 +193,17 @@ namespace Greed {
 
   // end round or start next round if last enemy was killed
   function hndLastEnemyKilled(): void {
-    if (stage === 5 && remainingRounds === 0) {
+    if (gameState.stage === 6 && gameState.remainingRounds === 0) {
       showOverlay(true);
     }
-    if (remainingRounds === 0) {
-      stage++;
+    if (gameState.remainingRounds === 0) {
+      gameState.stage++;
       bars.activate(false);
       doorAudio.play(true);
       Timer.showFrame(30, true);
       button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(0.085);
       isFighting = false;
+      gameState.remainingRounds = gameState.stage <= 5 ? 5 : 2;
     } else {
       setTimer();
     }
@@ -220,10 +218,15 @@ namespace Greed {
     isFighting = true;
     startNewRound();
 
-    if (remainingRounds !== 0) {
-      timer = new ƒ.Timer(ƒ.Time.game, stage < 5 ? 11000 : 31000, remainingRounds, () => {
-        startNewRound();
-      });
+    if (gameState.remainingRounds !== 0) {
+      timer = new ƒ.Timer(
+        ƒ.Time.game,
+        gameState.stage < 6 ? 11000 : 31000,
+        gameState.remainingRounds,
+        () => {
+          startNewRound();
+        }
+      );
     }
   }
 
@@ -231,27 +234,27 @@ namespace Greed {
   function startNewRound(): void {
     gameState.coins += 5;
     coinAudio.play(true);
-    remainingRounds--;
+    gameState.remainingRounds--;
 
-    if (remainingRounds === 0) {
+    if (gameState.remainingRounds === 0) {
       Timer.showFrame(30, true);
     } else {
-      Timer.showFrame(stage < 5 ? 20 : 0);
+      Timer.showFrame(gameState.stage < 6 ? 20 : 0);
     }
 
-    createEnemies(stage >= 5);
+    createEnemies(gameState.stage >= 6);
   }
 
   // add enemies to the game
   function createEnemies(_isBoss: boolean): void {
     const enemy: EnemyInterface = _isBoss
-      ? Boss.bosses[remainingRounds === 1 ? 0 : 1]
+      ? Boss.bosses[gameState.remainingRounds === 1 ? 0 : 1]
       : ƒ.Random.default.getElement(Enemy.enemies);
     gameState.isInvincible = true;
     addEnemiesAudio.play(true);
 
     if (_isBoss) {
-      enemiesNode.addChild(new Boss("Enemy", enemy, remainingRounds));
+      enemiesNode.addChild(new Boss("Enemy", enemy, gameState.remainingRounds));
     } else {
       for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
         enemiesNode.addChild(new Enemy("Enemy", enemy));
@@ -291,7 +294,7 @@ namespace Greed {
 
         setTimeout(() => {
           victoryAudio.play(true);
-        }, 1000);
+        }, 200);
       }
     }
   }

@@ -27,6 +27,8 @@ declare namespace Greed {
         shotSpeed: number;
         projectileSize: number;
         range: number;
+        stage: number;
+        remainingRounds: number;
         canShoot: boolean;
         isInvincible: boolean;
         private heartsContainer;

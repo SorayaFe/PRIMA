@@ -119,6 +119,8 @@ var Greed;
         shotSpeed = 2.5;
         projectileSize = 0.3;
         range = 5;
+        stage = 1;
+        remainingRounds = 5;
         canShoot = true;
         isInvincible = false;
         heartsContainer;
@@ -174,8 +176,6 @@ var Greed;
     let victoryAudio;
     // parameters needed for game logic
     let isFighting = false;
-    let stage = 0;
-    let remainingRounds = 5;
     let timer;
     let hasCursedLight = false;
     // array to pick random enemy amount from
@@ -248,7 +248,7 @@ var Greed;
         button
             .getComponent(ƒ.ComponentRigidbody)
             .addEventListener("TriggerEnteredCollision" /* TRIGGER_ENTER */, (_event) => {
-            if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting && stage < 6) {
+            if (_event.cmpRigidbody.node.name === "Avatar" && !isFighting && Greed.gameState.stage < 7) {
                 hndButtonTouched();
             }
         });
@@ -308,7 +308,6 @@ var Greed;
     }
     // set timer, start round, close door when button touched
     function hndButtonTouched() {
-        remainingRounds = stage <= 4 ? 5 : 2;
         button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(-0.085);
         bars.activate(true);
         doorAudio.play(true);
@@ -316,16 +315,17 @@ var Greed;
     }
     // end round or start next round if last enemy was killed
     function hndLastEnemyKilled() {
-        if (stage === 5 && remainingRounds === 0) {
+        if (Greed.gameState.stage === 6 && Greed.gameState.remainingRounds === 0) {
             showOverlay(true);
         }
-        if (remainingRounds === 0) {
-            stage++;
+        if (Greed.gameState.remainingRounds === 0) {
+            Greed.gameState.stage++;
             bars.activate(false);
             doorAudio.play(true);
             Greed.Timer.showFrame(30, true);
             button.getComponent(ƒ.ComponentMaterial).mtxPivot.translateX(0.085);
             isFighting = false;
+            Greed.gameState.remainingRounds = Greed.gameState.stage <= 5 ? 5 : 2;
         }
         else {
             setTimer();
@@ -338,8 +338,8 @@ var Greed;
         }
         isFighting = true;
         startNewRound();
-        if (remainingRounds !== 0) {
-            timer = new ƒ.Timer(ƒ.Time.game, stage < 5 ? 11000 : 31000, remainingRounds, () => {
+        if (Greed.gameState.remainingRounds !== 0) {
+            timer = new ƒ.Timer(ƒ.Time.game, Greed.gameState.stage < 6 ? 11000 : 31000, Greed.gameState.remainingRounds, () => {
                 startNewRound();
             });
         }
@@ -348,24 +348,24 @@ var Greed;
     function startNewRound() {
         Greed.gameState.coins += 5;
         coinAudio.play(true);
-        remainingRounds--;
-        if (remainingRounds === 0) {
+        Greed.gameState.remainingRounds--;
+        if (Greed.gameState.remainingRounds === 0) {
             Greed.Timer.showFrame(30, true);
         }
         else {
-            Greed.Timer.showFrame(stage < 5 ? 20 : 0);
+            Greed.Timer.showFrame(Greed.gameState.stage < 6 ? 20 : 0);
         }
-        createEnemies(stage >= 5);
+        createEnemies(Greed.gameState.stage >= 6);
     }
     // add enemies to the game
     function createEnemies(_isBoss) {
         const enemy = _isBoss
-            ? Greed.Boss.bosses[remainingRounds === 1 ? 0 : 1]
+            ? Greed.Boss.bosses[Greed.gameState.remainingRounds === 1 ? 0 : 1]
             : ƒ.Random.default.getElement(Greed.Enemy.enemies);
         Greed.gameState.isInvincible = true;
         addEnemiesAudio.play(true);
         if (_isBoss) {
-            Greed.enemiesNode.addChild(new Greed.Boss("Enemy", enemy, remainingRounds));
+            Greed.enemiesNode.addChild(new Greed.Boss("Enemy", enemy, Greed.gameState.remainingRounds));
         }
         else {
             for (let index = 0; index < ƒ.Random.default.getElement(amounts); index++) {
@@ -400,7 +400,7 @@ var Greed;
                 overlay.appendChild(confetti);
                 setTimeout(() => {
                     victoryAudio.play(true);
-                }, 1000);
+                }, 200);
             }
         }
     }
